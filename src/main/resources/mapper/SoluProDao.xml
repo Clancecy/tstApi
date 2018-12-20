@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ISoluProDao">
+    <resultMap id="listSoluPro" type="SoluPro">
+        <id column="ID" property="ID"></id>
+        <result column="soluID" property="soluID"></result>
+        <result column="proID" property="proID"></result>
+        <result column="proName" property="proName"></result>
+    </resultMap>
+
+    <select id="getSoluPro" resultType="SoluPro" parameterType="long">
+        select *
+        from SoluPro
+        where ID = #{ID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="SoluPro">
+        select IFNULL(max(ID),0) as ID from soluPro
+        <where>
+            <if test="soluID!=-1">
+                and soluID=#{soluID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listSoluPro" parameterType="SoluPro">
+        select * from soluPro
+        <where>
+            <if test="ID!=-1">
+                and ID=#{ID}
+            </if>
+            <if test="soluID!=-1">
+                and soluID=#{soluID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="SoluPro">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into soluPro (soluID,proID,proName,addtime) values (#{soluID},
+        #{proID},#{proName},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into soluPro (soluID,proID,proName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="SoluPro" index="index" separator="," close=";">
+            ( #{SoluPro.soluID},#{SoluPro.proID},#{SoluPro.proName},#{SoluPro.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from soluPro
+        where soluID = #{soluID}
+    </delete>
+    <delete id="delOne" parameterType="long">
+        delete
+        from soluPro
+        where ID = #{ID}
+    </delete>
+
+    <update id="update" parameterType="SoluPro">
+        update soluPro
+        set soluID  = #{soluID},
+            proID   = #{proID},
+            proName = #{proName},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update soluPro set
+        soluID =
+        <foreach collection="list" item="SoluPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{SoluPro.ID} then
+            #{SoluPro.soluID}
+        </foreach>
+        ,proID =
+        <foreach collection="list" item="SoluPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{SoluPro.ID} then
+            #{SoluPro.proID}
+        </foreach>
+        ,proName =
+        <foreach collection="list" item="SoluPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{SoluPro.ID} then
+            #{SoluPro.proName}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="SoluPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{SoluPro.ID} then
+            #{SoluPro.addtime}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IPlanDanDao">
+    <resultMap id="listPlan" type="PlanDan">
+        <id column="planDanID" property="planDanID"></id>
+        <result property="planDanName" column="planDanName"></result>
+        <result property="planDanNumber" column="planDanNumber"></result>
+        <result property="planID" column="planID"></result>
+        <result property="status" column="status"></result>
+        <result property="addtime" column="addtime"></result>
+    </resultMap>
+
+    <select id="selectList" resultMap="listPlan" parameterType="List">
+        select * from planDan where a.planDanID in
+        <foreach collection="list" item="planDanID" open="(" close=")" separator=",">
+            #{planDanID}
+        </foreach>
+    </select>
+    <select id="select" resultMap="listPlan" parameterType="Plan">
+        select * from planDan
+        <where>
+            <if test="planDanID!=-1">
+                and planDanID=#{planDanID}
+            </if>
+            <if test="planDanName!=null">
+                and planDanName=#{planDanName}
+            </if>
+            <if test="planID!=-1">
+                and planID=#{planID}
+            </if>
+            <if test="status!=-1">
+                and status=#{status}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="Plan">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planDanID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into planDan (planDanName,planDanNumber,planID,status,addtime) values (#{planDanName},
+        #{planDanNumber},#{planID},#{status},#{addtime})
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from planDan
+        where planDanID = #{planDanID}
+    </delete>
+
+    <update id="update" parameterType="Plan">
+        update planDan
+        set planDanName  = #{planDanName},
+            planDanNumber   = #{planDanNumber},
+            planID = #{planID},
+            status    = #{status},
+            addtime   = #{addtime}
+        where planDanID = #{planDanID}
+    </update>
+
+</mapper>

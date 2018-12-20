@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ITaskUserDao">
+    <resultMap id="listTaskUser" type="TaskUser">
+        <id column="ID" property="ID"></id>
+        <result column="taskID" property="taskID"></result>
+        <result column="userID" property="userID"></result>
+        <result column="userName" property="userName"></result>
+    </resultMap>
+
+    <select id="getTaskUser" resultType="TaskUser" parameterType="long">
+        select *
+        from TaskUser
+        where ID = #{ID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="TaskUser">
+        select IFNULL(max(ID),0) as ID from TaskUser
+        <where>
+            <if test="taskID!=-1">
+                and taskID=#{taskID}
+            </if>
+            <if test="userID!=-1">
+                and userID=#{userID}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listTaskUser" parameterType="TaskUser">
+        select a.ID,a.taskID,a.userID,b.userName from TaskUser a,user b
+        <where>
+            a.userID=b.userID
+            <if test="ID!=-1">
+                and a.ID=#{ID}
+            </if>
+            <if test="taskID!=-1">
+                and a.taskID=#{taskID}
+            </if>
+            <if test="userID!=-1">
+                and a.userID=#{userID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="TaskUser">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into TaskUser (taskID,userID,addtime) values (#{taskID},
+        #{userID},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into TaskUser (taskID,userID,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="TaskUser" index="index" separator="," close=";">
+            ( #{TaskUser.taskID},#{TaskUser.userID},#{TaskUser.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from TaskUser
+        where taskID = #{taskID}
+    </delete>
+    <delete id="delOne">
+        delete
+        from TaskUser
+        where ID = #{ID}
+    </delete>
+    <update id="update" parameterType="TaskUser">
+        update TaskUser
+        set taskID  = #{taskID},
+            userID  = #{userID},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update TaskUser set
+        taskID =
+        <foreach collection="list" item="TaskUser" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskUser.ID} then
+            #{TaskUser.taskID}
+        </foreach>
+        ,userID =
+        <foreach collection="list" item="TaskUser" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskUser.ID} then
+            #{TaskUser.userID}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="TaskUser" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskUser.ID} then
+            #{TaskUser.addtime}
+        </foreach>
+    </update>
+
+</mapper>

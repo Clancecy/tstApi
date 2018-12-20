@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IInstrumentDao">
+    <resultMap id="listInstrument" type="Instrument">
+        <id column="insID" property="insID"></id>
+        <result property="insName" column="insName"></result>
+        <result property="insTypeID" column="insTypeID"></result>
+        <result property="insNumber" column="insNumber"></result>
+        <result property="manufacturer" column="manufacturer"></result>
+        <result property="isWork" column="isWork"></result>
+        <result property="isRepair" column="isRepair"></result>
+
+    </resultMap>
+
+    <select id="select" resultMap="listInstrument" parameterType="Instrument">
+        select * from instrument
+        <where>
+            <if test="insID!=-1">
+                and insID=#{insID}
+            </if>
+            <if test="insTypeID!=-1">
+                and insTypeID=#{insTypeID}
+            </if>
+            <if test="insTypeName!=null">
+                and insTypeName=#{insTypeName}
+            </if>
+            <if test="insNumber!=null">
+                and insNumber=#{insNumber}
+            </if>
+            <if test="isWork!=-1">
+                and isWork=#{isWork}
+            </if>
+            <if test="isRepair!=-1">
+                and isRepair=#{isRepair}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="Instrument">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="insID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into Instrument (insName,insTypeID,insTypeName,insNumber,manufacturer,isWork,isRepair,addtime) values
+        (#{insName},
+        #{insTypeID},#{insTypeName},#{insNumber},#{manufacturer}, #{isWork},#{isRepair},#{addtime})
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from Instrument
+        where insID = #{insID}
+    </delete>
+
+    <update id="update" parameterType="Instrument">
+        update Instrument
+        set insName      = #{insName},
+            insTypeID    = #{insTypeID},
+            insTypeName  = #{insTypeName},
+            insNumber    = #{insNumber},
+            manufacturer = #{manufacturer},
+            isWork       = #{isWork},
+            isRepair     = #{isRepair},
+            addtime      = #{addtime}
+        where insID = #{insID}
+    </update>
+
+</mapper>

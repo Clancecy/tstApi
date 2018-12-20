@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IPlanDao">
+    <resultMap id="listPlan" type="Plan">
+        <id column="planID" property="planID"></id>
+        <result property="planName" column="planName"></result>
+        <result property="staID" column="staID"></result>
+        <result property="cycType" column="cycType"></result>
+        <result property="firsttime" column="firsttime"></result>
+        <result property="cyctime" column="cyctime"></result>
+        <result property="addtime" column="addtime"></result>
+        <!--<result property="testID" column="testID"></result>-->
+        <!--<result property="leaderID" column="leaderID"></result>-->
+        <!--<result property="userName" column="userName"></result>-->
+        <!--<result property="status" column="status"></result>-->
+    </resultMap>
+
+    <select id="selectList" resultMap="listPlan" parameterType="List">
+        select * from plan where a.planID in
+        <foreach collection="list" item="planID" open="(" close=")" separator=",">
+            #{planID}
+        </foreach>
+    </select>
+    <select id="select" resultMap="listPlan" parameterType="Plan">
+        select * from plan
+        <where>
+            <if test="planID!=-1">
+                and planID=#{planID}
+            </if>
+            <if test="staID!=-1">
+                and staID=#{staID}
+            </if>
+            <if test="planName!=null">
+                and planName=#{planName}
+            </if>
+            <if test="cycType!=-1">
+                and cycType=#{cycType}
+            </if>
+            <if test="status!=-1">
+                and status=#{status}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="Plan">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into plan (planName,staID,cycType,firsttime,cyctime,status,addtime)
+        values (#{planName},#{staID},#{cycType},#{firsttime},#{cyctime},#{status},#{addtime})
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from plan
+        where planID = #{planID}
+    </delete>
+
+    <update id="update" parameterType="Plan">
+        update plan
+        set planName  = #{planName},
+            staID     = #{staID},
+            cycType   = #{cycType},
+            firsttime = #{firsttime},
+            cyctime   = #{cyctime},
+            status    = #{status},
+            addtime   = #{addtime}
+        where planID = #{planID}
+    </update>
+
+</mapper>

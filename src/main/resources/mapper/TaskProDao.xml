@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ITaskProDao">
+    <resultMap id="listTaskPro" type="TaskPro">
+        <id column="ID" property="ID"></id>
+        <result column="taskID" property="taskID"></result>
+        <result column="proID" property="proID"></result>
+        <result column="proName" property="proName"></result>
+    </resultMap>
+
+    <select id="getTaskPro" resultType="TaskPro" parameterType="long">
+        select *
+        from TaskPro
+        where ID = #{ID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="TaskPro">
+        select IFNULL(max(ID),0) as ID from taskPro
+        <where>
+            <if test="taskID!=-1">
+                and taskID=#{taskID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="proName!=null">
+                and proName=#{proName}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listTaskPro" parameterType="TaskPro">
+        select * from taskPro
+        <where>
+            <if test="ID!=-1">
+                and ID=#{ID}
+            </if>
+            <if test="taskID!=-1">
+                and taskID=#{taskID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="proName!=null">
+                and proName=#{proName}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="TaskPro">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into taskPro (taskID,proID,proName,addtime) values (#{taskID},
+        #{proID},#{proName},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into taskPro (taskID,proID,proName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="TaskPro" index="index" separator="," close=";">
+            ( #{TaskPro.taskID},#{TaskPro.proID},#{TaskPro.proName},#{TaskPro.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from taskPro
+        where taskID = #{taskID}
+    </delete>
+    <delete id="delOne" parameterType="long">
+        delete
+        from taskPro
+        where ID = #{ID}
+    </delete>
+
+    <update id="update" parameterType="TaskPro">
+        update taskPro
+        set taskID  = #{taskID},
+            proID   = #{proID},
+            proName = #{proName},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update taskPro set
+        taskID =
+        <foreach collection="list" item="TaskPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskPro.ID} then
+            #{TaskPro.taskID}
+        </foreach>
+        ,proID =
+        <foreach collection="list" item="TaskPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskPro.ID} then
+            #{TaskPro.proID}
+        </foreach>
+        ,proName =
+        <foreach collection="list" item="TaskPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskPro.ID} then
+            #{TaskPro.proName}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="TaskPro" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{TaskPro.ID} then
+            #{TaskPro.addtime}
+        </foreach>
+    </update>
+
+</mapper>

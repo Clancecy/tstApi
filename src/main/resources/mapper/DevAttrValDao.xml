@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IDevAttrValDao">
+    <resultMap id="listDevAttrVal" type="DevAttrVal">
+        <id column="ID" property="ID"></id>
+        <result property="attrID" column="attrID"></result>
+        <result property="attrName" column="attrName"></result>
+        <result property="devID" column="devID"></result>
+        <result property="arrtVal" column="arrtVal"></result>
+    </resultMap>
+
+    <select id="select" resultMap="listDevAttrVal" parameterType="DevAttrVal">
+        select * from DevAttrVal
+        <where>
+            <if test="ID!=-1">
+                and ID=#{ID}
+            </if>
+            <if test="devID!=-1">
+                and devID=#{devID}
+            </if>
+            <if test="attrID!=-1">
+                and attrID=#{attrID}
+            </if>
+        </where>
+    </select>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into DevAttrVal (attrID,attrName,devID,arrtVal,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="DevAttrVal" index="index" separator="," close=";">
+            (#{DevAttrVal.attrID},#{DevAttrVal.attrName},#{DevAttrVal.devID},
+            #{DevAttrVal.arrtVal},#{DevAttrVal.addtime})
+        </foreach>
+    </insert>
+    <insert id="insert" parameterType="DevAttrVal">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into DevAttrVal (attrID,attrName,devID,arrtVal,addtime) values (#{attrID},
+        #{attrName},#{devID},#{arrtVal},#{addtime})
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from DevAttrVal
+        where devID = #{devID}
+    </delete>
+
+    <update id="update" parameterType="TypeAttr">
+        update DevAttrVal
+        set attrID   = #{attrID},
+            attrName = #{attrName},
+            devID    = #{devID},
+            arrtVal  = #{arrtVal},
+            addtime  = #{addtime}
+        where ID = #{ID}
+    </update>
+
+</mapper>

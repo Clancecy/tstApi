@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ISolutionDao">
+    <resultMap id="listSolution" type="com.testyle.model.Solution">
+        <id column="soluID" property="soluID"></id>
+        <result property="soluName" column="soluName"></result>
+        <result property="devTypeID" column="devTypeID"></result>
+        <result property="builder" column="builder"></result>
+    </resultMap>
+
+    <select id="getSolution" resultType="Solution" parameterType="long">
+        select *
+        from solution
+        where soluID = #{soluID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="Solution">
+        select IFNULL(max(soluID),0) as soluID from solution
+        <where>
+            <if test="soluName!=null">
+                and soluName=#{soluName}
+            </if>
+            <if test="devTypeID!=-1">
+                and devTypeID=#{devTypeID}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listSolution" parameterType="Solution">
+        select * from solution
+        <where>
+            <if test="soluID!=-1">
+                and soluID=#{soluID}
+            </if>
+            <if test="soluName!=null">
+                and soluName=#{soluName}
+            </if>
+            <if test="devTypeID!=-1">
+                and devTypeID=#{devTypeID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="Solution">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="soluID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into solution (soluName,devTypeID,builder,addtime) values (#{soluName},
+        #{devTypeID},#{builder},#{addtime})
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from solution
+        where soluID = #{soluID}
+    </delete>
+
+    <update id="update" parameterType="Solution">
+        update solution
+        set soluName  = #{soluName},
+            devTypeID = #{devTypeID},
+            builder   = #{builder},
+            addtime   = #{addtime}
+        where soluID = #{soluID}
+    </update>
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ITaskDao">
+    <resultMap id="listTask" type="Task">
+        <id column="taskID" property="taskID"></id>
+        <result property="taskName" column="taskName"></result>
+        <result property="testID" column="testID"></result>
+        <result property="workerID" column="workerID"></result>
+        <result property="userName" column="userName"></result>
+    </resultMap>
+
+    <select id="selectList" resultMap="listTask" parameterType="List">
+        select a.taskID,a.taskName,a.testID,a.workerID,d.userName from task a,user d where a.workerID=d.userID and
+        a.taskID in
+        <foreach collection="list" item="taskID" open="(" close=")" separator=",">
+            #{taskID}
+        </foreach>
+    </select>
+    <select id="select" resultMap="listTask" parameterType="Task">
+        select a.taskID,a.taskName,a.testID,a.workerID,d.userName from task a,user d
+        <where>
+            a.workerID=d.userID
+            <if test="taskID!=-1">
+                and a.taskID=#{taskID}
+            </if>
+            <if test="taskName!=null">
+                and a.taskName=#{taskName}
+            </if>
+            <if test="testID!=-1">
+                and a.testID=#{testID}
+            </if>
+            <if test="workerID!=-1">
+                and a.workerID=#{workerID}
+            </if>
+            <if test="status!=-1">
+                and a.status=#{status}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="Task">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="taskID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into task (taskName,testID,workerID,status,addtime) values (#{taskName},
+        #{testID},#{workerID},#{status},#{addtime})
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from task
+        where taskID = #{taskID}
+    </delete>
+
+    <update id="update" parameterType="Task">
+        update task
+        set taskName = #{taskName},
+            testID   = #{testID},
+            workerID = #{workerID},
+            status   = #{status},
+            addtime  = #{addtime}
+        where taskID = #{taskID}
+    </update>
+
+
+</mapper>

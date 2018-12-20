@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IReportProFileDao">
+    <resultMap id="listReportProFile" type="ReportProFile">
+        <id column="ID" property="ID"></id>
+        <result column="reportID" property="reportID"></result>
+        <result column="proID" property="proID"></result>
+        <result column="taskID" property="taskID"></result>
+        <result column="workerID" property="workerID"></result>
+        <result column="url" property="url"></result>
+        <result column="status" property="status"></result>
+    </resultMap>
+
+    <select id="selectByTask" resultMap="listReportProFile" parameterType="List">
+        select * from repprofile where taskID in
+        <foreach collection="list" item="taskID" open="(" close=")" separator=",">
+            #{taskID}
+        </foreach>
+        and status!=1
+    </select>
+    <select id="getReportProFile" resultType="ReportProFile" parameterType="long">
+        select *
+        from repprofile
+        where ID = #{ID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="ReportProFile">
+        select IFNULL(max(ID),0) as ID from repprofile
+        <where>
+            <if test="reportID!=-1">
+                and reportID=#{reportID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="taskID!=-1">
+                and taskID=#{taskID}
+            </if>
+            <if test="workerID!=-1">
+                and workerID=#{workerID}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listReportProFile" parameterType="ReportProFile">
+        select * from repprofile
+        <where>
+            <if test="ID!=-1">
+                and ID=#{ID}
+            </if>
+            <if test="reportID!=-1">
+                and reportID=#{reportID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="taskID!=-1">
+                and taskID=#{taskID}
+            </if>
+            <if test="workerID!=-1">
+                and workerID=#{workerID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="ReportProFile">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into repprofile (reportID,taskID,proID,status,url,addtime) values (#{reportID},
+        #{taskID},#{proID},#{status},#{url},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into repprofile (reportID,taskID,proID,status,workerID,url,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="ReportProFile" index="index" separator="," close=";">
+            (
+            #{ReportProFile.reportID},#{ReportProFile.taskID},#{ReportProFile.proID},#{ReportProFile.status},#{ReportProFile.workerID},#{ReportProFile.url},#{ReportProFile.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from repprofile
+        where reportID = #{reportID}
+    </delete>
+    <delete id="delOne" parameterType="long">
+        delete
+        from repprofile
+        where ID = #{ID}
+    </delete>
+
+    <update id="update" parameterType="ReportProFile">
+        update repprofile
+        set reportID = #{reportID},
+            taskID   = #{taskID},
+            proID    = #{proID},
+            status   = #{status},
+            workerID = #{workerID},
+            url      = #{url},
+            addtime  = #{addtime}
+        where ID = #{ID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update repprofile set
+        reportID =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.reportID}
+        </foreach>
+        ,taskID =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.taskID}
+        </foreach>
+        ,proID =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.proID}
+        </foreach>
+        ,status =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.status}
+        </foreach>
+        ,workerID =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.workerID}
+        </foreach>
+        ,url =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.url}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="ReportProFile" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{ReportProFile.ID} then
+            #{ReportProFile.addtime}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IPlanTestDao">
+    <resultMap id="listPlanTest" type="PlanTest">
+        <id column="ID" property="ID"></id>
+        <result column="planID" property="planID"></result>
+        <result column="testID" property="testID"></result>
+        <result column="testName" property="testName"></result>
+        <!--<result column="status" property="status"></result>-->
+    </resultMap>
+
+    <select id="getPlanTest" resultType="PlanTest" parameterType="long">
+        select *
+        from PlanTest
+        where ID = #{ID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="PlanTest">
+        select IFNULL(max(ID),0) as ID from planTest
+        <where>
+            <if test="planID!=-1">
+                and planID=#{planID}
+            </if>
+            <if test="testID!=-1">
+                and testID=#{testID}
+            </if>
+            <if test="testName!=null">
+                and testName=#{testName}
+            </if>
+            <!--<if test="status!=-1">-->
+            <!--and status=#{status}-->
+            <!--</if>-->
+        </where>
+
+    </select>
+    <select id="select" resultMap="listPlanTest" parameterType="PlanTest">
+        select a.ID,a.planID,a.testID,b.testName from planTest a,test b
+        <where>
+            a.testID=b.testID
+            <if test="ID!=-1">
+                and a.ID=#{ID}
+            </if>
+            <if test="planID!=-1">
+                and a.planID=#{planID}
+            </if>
+            <if test="testID!=-1">
+                and a.testID=#{testID}
+            </if>
+            <if test="testName!=null">
+                and testName=#{testName}
+            </if>
+            <!--<if test="status!=-1">-->
+            <!--and status=#{status}-->
+            <!--</if>-->
+        </where>
+    </select>
+    <insert id="insert" parameterType="PlanTest">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into planTest (planID,testID,addtime) values (#{planID},
+        #{testID},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into planTest (planID,testID,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="PlanTest" index="index" separator="," close=";">
+            ( #{PlanTest.planID},#{PlanTest.testID},#{PlanTest.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from planTest
+        where planID = #{planID}
+    </delete>
+    <delete id="delOne" parameterType="long">
+        delete
+        from planTest
+        where ID = #{ID}
+    </delete>
+
+    <update id="update" parameterType="PlanTest">
+        update planTest
+        set planID  = #{planID},
+            testID  = #{testID},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update planTest set
+        planID =
+        <foreach collection="list" item="PlanTest" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{PlanTest.ID} then
+            #{PlanTest.planID}
+        </foreach>
+        ,testID =
+        <foreach collection="list" item="PlanTest" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{PlanTest.ID} then
+            #{PlanTest.testID}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="PlanTest" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{PlanTest.ID} then
+            #{PlanTest.addtime}
+        </foreach>
+    </update>
+
+</mapper>

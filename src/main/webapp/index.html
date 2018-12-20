@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <script src="jquery-3.3.1.min.js"></script>
+</head>
+<script>
+    function selectUser() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                document.getElementById("test").innerHTML = xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("POST", "test/add", true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send("testID=8");
+    }
+
+    function login() {
+        $.ajax({
+            url:"user/login",
+            data:{
+                userName:$("#name").value,
+                userPassword:$("#pwd").value
+            },
+            success:function (result) {
+                res=eval("(" + result+ ")");
+                if(res.code==101){
+                    window.location.href="main.html";
+                }
+            }
+        })
+    }
+</script>
+<body>
+<p id="test">Hello World!</p>
+<button type="button" onclick="selectUser()">onclick test</button>
+
+<input type="text" name="用户名" id="name">
+<input type="text" name="密码" id="pwd">
+<button onclick="login()">登陆</button>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IESDao">
+    <update id="update" parameterType="ES">
+        update ES
+        set ESUrl = #{ESUrl}
+        where ID = #{ID}
+    </update>
+    <select id="getUrl" resultType="String">
+        select ESUrl
+        from ES where ID=1;
+    </select>
+</mapper>
