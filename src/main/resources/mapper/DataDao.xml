@@ -46,7 +46,7 @@
 
     </select>
     <select id="select" resultMap="listData" parameterType="Data">
-        select * from data
+        select * from ${table}
         <where>
             <if test="dataID!=-1">
                 and dataID=#{dataID}
@@ -78,19 +78,19 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="dataID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into data (reportID,taskID,proID,dataVal,recordID,
+        INSERT into ${table} (reportID,taskID,proID,dataVal,recordID,
         testOrder,itemID,devID,addtime)
         values (#{reportID},#{taskID},#{proID},#{dataVal},#{recordID},
         #{testOrder},#{itemID},#{devID},#{addtime})
     </insert>
-    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+    <insert id="insertList" useGeneratedKeys="true">
         <selectKey resultType="long" keyProperty="dataID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into data (reportID,taskID,proID,dataVal,recordID,
+        INSERT into ${table} (reportID,taskID,proID,dataVal,recordID,
         testOrder,itemID,devID,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
-        <foreach collection="list" item="Data" index="index" separator="," close=";">
+        <foreach collection="dataList" item="Data" index="index" separator="," close=";">
             (
             #{Data.reportID},#{Data.taskID},#{Data.proID},#{Data.dataVal},
             #{Data.recordID},#{Data.testOrder},#{Data.itemID},#{Data.devID},
@@ -99,12 +99,12 @@
     </insert>
     <delete id="delete" parameterType="long">
         delete
-        from data
+        from ${table}
         where dataID = #{dataID}
     </delete>
 
     <update id="update" parameterType="Data">
-        update data
+        update ${table}
         set reportID  = #{reportID},
             taskID    = #{taskID},
             proID     = #{proID},
@@ -118,7 +118,7 @@
     </update>
 
     <update id="updateList" parameterType="java.util.List">
-        update data set
+        update ${table} set
         reportID =
         <foreach collection="list" item="Data" index="index"
                  separator=" " open="case DataID" close="end">

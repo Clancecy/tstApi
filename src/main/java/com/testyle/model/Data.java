@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Data {
+    String table="data";
     long dataID = -1;
     long reportID=-1;
     long taskID=-1;
@@ -15,6 +16,14 @@ public class Data {
     int status=-1;
     String dataVal;
     Date addtime = new Date();
+
+    public String getTable() {
+        return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
+    }
 
     public long getDevID() {
         return devID;

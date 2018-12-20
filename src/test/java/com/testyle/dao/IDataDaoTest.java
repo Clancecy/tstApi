@@ -169,6 +169,6 @@ public class IDataDaoTest {
         dataList.add(data);
         dataList.add(data);
         dataList.add(data);
-        dataDao.updateList(dataList);
+        dataDao.updateList(data.getTable(),dataList);
     }
 }

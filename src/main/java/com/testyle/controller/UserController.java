@@ -105,17 +105,18 @@ public class UserController {
         if (isEmptyUser(user)) {
             res.put("code", 102);
             res.put("message", "参数为空或错误");
-        }
-        if(checkUser(user)){
-            res.put("code",101);
-            res.put("message","登录成功");
-            long userID=userService.checkUser(user);
-            HttpSession session = request.getSession();
-            session.setAttribute("userName",user.getUserName());
-            session.setAttribute("userID",userID);
         }else {
-            res.put("code",103);
-            res.put("message","用户名或密码错误");
+            if (checkUser(user)) {
+                res.put("code", 101);
+                res.put("message", "登录成功");
+                long userID = userService.checkUser(user);
+                HttpSession session = request.getSession();
+                session.setAttribute("userName", user.getUserName());
+                session.setAttribute("userID", userID);
+            } else {
+                res.put("code", 103);
+                res.put("message", "用户名或密码错误");
+            }
         }
         response.getWriter().write(JSON.toJSONString(res));
         response.getWriter().close();

@@ -7,9 +7,9 @@ import java.util.List;
 public interface IDataService {
     List<Data> select(Data data);
     int insert(Data data);
-    int delete(long dataID);
+    int delete(String table,long dataID);
     int update(Data data);
-    int insertList(List<Data> dataList);
+    int insertList(String table,List<Data> dataList);
     long selOne(Data data);
-    int updateList(List<Data> dataList);
+    int updateList(String table,List<Data> dataList);
 }

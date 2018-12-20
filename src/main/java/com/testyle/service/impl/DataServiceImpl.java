@@ -26,8 +26,8 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public int delete(long dataID) {
-        return dataDao.delete(dataID);
+    public int delete(String table,long dataID) {
+        return dataDao.delete(table,dataID);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public int insertList(List<Data> dataList) {
-        return dataDao.insertList(dataList);
+    public int insertList(String table,List<Data> dataList) {
+        return dataDao.insertList(table,dataList);
     }
 
     @Override
@@ -46,8 +46,8 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public int updateList(List<Data> dataList) {
-        return dataDao.updateList(dataList);
+    public int updateList(String table,List<Data> dataList) {
+        return dataDao.updateList(table,dataList);
     }
 
 

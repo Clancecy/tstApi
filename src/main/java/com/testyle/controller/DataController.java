@@ -332,7 +332,7 @@ public class DataController {
             }
         }
         if (!isExt) {
-            int count = dataService.insertList(List);
+            int count = dataService.insertList(data.getTable(),List);
             if (count > 0) {
                 resContent.setCode(101);
                 resContent.setMessage("新增成功，新增" + count + "条数据");
@@ -341,7 +341,7 @@ public class DataController {
                 resContent.setMessage("新增失败");
             }
         } else {
-            int count = dataService.updateList(List);
+            int count = dataService.updateList(data.getTable(),List);
             if (count > 0) {
                 resContent.setCode(101);
                 resContent.setMessage("更新成功，更新" + count + "条数据");
