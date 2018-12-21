@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100136
 File Encoding         : 65001
 
-Date: 2018-12-20 10:55:19
+Date: 2018-12-21 16:52:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,7 +33,7 @@ CREATE TABLE `company` (
 DROP TABLE IF EXISTS `data`;
 CREATE TABLE `data` (
   `dataID` int(11) NOT NULL AUTO_INCREMENT,
-  `reportID` int(11) DEFAULT NULL,
+  `testID` int(11) DEFAULT NULL,
   `taskID` int(11) DEFAULT NULL,
   `proID` int(11) DEFAULT NULL,
   `testOrder` int(11) DEFAULT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE `data` (
   `dataVal` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`dataID`)
-) ENGINE=InnoDB AUTO_INCREMENT=540 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=558 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for devattrval
@@ -114,7 +114,7 @@ CREATE TABLE `instrument` (
   `isRepair` int(11) DEFAULT '0' COMMENT '0未检查，1已检查，2送检中',
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`insID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for item
@@ -136,10 +136,8 @@ DROP TABLE IF EXISTS `plan`;
 CREATE TABLE `plan` (
   `planID` int(11) NOT NULL AUTO_INCREMENT,
   `planName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `staID` int(11) DEFAULT NULL,
   `cycType` int(11) DEFAULT '0' COMMENT '//0：不循环，1：每天，2：每周，3：每月，4：每个季度，5：每年',
-  `firsttime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `cycTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `builderID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '0未执行，1已执行，-1停止执行',
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`planID`)
@@ -151,9 +149,12 @@ CREATE TABLE `plan` (
 DROP TABLE IF EXISTS `plandan`;
 CREATE TABLE `plandan` (
   `planDanID` int(11) NOT NULL AUTO_INCREMENT,
-  `planDanName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `planDanNumber` varchar(255) DEFAULT NULL,
+  `cycType` int(11) DEFAULT NULL,
+  `cycTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `staID` int(11) DEFAULT NULL,
   `planID` int(11) DEFAULT NULL,
+  `builderID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`planDanID`)
@@ -166,7 +167,7 @@ DROP TABLE IF EXISTS `plantest`;
 CREATE TABLE `plantest` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `planID` int(11) DEFAULT NULL,
-  `testID` int(11) DEFAULT NULL,
+  `soluID` int(11) DEFAULT NULL,
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
@@ -275,9 +276,13 @@ CREATE TABLE `station` (
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
   `taskID` int(11) NOT NULL AUTO_INCREMENT,
-  `taskName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `taskNumber` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `workerID` int(11) DEFAULT NULL,
   `testID` int(11) DEFAULT NULL,
+  `proID` int(11) DEFAULT NULL,
+  `proName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `devID` int(11) DEFAULT NULL,
+  `insID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '完成状态',
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`taskID`)
@@ -328,10 +333,11 @@ CREATE TABLE `taskuser` (
 DROP TABLE IF EXISTS `test`;
 CREATE TABLE `test` (
   `testID` int(11) NOT NULL AUTO_INCREMENT,
-  `testName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `testNumber` varchar(11) CHARACTER SET utf8 DEFAULT NULL,
   `soluID` int(11) DEFAULT NULL,
-  `devID` int(11) DEFAULT NULL,
-  `leaderID` int(11) DEFAULT NULL,
+  `planDanID` int(11) DEFAULT NULL,
+  `builderID` int(11) DEFAULT NULL,
+  `status` int(11) DEFAULT '0',
   `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`testID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
