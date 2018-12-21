@@ -5,17 +5,9 @@ import java.util.Date;
 public class PlanTest {
     long ID=-1;
     long planID=-1;
-    long testID=-1;
-    String testName;
+    long soluID=-1;
+    String soluName;
     Date addtime=new Date();
-
-    public String getTestName() {
-        return testName;
-    }
-
-    public void setTestName(String testName) {
-        this.testName = testName;
-    }
 
     public long getID() {
         return ID;
@@ -33,12 +25,20 @@ public class PlanTest {
         this.planID = planID;
     }
 
-    public long getTestID() {
-        return testID;
+    public long getSoluID() {
+        return soluID;
     }
 
-    public void setTestID(long testID) {
-        this.testID = testID;
+    public void setSoluID(long soluID) {
+        this.soluID = soluID;
+    }
+
+    public String getSoluName() {
+        return soluName;
+    }
+
+    public void setSoluName(String soluName) {
+        this.soluName = soluName;
     }
 
     public Date getAddtime() {
