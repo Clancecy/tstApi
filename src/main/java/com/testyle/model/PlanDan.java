@@ -6,14 +6,14 @@ public class PlanDan {
     long planDanID=-1;
     String planDanNumber;
     int cycType=0;
-    Date cycTime=new Date();
+    Date cyctime=new Date();
     long staID=-1;
     long planID=-1;
     String planName;
     long builderID=-1;
     String userName;
     int status=0;
-    Date date=new Date();
+    Date addtime=new Date();
 
     public String getUserName() {
         return userName;
@@ -47,12 +47,12 @@ public class PlanDan {
         this.cycType = cycType;
     }
 
-    public Date getCycTime() {
-        return cycTime;
+    public Date getCyctime() {
+        return cyctime;
     }
 
-    public void setCycTime(Date cycTime) {
-        this.cycTime = cycTime;
+    public void setCyctime(Date cyctime) {
+        this.cyctime = cyctime;
     }
 
     public long getStaID() {
@@ -95,11 +95,11 @@ public class PlanDan {
         this.status = status;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getAddtime() {
+        return addtime;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setAddtime(Date date) {
+        this.addtime = date;
     }
 }

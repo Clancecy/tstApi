@@ -12,9 +12,18 @@ public class Test {
     String soluName;
     long builderID=-1;
     String userName;
+    int status=0;
     Date addtime=new Date();
 
     List<TestUser> testUserList;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getTestNumber() {
         return testNumber;

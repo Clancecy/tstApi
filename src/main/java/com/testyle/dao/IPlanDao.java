@@ -10,4 +10,5 @@ public interface IPlanDao {
     int delete(long planID);
     int update(Plan plan);
     List<Plan> selectList(List<Long> planIDs);
+    Plan selectByID(long planID);
 }

@@ -39,4 +39,9 @@ public class PlanServiceImpl implements IPlanService {
     public List<Plan> selectList(List<Long> planIDs) {
         return planDao.selectList(planIDs);
     }
+
+    @Override
+    public Plan selectByID(long planID) {
+        return planDao.selectByID(planID);
+    }
 }

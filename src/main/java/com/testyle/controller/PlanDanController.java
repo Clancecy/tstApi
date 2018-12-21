@@ -6,7 +6,11 @@ import com.testyle.common.Utils;
 import com.testyle.model.Plan;
 import com.testyle.model.PlanDan;
 import com.testyle.model.PlanTest;
+import com.testyle.model.Test;
 import com.testyle.service.IPlanDanService;
+import com.testyle.service.IPlanService;
+import com.testyle.service.IPlanTestService;
+import com.testyle.service.ITestService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +30,12 @@ public class PlanDanController {
     String charact = "UTF-8";
     @Resource
     private IPlanDanService planDanService;
+    @Resource
+    private IPlanService planService;
+    @Resource
+    private IPlanTestService planTestService;
+    @Resource
+    private ITestService testService;
     @RequestMapping("/list")
     public void planDanList(PlanDan planDan, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -52,6 +62,9 @@ public class PlanDanController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
+            Plan plan=planService.selectByID(planDan.getPlanID());
+            int cycType=plan.getCycType();
+            planDan.setCycType(cycType);
             int count = planDanService.insert(planDan);
             Utils.dealForAdd(resContent, count);
         }
@@ -123,12 +136,46 @@ public class PlanDanController {
         System.out.println(System.currentTimeMillis());
         PlanDan planDan=new PlanDan();
         List<PlanDan> planDanList=planDanService.select(planDan);
-        addTest(planDanList);
+        addNewPlanDan(planDanList);
 
     }
 
-    private void addTest(List<PlanDan> planDanList) {
+    private void addNewPlanDan(List<PlanDan> planDanList) {
+        Date curDate = new Date();
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+        String curdf = dft.format(curDate);
+        for (PlanDan planDan:planDanList){
+            String cycdf = dft.format( planDan.getCyctime());
+            System.out.println("当前时间：" + curdf + "," + "计划时间：" + cycdf);
+            if (curdf.equals(cycdf)) {
+                PlanDan newPlanDan=new PlanDan();
+                newPlanDan.setPlanDanNumber(Utils.getNumberForPK());
+                newPlanDan.setPlanID(planDan.getPlanID());
+                newPlanDan.setStatus(0);
+                newPlanDan.setCycType(planDan.getCycType());
+                newPlanDan.setCyctime(planDan.getCyctime());
+                Utils.claCyctime(newPlanDan);
+                newPlanDan.setStaID(planDan.getStaID());
+                newPlanDan.setBuilderID(planDan.getBuilderID());
+                planDanService.insert(newPlanDan);
+                addTest(newPlanDan);
+            }
+        }
+    }
 
+    private void addTest(PlanDan planDan) {
+       PlanTest planTest=new PlanTest();
+       planTest.setPlanID(planDan.getPlanID());
+       List<PlanTest> planTestList=planTestService.select(planTest);
+       for(PlanTest test:planTestList){
+           Test newTest=new Test();
+           newTest.setSoluID(test.getSoluID());
+           newTest.setBuilderID(planDan.getBuilderID());
+           newTest.setTestNumber(Utils.getNumberForPK());
+           newTest.setPlanDanID(planDan.getPlanDanID());
+           newTest.setStatus(0);
+           testService.insert(newTest);
+       }
     }
 //    public void testTask() {
 //        System.out.println(System.currentTimeMillis());

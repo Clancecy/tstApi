@@ -3,10 +3,7 @@ package com.testyle.common;
 import com.alibaba.fastjson.JSON;
 import com.testyle.dao.IDataDao;
 import com.testyle.dao.IItemDao;
-import com.testyle.model.DevAttrVal;
-import com.testyle.model.Item;
-import com.testyle.model.Plan;
-import com.testyle.model.Record;
+import com.testyle.model.*;
 import com.testyle.service.IItemService;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,38 +201,38 @@ public class Utils {
         return itemList;
     }
 
-    public static void claCyctime(Plan plan){
-        int type=plan.getCycType();
-        Date date=plan.getCyctime();
+    public static void claCyctime(PlanDan planDan){
+        int type=planDan.getCycType();
+        Date date=planDan.getCyctime();
         Calendar calendar = Calendar.getInstance();
         switch (type){
             case 0:
-                plan.setCyctime(date);
+                planDan.setCyctime(date);
                 break;
             case 1:
                 calendar.setTime(date);
                 calendar.add(Calendar.DAY_OF_YEAR,1);
-                plan.setCyctime(calendar.getTime());
+                planDan.setCyctime(calendar.getTime());
                 break;
             case 2:
                 calendar.setTime(date);
                 calendar.add(Calendar.WEEK_OF_YEAR,1);
-                plan.setCyctime(calendar.getTime());
+                planDan.setCyctime(calendar.getTime());
                 break;
             case 3:
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH,1);
-                plan.setCyctime(calendar.getTime());
+                planDan.setCyctime(calendar.getTime());
                 break;
             case 4:
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH,3);
-                plan.setCyctime(calendar.getTime());
+                planDan.setCyctime(calendar.getTime());
                 break;
             case 5:
                 calendar.setTime(date);
                 calendar.add(Calendar.YEAR,1);
-                plan.setCyctime(calendar.getTime());
+                planDan.setCyctime(calendar.getTime());
                 break;
         }
     }

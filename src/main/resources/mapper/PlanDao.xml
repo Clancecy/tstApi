@@ -16,8 +16,11 @@
         <result property="status" column="status"></result>
     </resultMap>
 
+    <select id="selectByID" resultType="Plan" parameterType="Long">
+        select * from plan a,user b where a.builderID=b.userID and a.planID=#{planID}
+    </select>
     <select id="selectList" resultMap="listPlan" parameterType="List">
-        select * from plan where a.planID in
+        select * from plan a,user b where a.builderID=b.userID and a.planID in
         <foreach collection="list" item="planID" open="(" close=")" separator=",">
             #{planID}
         </foreach>
