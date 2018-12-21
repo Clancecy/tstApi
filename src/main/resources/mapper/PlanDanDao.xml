@@ -3,9 +3,12 @@
 <mapper namespace="com.testyle.dao.IPlanDanDao">
     <resultMap id="listPlan" type="PlanDan">
         <id column="planDanID" property="planDanID"></id>
-        <result property="planDanName" column="planDanName"></result>
         <result property="planDanNumber" column="planDanNumber"></result>
+        <result property="staID" column="staID"></result>
+        <result property="cycType" column="cycType"></result>
+        <result property="cyctime" column="cyctime"></result>
         <result property="planID" column="planID"></result>
+        <result property="planName" column="planName"></result>
         <result property="status" column="status"></result>
         <result property="addtime" column="addtime"></result>
     </resultMap>
@@ -17,13 +20,14 @@
         </foreach>
     </select>
     <select id="select" resultMap="listPlan" parameterType="Plan">
-        select * from planDan
+        select * from planDan a,plan b
         <where>
+            a.planID=b.planID
             <if test="planDanID!=-1">
                 and planDanID=#{planDanID}
             </if>
-            <if test="planDanName!=null">
-                and planDanName=#{planDanName}
+            <if test="staID!=-1">
+                and staID=#{staID}
             </if>
             <if test="planID!=-1">
                 and planID=#{planID}
@@ -37,7 +41,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planDanID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into planDan (planDanName,planDanNumber,planID,status,addtime) values (#{planDanName},
+        INSERT into planDan (staID,cycType,cyctime,planDanNumber,planID,status,addtime)
+        values (#{staID},#{cycType},#{cyctime},
         #{planDanNumber},#{planID},#{status},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
@@ -48,11 +53,13 @@
 
     <update id="update" parameterType="Plan">
         update planDan
-        set planDanName  = #{planDanName},
-            planDanNumber   = #{planDanNumber},
-            planID = #{planID},
-            status    = #{status},
-            addtime   = #{addtime}
+        set staID         = #{staID},
+            cycType       = #{cycType},
+            cyctime       = #{cyctime},
+            planDanNumber = #{planDanNumber},
+            planID        = #{planID},
+            status        = #{status},
+            addtime       = #{addtime}
         where planDanID = #{planDanID}
     </update>
 

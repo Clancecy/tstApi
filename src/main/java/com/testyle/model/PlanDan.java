@@ -4,11 +4,46 @@ import java.util.Date;
 
 public class PlanDan {
     long planDanID=-1;
-    String planDanName;
     String planDanNumber;
+    int cycType=0;
+    Date cycTime=new Date();
+    long staID=-1;
     long planID=-1;
+    String planName;
     int status=0;
     Date date=new Date();
+
+    public String getPlanName() {
+        return planName;
+    }
+
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+    public int getCycType() {
+        return cycType;
+    }
+
+    public void setCycType(int cycType) {
+        this.cycType = cycType;
+    }
+
+    public Date getCycTime() {
+        return cycTime;
+    }
+
+    public void setCycTime(Date cycTime) {
+        this.cycTime = cycTime;
+    }
+
+    public long getStaID() {
+        return staID;
+    }
+
+    public void setStaID(long staID) {
+        this.staID = staID;
+    }
 
     public long getPlanDanID() {
         return planDanID;
@@ -16,14 +51,6 @@ public class PlanDan {
 
     public void setPlanDanID(long planDanID) {
         this.planDanID = planDanID;
-    }
-
-    public String getPlanDanName() {
-        return planDanName;
-    }
-
-    public void setPlanDanName(String planDanName) {
-        this.planDanName = planDanName;
     }
 
     public String getPlanDanNumber() {
