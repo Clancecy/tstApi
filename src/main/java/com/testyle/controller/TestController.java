@@ -108,30 +108,30 @@ public class TestController {
         response.getWriter().close();
     }
 
-    @RequestMapping("/planTest")
-    public void getTestByPlan(PlanTest planTest, HttpServletResponse response)throws IOException{
-        response.setCharacterEncoding(charact);
-        ResContent resContent =new ResContent();
-        List<PlanTest> planTestList=planTestService.select(planTest);
-        if(planTest.getPlanID()==-1){
-            resContent.setCode(103);
-            resContent.setMessage("参数错误");
-        }else {
-            if (planTestList.size() == 0) {
-                resContent.setCode(104);
-                resContent.setMessage("没有计划");
-            } else {
-                List<Long> testIDs = new ArrayList<>();
-                for (PlanTest test : planTestList) {
-                    testIDs.add(test.getTestID());
-                }
-                List<Test> testList = testService.selectList(testIDs);
-                dealTestList(resContent, testList);
-            }
-        }
-        response.getWriter().write(JSON.toJSONString(resContent));
-        response.getWriter().close();
-    }
+//    @RequestMapping("/planTest")
+//    public void getTestByPlan(PlanTest planTest, HttpServletResponse response)throws IOException{
+//        response.setCharacterEncoding(charact);
+//        ResContent resContent =new ResContent();
+//        List<PlanTest> planTestList=planTestService.select(planTest);
+//        if(planTest.getPlanID()==-1){
+//            resContent.setCode(103);
+//            resContent.setMessage("参数错误");
+//        }else {
+//            if (planTestList.size() == 0) {
+//                resContent.setCode(104);
+//                resContent.setMessage("没有计划");
+//            } else {
+//                List<Long> testIDs = new ArrayList<>();
+//                for (PlanTest test : planTestList) {
+//                    testIDs.add(test.getTestID());
+//                }
+//                List<Test> testList = testService.selectList(testIDs);
+//                dealTestList(resContent, testList);
+//            }
+//        }
+//        response.getWriter().write(JSON.toJSONString(resContent));
+//        response.getWriter().close();
+//    }
 
     public void dealTestList(ResContent resContent, List<Test> testList) {
         if (testList.size() == 0) {
@@ -154,13 +154,6 @@ public class TestController {
             testUsers =testUserService.select(testUser);
             test.setTestUserList(testUsers);
         }
-    }
-
-    private int updateListTestUser(long testID, List<Long> userIDs) {
-        List<TestUser> testUsers =new ArrayList<>();
-        dealProIDList(testID, userIDs, testUsers);
-        int count=testUserService.updateList(testUsers);
-        return count;
     }
 
     private int addListTestUser(long testID, List<Long> userIDs) {
