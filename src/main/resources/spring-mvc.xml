@@ -18,9 +18,9 @@
     <!-- 开启SpringMVC注解模式 -->
     <mvc:annotation-driven/>
 
-    <mvc:cors>
-        <mvc:mapping path="/**" allowed-origins="*" allow-credentials="true" max-age="1800" allowed-methods="GET,POST,OPTIONS"/>
-    </mvc:cors>
+    <!--<mvc:cors>-->
+        <!--<mvc:mapping path="/**" allowed-origins="*" allow-credentials="true" max-age="1800" allowed-methods="GET,POST,OPTIONS"/>-->
+    <!--</mvc:cors>-->
 
     <!-- 静态资源默认servlet配置 -->
     <mvc:default-servlet-handler/>
@@ -45,4 +45,19 @@
         <property name="defaultEncoding" value="UTF-8" />
         <property name="resolveLazily" value="true" />
     </bean>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.testyle.common.CorsInterceptor"></bean>
+        </mvc:interceptor>
+        <!-- 定义拦截器 -->
+        <mvc:interceptor>
+            <!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
+            <mvc:mapping path="/**" />
+            <!-- 不需要拦截的地址 -->
+            <mvc:exclude-mapping path="/user/login" />
+            <mvc:exclude-mapping path="/user/check"/>
+            <bean class="com.testyle.common.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
