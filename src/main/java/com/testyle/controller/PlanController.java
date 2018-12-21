@@ -48,15 +48,15 @@ public class PlanController {
     public void addPlan(Plan plan, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> testIDs = (JSON.parseArray(request.getParameter("tests"), Long.class));
+        List<Long> soluIDs = (JSON.parseArray(request.getParameter("solus"), Long.class));
         if (plan.getPlanName() == null ||
-                plan.getCycType() == -1 || testIDs.size() == 0) {
+                plan.getCycType() == -1 || soluIDs.size() == 0) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
             int count = planService.insert(plan);
             if (count > 0) {
-                count = addListPlanTest(plan.getPlanID(), testIDs);
+                count = addListPlanTest(plan.getPlanID(), soluIDs);
                 Utils.dealForAdd(resContent, count);
             } else {
                 resContent.setCode(104);
@@ -71,7 +71,7 @@ public class PlanController {
     public void updatePlan(Plan plan, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> testIDs = JSON.parseArray(request.getParameter("tests"), Long.class);
+        List<Long> soluIDs = JSON.parseArray(request.getParameter("solus"), Long.class);
         if (plan.getPlanName() == null ||
                 plan.getCycType() == -1 ||
                 plan.getPlanID() == -1) {
@@ -87,7 +87,7 @@ public class PlanController {
                 int count = planService.update(plan);
                 if (count > 0) {
                     planTestService.delete(plan.getPlanID());
-                    addListPlanTest(plan.getPlanID(), testIDs);
+                    addListPlanTest(plan.getPlanID(), soluIDs);
                     Utils.dealForUpdate(count, resContent);
                 } else {
                     resContent.setCode(104);
@@ -116,18 +116,18 @@ public class PlanController {
     }
 
 
-    private int addListPlanTest(long planID, List<Long> testIDs) {
+    private int addListPlanTest(long planID, List<Long> soluIDs) {
         List<PlanTest> planTests = new ArrayList<>();
-        dealUserIDList(planID, testIDs, planTests);
+        dealUserIDList(planID, soluIDs, planTests);
         int count = planTestService.insertList(planTests);
         return count;
     }
 
-    private void dealUserIDList(long planID, List<Long> testIDs, List<PlanTest> planTests) {
-        for (long testID : testIDs) {
+    private void dealUserIDList(long planID, List<Long> soluIDs, List<PlanTest> planTests) {
+        for (long soluID : soluIDs) {
             PlanTest taskUser = new PlanTest();
             taskUser.setPlanID(planID);
-            taskUser.setTestID(testID);
+            taskUser.setSoluID(soluID);
             planTests.add(taskUser);
         }
     }
