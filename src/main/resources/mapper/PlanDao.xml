@@ -9,10 +9,11 @@
         <!--<result property="firsttime" column="firsttime"></result>-->
         <!--<result property="cyctime" column="cyctime"></result>-->
         <result property="addtime" column="addtime"></result>
+        <result property="buliderID" column="builderID"></result>
         <!--<result property="testID" column="testID"></result>-->
         <!--<result property="leaderID" column="leaderID"></result>-->
-        <!--<result property="userName" column="userName"></result>-->
-        <!--<result property="status" column="status"></result>-->
+        <result property="userName" column="userName"></result>
+        <result property="status" column="status"></result>
     </resultMap>
 
     <select id="selectList" resultMap="listPlan" parameterType="List">
@@ -22,13 +23,11 @@
         </foreach>
     </select>
     <select id="select" resultMap="listPlan" parameterType="Plan">
-        select * from plan
+        select * from plan a,user b
         <where>
+            a.builderID=b.userID
             <if test="planID!=-1">
                 and planID=#{planID}
-            </if>
-            <if test="staID!=-1">
-                and staID=#{staID}
             </if>
             <if test="planName!=null">
                 and planName=#{planName}
@@ -45,8 +44,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into plan (planName,staID,cycType,firsttime,cyctime,status,addtime)
-        values (#{planName},#{staID},#{cycType},#{firsttime},#{cyctime},#{status},#{addtime})
+        INSERT into plan (planName,cycType,builder,status,addtime)
+        values (#{planName},#{cycType},#{builder},#{status},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -56,13 +55,14 @@
 
     <update id="update" parameterType="Plan">
         update plan
-        set planName  = #{planName},
-            staID     = #{staID},
-            cycType   = #{cycType},
-            firsttime = #{firsttime},
-            cyctime   = #{cyctime},
-            status    = #{status},
-            addtime   = #{addtime}
+        set planName = #{planName},
+#             staID     = #{staID},
+            cycType  = #{cycType},
+#             firsttime = #{firsttime},
+#             cyctime   = #{cyctime},
+            builder  = #{builder},
+            status   = #{status},
+            addtime  = #{addtime}
         where planID = #{planID}
     </update>
 
