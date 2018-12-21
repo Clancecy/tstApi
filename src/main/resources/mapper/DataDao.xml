@@ -3,7 +3,7 @@
 <mapper namespace="com.testyle.dao.IDataDao">
     <resultMap id="listData" type="Data">
         <id column="dataID" property="dataID"></id>
-        <result property="reportID" column="reportID"></result>
+        <result property="testID" column="testID"></result>
         <result property="taskID" column="taskID"></result>
         <result property="proID" column="proID"></result>
         <result property="dataVal" column="dataVal"></result>
@@ -21,8 +21,8 @@
     <select id="selOne" resultType="long" parameterType="Data">
         select IFNULL(max(dataID),0) as dataID from data
         <where>
-            <if test="reportID!=-1">
-                and reportID=#{reportID}
+            <if test="testID!=-1">
+                and testID=#{testID}
             </if>
             <if test="taskID!=-1">
                 and taskID=#{taskID}
@@ -51,8 +51,8 @@
             <if test="dataID!=-1">
                 and dataID=#{dataID}
             </if>
-            <if test="reportID!=-1">
-                and reportID=#{reportID}
+            <if test="testID!=-1">
+                and testID=#{testID}
             </if>
             <if test="taskID!=-1">
                 and taskID=#{taskID}
@@ -78,21 +78,21 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="dataID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into ${table} (reportID,taskID,proID,dataVal,recordID,
+        INSERT into ${table} (testID,taskID,proID,dataVal,recordID,
         testOrder,itemID,devID,addtime)
-        values (#{reportID},#{taskID},#{proID},#{dataVal},#{recordID},
+        values (#{testID},#{taskID},#{proID},#{dataVal},#{recordID},
         #{testOrder},#{itemID},#{devID},#{addtime})
     </insert>
     <insert id="insertList" useGeneratedKeys="true">
         <selectKey resultType="long" keyProperty="dataID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into ${table} (reportID,taskID,proID,dataVal,recordID,
+        INSERT into ${table} (testID,taskID,proID,dataVal,recordID,
         testOrder,itemID,devID,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
         <foreach collection="dataList" item="Data" index="index" separator="," close=";">
             (
-            #{Data.reportID},#{Data.taskID},#{Data.proID},#{Data.dataVal},
+            #{Data.testID},#{Data.taskID},#{Data.proID},#{Data.dataVal},
             #{Data.recordID},#{Data.testOrder},#{Data.itemID},#{Data.devID},
             #{Data.addtime})
         </foreach>
@@ -105,7 +105,7 @@
 
     <update id="update" parameterType="Data">
         update ${table}
-        set reportID  = #{reportID},
+        set testID  = #{testID},
             taskID    = #{taskID},
             proID     = #{proID},
             dataVal   = #{dataVal},
@@ -119,11 +119,11 @@
 
     <update id="updateList" parameterType="java.util.List">
         update ${table} set
-        reportID =
+        testID =
         <foreach collection="list" item="Data" index="index"
                  separator=" " open="case DataID" close="end">
             when #{Data.dataID} then
-            #{Data.reportID}
+            #{Data.testID}
         </foreach>
         ,taskID =
         <foreach collection="list" item="Data" index="index"

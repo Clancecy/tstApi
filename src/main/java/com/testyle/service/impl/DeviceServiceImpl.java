@@ -32,4 +32,9 @@ public class DeviceServiceImpl implements IDeviceService {
     public int update(Device device) {
         return deviceDao.update(device);
     }
+
+    @Override
+    public Device selectByID(long devID) {
+        return deviceDao.selectByID(devID);
+    }
 }

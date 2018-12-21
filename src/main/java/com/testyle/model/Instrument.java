@@ -8,7 +8,7 @@ public class Instrument {
     String insTypeName;
     String insName;
     String insNumber;
-    String manufacturer;
+    String manufacturer;//出厂厂商
     int isWork=1; //1正常工作，0维修中，2报废
     int isRepair=0;//0未检查，1已检查，2送检中
     Date addtime=new Date();

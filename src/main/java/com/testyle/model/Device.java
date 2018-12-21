@@ -9,9 +9,18 @@ public class Device {
     String devCode;
     long devTypeID=-1;
     long staID=-1;
+    String staName;
     Date addtime =new Date();
 
     List<DevAttrVal> devAttrValList;
+
+    public String getStaName() {
+        return staName;
+    }
+
+    public void setStaName(String staName) {
+        this.staName = staName;
+    }
 
     public List<DevAttrVal> getDevAttrValList() {
         return devAttrValList;

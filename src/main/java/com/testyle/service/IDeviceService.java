@@ -9,4 +9,5 @@ public interface IDeviceService {
     int insert(Device device);
     int delete(long devID);
     int update(Device device);
+    Device selectByID(long devID);
 }

@@ -5,52 +5,77 @@ import java.util.List;
 
 public class Task {
     long taskID = -1;
-    String taskName;
+    String taskNumber;
     long workerID = -1;
     String userName;
     long testID = -1;
+    String testNumber;
+    long proID=-1;
+    String proName;
+    long devID=-1;
+    Device device;
+    long insID=-1;
+    Instrument instrument;
     int status=0;
     Date addtime = new Date();
 
-    List<TaskPro> taskProList;
+//    List<TaskPro> taskProList;
     List<TaskUser> taskUserList;
-    //json 使用
-    long reportID=-1;
-    String reportName;
 
-    long testLeaderID=-1;
-    String testLeaderName;
-
-    public long getTestLeaderID() {
-        return testLeaderID;
+    public String getTestNumber() {
+        return testNumber;
     }
 
-    public void setTestLeaderID(long testLeaderID) {
-        this.testLeaderID = testLeaderID;
+    public void setTestNumber(String testNumber) {
+        this.testNumber = testNumber;
     }
 
-    public String getTestLeaderName() {
-        return testLeaderName;
+    public long getProID() {
+        return proID;
     }
 
-    public void setTestLeaderName(String testLeaderName) {
-        this.testLeaderName = testLeaderName;
+    public void setProID(long proID) {
+        this.proID = proID;
     }
 
-    public long getReportID() {
-        return reportID;
+    public String getProName() {
+        return proName;
     }
 
-    public void setReportID(long reportID) {
-        this.reportID = reportID;
+    public void setProName(String proName) {
+        this.proName = proName;
     }
 
-    public String getReportName() {
-        return reportName;
+    public long getDevID() {
+        return devID;
     }
 
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
+    public void setDevID(long devID) {
+        this.devID = devID;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    public long getInsID() {
+        return insID;
+    }
+
+    public void setInsID(long insID) {
+        this.insID = insID;
+    }
+
+    public Instrument getInstrument() {
+        return instrument;
+    }
+
+    public void setInstrument(Instrument instrument) {
+        this.instrument = instrument;
     }
 
     public int getStatus() {
@@ -69,14 +94,6 @@ public class Task {
         this.userName = userName;
     }
 
-    public List<TaskPro> getTaskProList() {
-        return taskProList;
-    }
-
-    public void setTaskProList(List<TaskPro> taskProList) {
-        this.taskProList = taskProList;
-    }
-
     public List<TaskUser> getTaskUserList() {
         return taskUserList;
     }
@@ -93,12 +110,12 @@ public class Task {
         this.taskID = taskID;
     }
 
-    public String getTaskName() {
-        return taskName;
+    public String getTaskNumber() {
+        return taskNumber;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
+    public void setTaskNumber(String taskNumber) {
+        this.taskNumber = taskNumber;
     }
 
     public long getWorkerID() {

@@ -3,28 +3,36 @@
 <mapper namespace="com.testyle.dao.ITaskDao">
     <resultMap id="listTask" type="Task">
         <id column="taskID" property="taskID"></id>
-        <result property="taskName" column="taskName"></result>
+        <result property="taskNumber" column="taskNumber"></result>
         <result property="testID" column="testID"></result>
+        <result property="testNumber" column="testNumber"></result>
         <result property="workerID" column="workerID"></result>
         <result property="userName" column="userName"></result>
+        <result property="proID" column="proID"></result>
+        <result property="proName" column="proName"></result>
+        <result property="devID" column="devID"></result>
+        <result property="insID" column="insID"></result>
+        <result property="status" column="status"></result>
+        <result property="addtime" column="addtime"></result>
     </resultMap>
 
     <select id="selectList" resultMap="listTask" parameterType="List">
-        select a.taskID,a.taskName,a.testID,a.workerID,d.userName from task a,user d where a.workerID=d.userID and
+        select * from task a,user d,test c
+        where a.workerID=d.userID and a.testID=c.testID and
         a.taskID in
         <foreach collection="list" item="taskID" open="(" close=")" separator=",">
             #{taskID}
         </foreach>
     </select>
     <select id="select" resultMap="listTask" parameterType="Task">
-        select a.taskID,a.taskName,a.testID,a.workerID,d.userName from task a,user d
+        select * from task a,user d,test c
         <where>
-            a.workerID=d.userID
+            a.workerID=d.userID and a.testID=c.testID
             <if test="taskID!=-1">
                 and a.taskID=#{taskID}
             </if>
-            <if test="taskName!=null">
-                and a.taskName=#{taskName}
+            <if test="taskNumber!=null">
+                and a.taskNumber=#{taskNumber}
             </if>
             <if test="testID!=-1">
                 and a.testID=#{testID}
@@ -35,14 +43,20 @@
             <if test="status!=-1">
                 and a.status=#{status}
             </if>
+            <if test="devID!=-1">
+                and a.devID=#{devID}
+            </if>
+            <if test="insID!=-1">
+                and a.insID=#{insID}
+            </if>
         </where>
     </select>
     <insert id="insert" parameterType="Task">
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="taskID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into task (taskName,testID,workerID,status,addtime) values (#{taskName},
-        #{testID},#{workerID},#{status},#{addtime})
+        INSERT into task (taskNumber,testID,workerID,proID,proName,devID,insID,status,addtime)
+        values (#{taskNumber},#{testID},#{workerID},#{proID},#{proName},#{devID},#{insID},#{status},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -52,11 +66,15 @@
 
     <update id="update" parameterType="Task">
         update task
-        set taskName = #{taskName},
-            testID   = #{testID},
-            workerID = #{workerID},
-            status   = #{status},
-            addtime  = #{addtime}
+        set taskNumber = #{taskNumber},
+            testID     = #{testID},
+            workerID   = #{workerID},
+            proID      = #{proID},
+            proName    = #{proName},
+            devID      = #{devID},
+            insID      = #{insID},
+            status     = #{status},
+            addtime    = #{addtime}
         where taskID = #{taskID}
     </update>
 

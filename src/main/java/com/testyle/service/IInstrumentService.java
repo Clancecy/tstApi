@@ -9,4 +9,5 @@ public interface IInstrumentService {
     int insert(Instrument instrument);
     int delete(long insID);
     int update(Instrument instrument);
+    Instrument selectByID(long insID);
 }

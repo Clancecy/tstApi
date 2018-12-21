@@ -32,4 +32,9 @@ public class InstrumentServiceImpl implements IInstrumentService {
     public int update(Instrument instrument) {
         return instrumentDao.update(instrument);
     }
+
+    @Override
+    public Instrument selectByID(long insID) {
+        return instrumentDao.selectByID(insID);
+    }
 }

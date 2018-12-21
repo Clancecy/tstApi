@@ -6,7 +6,7 @@ import java.util.List;
 public class Data {
     String table="data";
     long dataID = -1;
-    long reportID=-1;
+    long testID=-1;
     long taskID=-1;
     long proID = -1;
     int testOrder=-1;
@@ -41,12 +41,12 @@ public class Data {
         this.status = status;
     }
 
-    public long getReportID() {
-        return reportID;
+    public long getTestID() {
+        return testID;
     }
 
-    public void setReportID(long reportID) {
-        this.reportID = reportID;
+    public void setTestID(long testID) {
+        this.testID = testID;
     }
 
     public long getTaskID() {

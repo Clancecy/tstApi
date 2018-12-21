@@ -11,7 +11,9 @@
         <result property="isRepair" column="isRepair"></result>
 
     </resultMap>
-
+    <select id="selectByID" parameterType="Long" resultType="Instrument">
+        select * from instrument where insID=#{insID}
+    </select>
     <select id="select" resultMap="listInstrument" parameterType="Instrument">
         select * from instrument
         <where>

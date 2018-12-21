@@ -6,19 +6,25 @@
         <result property="devName" column="devName"></result>
         <result property="devTypeID" column="devTypeID"></result>
         <result property="staID" column="staID"></result>
+        <result property="staName" column="staName"></result>
     </resultMap>
 
+    <select id="selectByID" resultType="Device" parameterType="Long">
+        select *
+        from device a,station b WHERE a.staID=b.staID and a.devID=#{devID};
+    </select>
     <select id="select" resultMap="listDevice" parameterType="Device">
-        select * from device
+        select * from device a,station b
         <where>
+            a.staID=b.staID
             <if test="devID!=-1">
-                and devID=#{devID}
+                and a.devID=#{devID}
             </if>
             <if test="devTypeID!=-1">
-                and devTypeID=#{devTypeID}
+                and a.devTypeID=#{devTypeID}
             </if>
             <if test="staID!=-1">
-                and staID=#{staID}
+                and a.staID=#{staID}
             </if>
         </where>
     </select>
