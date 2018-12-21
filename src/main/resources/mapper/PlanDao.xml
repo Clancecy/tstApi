@@ -4,10 +4,10 @@
     <resultMap id="listPlan" type="Plan">
         <id column="planID" property="planID"></id>
         <result property="planName" column="planName"></result>
-        <result property="staID" column="staID"></result>
+        <!--<result property="staID" column="staID"></result>-->
         <result property="cycType" column="cycType"></result>
-        <result property="firsttime" column="firsttime"></result>
-        <result property="cyctime" column="cyctime"></result>
+        <!--<result property="firsttime" column="firsttime"></result>-->
+        <!--<result property="cyctime" column="cyctime"></result>-->
         <result property="addtime" column="addtime"></result>
         <!--<result property="testID" column="testID"></result>-->
         <!--<result property="leaderID" column="leaderID"></result>-->
