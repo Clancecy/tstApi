@@ -9,6 +9,7 @@
         <result property="cyctime" column="cyctime"></result>
         <result property="planID" column="planID"></result>
         <result property="planName" column="planName"></result>
+        <result property="builderID" column="builderID"></result>
         <result property="status" column="status"></result>
         <result property="addtime" column="addtime"></result>
     </resultMap>
@@ -20,9 +21,9 @@
         </foreach>
     </select>
     <select id="select" resultMap="listPlan" parameterType="Plan">
-        select * from planDan a,plan b
+        select * from planDan a,plan b,user c
         <where>
-            a.planID=b.planID
+            a.planID=b.planID and a.builderID=c.userID
             <if test="planDanID!=-1">
                 and planDanID=#{planDanID}
             </if>
@@ -31,6 +32,9 @@
             </if>
             <if test="planID!=-1">
                 and planID=#{planID}
+            </if>
+            <if test="builderID!=-1">
+                and builderID=#{builderID}
             </if>
             <if test="status!=-1">
                 and status=#{status}
@@ -41,9 +45,9 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planDanID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into planDan (staID,cycType,cyctime,planDanNumber,planID,status,addtime)
+        INSERT into planDan (staID,cycType,cyctime,planDanNumber,planID,builderID,status,addtime)
         values (#{staID},#{cycType},#{cyctime},
-        #{planDanNumber},#{planID},#{status},#{addtime})
+        #{planDanNumber},#{planID},#{builderID},#{status},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -58,6 +62,7 @@
             cyctime       = #{cyctime},
             planDanNumber = #{planDanNumber},
             planID        = #{planID},
+            builderID     = #{builderID},
             status        = #{status},
             addtime       = #{addtime}
         where planDanID = #{planDanID}

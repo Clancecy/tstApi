@@ -10,8 +10,26 @@ public class PlanDan {
     long staID=-1;
     long planID=-1;
     String planName;
+    long builderID=-1;
+    String userName;
     int status=0;
     Date date=new Date();
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public long getBuilderID() {
+        return builderID;
+    }
+
+    public void setBuilderID(long builderID) {
+        this.builderID = builderID;
+    }
 
     public String getPlanName() {
         return planName;
