@@ -1,29 +1,44 @@
 package com.testyle.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Test {
     long testID = -1;
-    String testName;
+    String testNumber;
     long soluID=-1;
+    long planDanID=-1;
+    String planDanNumber;
     String soluName;
-    long devID=-1;
-    String devName;
-    long leaderID=-1;
+    long builderID=-1;
     String userName;
     Date addtime=new Date();
 
-    public String getTestName() {
-        return testName;
-    }
-
-    public void setTestName(String testName) {
-        this.testName = testName;
-    }
-
     List<TestUser> testUserList;
+
+    public String getTestNumber() {
+        return testNumber;
+    }
+
+    public void setTestNumber(String testNumber) {
+        this.testNumber = testNumber;
+    }
+
+    public long getPlanDanID() {
+        return planDanID;
+    }
+
+    public void setPlanDanID(long planDanID) {
+        this.planDanID = planDanID;
+    }
+
+    public String getPlanDanNumber() {
+        return planDanNumber;
+    }
+
+    public void setPlanDanNumber(String planDanNumber) {
+        this.planDanNumber = planDanNumber;
+    }
 
     public List<TestUser> getTestUserList() {
         return testUserList;
@@ -49,13 +64,6 @@ public class Test {
         this.soluName = soluName;
     }
 
-    public String getDevName() {
-        return devName;
-    }
-
-    public void setDevName(String devName) {
-        this.devName = devName;
-    }
 
     public long getTestID() {
         return testID;
@@ -73,14 +81,6 @@ public class Test {
         this.soluID = soluID;
     }
 
-    public long getDevID() {
-        return devID;
-    }
-
-    public void setDevID(long devID) {
-        this.devID = devID;
-    }
-
     public Date getAddtime() {
         return addtime;
     }
@@ -89,11 +89,11 @@ public class Test {
         this.addtime = addtime;
     }
 
-    public long getLeaderID() {
-        return leaderID;
+    public long getBuilderID() {
+        return builderID;
     }
 
-    public void setLeaderID(long leaderID) {
-        this.leaderID = leaderID;
+    public void setBuilderID(long builderID) {
+        this.builderID = builderID;
     }
 }

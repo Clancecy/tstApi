@@ -3,42 +3,43 @@
 <mapper namespace="com.testyle.dao.ITestDao">
     <resultMap id="listTest" type="Test">
         <id column="testID" property="testID"></id>
-        <result column="testName" property="testName"></result>
+        <result property="testNumber" column="testNumber"></result>
         <result property="soluID" column="soluID"></result>
         <result property="soluName" column="soluName"></result>
-        <result property="devID" column="devID"></result>
-        <result property="devName" column="devName"></result>
-        <result property="leaderID" column="leaderID"></result>
+        <result property="planDanID" column="planDanID"></result>
+        <result property="planDanName" column="planDanName"></result>
+        <result property="builderID" column="builderID"></result>
         <result property="userName" column="userName"></result>
+        <result property="addtime" column="addtime"></result>
     </resultMap>
 
     <select id="selectList" resultMap="listTest" parameterType="List">
-        select a.testID,a.testName,a.soluID,b.soluName,a.devID,c.devName,a.leaderID,d.userName from test a,solution
-        b,device c,user d
-        where a.soluID=b.soluID and a.devID=c.devID and a.leaderID=d.userID and a.testID in
+        select a.testID,a.testNumber,a.soluID,b.soluName,a.planDanID,c.planDanName,a.builderID,d.userName from test a,solution
+        b,planDan c,user d
+        where a.soluID=b.soluID and a.planDanID=c.planDanID and a.builderID=d.userID and a.testID in
         <foreach collection="list" item="testID" open="(" close=")" separator=",">
             #{testID}
         </foreach>
     </select>
     <select id="select" resultMap="listTest" parameterType="Test">
-        select a.testID,a.testName,a.soluID,b.soluName,a.devID,c.devName,a.leaderID,d.userName from test a,solution
-        b,device c,user d
+        select a.testID,a.testNumber,a.soluID,b.soluName,a.planDanID,c.planDanName,a.builderID,d.userName from test a,solution
+        b,palnDan c,user d
         <where>
-            a.soluID=b.soluID and a.devID=c.devID and a.leaderID=d.userID
+            a.soluID=b.soluID and a.planDanID=c.planDanID and a.builderID=d.userID
             <if test="testID!=-1">
                 and testID=#{testID}
             </if>
-            <if test="testName!=null">
-                and testName=#{testName}
+            <if test="testNumber!=null">
+                and testNumber=#{testNumber}
             </if>
             <if test="soluID!=-1">
                 and soluID=#{soluID}
             </if>
-            <if test="devID!=-1">
-                and devID=#{devID}
+            <if test="planDanID!=-1">
+                and planDanID=#{planDanID}
             </if>
-            <if test="leaderID!=-1">
-                and leaderID=#{leaderID}
+            <if test="builderID!=-1">
+                and builderID=#{builderID}
             </if>
         </where>
     </select>
@@ -46,8 +47,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="testID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into test (testName,soluID,devID,leaderID,addtime) values (#{testName},#{soluID},
-        #{devID},#{leaderID},#{addtime})
+        INSERT into test (testNumber,soluID,planDanID,builderID,addtime) values (#{testNumber},#{soluID},
+        #{planDanID},#{builderID},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -57,10 +58,10 @@
 
     <update id="update" parameterType="Test">
         update test
-        set testName = #{testName},
+        set testNumber = #{testNumber},
             soluID   = #{soluID},
-            devID    = #{devID},
-            leaderID = #{leaderID},
+            planDanID    = #{planDanID},
+            builderID = #{builderID},
             addtime  = #{addtime}
         where testID = #{testID}
     </update>

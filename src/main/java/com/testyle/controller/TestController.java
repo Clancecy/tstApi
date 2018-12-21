@@ -35,9 +35,7 @@ public class TestController {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         List<Long> userIDs=(JSON.parseArray(request.getParameter("items"),Long.class));
-        if(test.getSoluID()==-1||test.getDevID()==-1||
-        test.getLeaderID()==-1||
-                test.getDevName()==null){
+        if(test.getSoluID()==-1){
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         }else {
@@ -59,9 +57,8 @@ public class TestController {
         response.setCharacterEncoding(charact);
         ResContent resContent=new ResContent();
         List<Long> userIDs=JSON.parseArray(request.getParameter("items"),Long.class);
-        if(test.getSoluID()==-1||test.getDevID()==-1||
-                test.getLeaderID()==-1||
-        test.getTestID()==-1||test.getDevName()==null){
+        if(test.getSoluID()==-1||
+        test.getTestID()==-1){
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         }else {
