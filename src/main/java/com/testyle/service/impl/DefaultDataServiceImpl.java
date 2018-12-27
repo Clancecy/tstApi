@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@Service("defalutDataService")
+@Service("defaultDataService")
 public class DefaultDataServiceImpl implements IDefaultDataService {
 
     @Resource

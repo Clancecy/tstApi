@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ITagDao">
+    <resultMap id="tagList" type="Tag">
+        <id column="tagID" property="tagID"></id>
+        <result column="tagName" property="tagName"></result>
+    </resultMap>
+    <select id="select" parameterType="Tag" resultType="tagList">
+        select * from tag
+        <where>
+            <if test="tagID!=-1">
+                and tagID=#{tagID}
+            </if>
+            <if test="pTagID!=-1">
+                and pTagID=#{pTagID}
+            </if>
+            <if test="tagType!=-1">
+                and tagType=#{tagType}
+            </if>
+        </where>
+    </select>
+    <select id="select" parameterType="Tag" resultType="tagList">
+        select * from tag where tagID
+        in
+        <foreach collection="list" item="tagID" open="(" close=")" separator=",">
+            #{tagID}
+        </foreach>
+    </select>
+    <insert id="insert" parameterType="Tag">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="tagID">
+            SELECT @@IDENTITY
+        </selectKey>
+        insert into tag (tagName,tagType,pTagID,addtime)
+        values (#{tagName},#{tagType},#{pTagID},#{addtime} );
+    </insert>
+    <delete id="delete" parameterType="Long">
+        delete
+        from tag
+        where tagID = #{tagID}
+    </delete>
+    <update id="update" parameterType="Tag">
+        update tag
+        set tagName = #{tagName},
+            tagType = #{tagType},
+            pTagID=#{pTagID},
+            addtime = #{addtime}
+        where tagID = #{tagID}
+    </update>
+</mapper>
