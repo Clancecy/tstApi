@@ -46,7 +46,7 @@ public class DataController {
         ResContent resContent = new ResContent();
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         String fname = request.getParameter("url");
-        if (data.getReportID() == -1
+        if (data.getTestID() == -1
                 || data.getTaskID() == -1
                 || data.getProID() == -1
                 || data.getDataVal() == null
@@ -56,7 +56,7 @@ public class DataController {
             resContent.setMessage("参数错误");
         } else {
             ReportProFile reportProFile = new ReportProFile();
-            reportProFile.setReportID(data.getReportID());
+            reportProFile.setReportID(data.getTestID());
             reportProFile.setTaskID(data.getTaskID());
             reportProFile.setProID(data.getProID());
             List<ReportProFile> reportProFileList = new ArrayList<>();
@@ -311,7 +311,7 @@ public class DataController {
                 for (Item item : record.getItemList()
                 ) {
                     Data tempData = new Data();
-                    tempData.setReportID(data.getReportID());
+                    tempData.setTestID(data.getTestID());
                     tempData.setTaskID(data.getTaskID());
                     tempData.setProID(data.getProID());
                     long itemID = item.getItemID();
