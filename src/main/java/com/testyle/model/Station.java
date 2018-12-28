@@ -8,13 +8,18 @@ public class Station {
     private long staID=-1;
     private String staName;
     private long pStaID=-1;
+    String pStaName;
     private int depth;
     private int order;
     private float longitude;
     private float latitude;
+    String address;
+    String tagString;
+    int devCount=0;
     private Date addtime =new Date();
-    private List<Station> childSta=new ArrayList<Station>();
 
+    private List<Station> childSta=new ArrayList<Station>();
+    List<StationFile> fileList;
 
     public long getStaID() {
         return staID;
@@ -38,6 +43,14 @@ public class Station {
 
     public void setpStaID(long pStaID) {
         this.pStaID = pStaID;
+    }
+
+    public String getpStaName() {
+        return pStaName;
+    }
+
+    public void setpStaName(String pStaName) {
+        this.pStaName = pStaName;
     }
 
     public int getDepth() {
@@ -72,12 +85,28 @@ public class Station {
         this.latitude = latitude;
     }
 
-    public Date getAddTime() {
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTagString() {
+        return tagString;
+    }
+
+    public void setTagString(String tagString) {
+        this.tagString = tagString;
+    }
+
+    public Date getAddtime() {
         return addtime;
     }
 
-    public void setAddTime(Date addTime) {
-        this.addtime = addTime;
+    public void setAddtime(Date addtime) {
+        this.addtime = addtime;
     }
 
     public List<Station> getChildSta() {
@@ -86,5 +115,13 @@ public class Station {
 
     public void setChildSta(List<Station> childSta) {
         this.childSta = childSta;
+    }
+
+    public List<StationFile> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<StationFile> fileList) {
+        this.fileList = fileList;
     }
 }

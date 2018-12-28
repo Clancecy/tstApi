@@ -3,6 +3,8 @@ package com.testyle.dao;
 import com.alibaba.fastjson.JSON;
 import com.testyle.common.Utils;
 import com.testyle.model.Record;
+import com.testyle.model.Station;
+import com.testyle.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,8 @@ import java.util.List;
 public class IStationDaoTest {
     @Autowired
     private IStationDao stationDao;
-
+    @Autowired
+    private IUserDao userDao;
     @Test
     public void testSeleteAll(){
         System.out.println(JSON.toJSONString(stationDao.selectAll()));
@@ -28,6 +31,16 @@ public class IStationDaoTest {
         Utils utils=new Utils();
         List<Record> excelRecords= utils.readExcel("E:\\file2\\直流电阻模板20180301.xlsx");
         System.out.println(JSON.toJSONString(excelRecords));
+    }
+    @Test
+    public void tesele(){
+       Station station=stationDao.selectStation(11);
+        System.out.println(JSON.toJSONString(station));
+    }
+    @Test
+    public void teuser(){
+        User user=userDao.selectUser(1);
+        System.out.println(JSON.toJSONString(user));
     }
 
 }

@@ -21,7 +21,7 @@ public class StationServiceImpl implements IStationService {
     }
 
     public Station selectStaton(long staID) {
-        return stationDao.selectStaton(staID);
+        return stationDao.selectStation(staID);
     }
 
     public int insertStation(Station station) {

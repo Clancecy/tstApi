@@ -1,6 +1,7 @@
 package com.testyle.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Tag {
     long tagID=-1;
@@ -9,6 +10,7 @@ public class Tag {
     long pTagID=-1;
     Date addtime=new Date();
 
+    List<TagStation> tagStationList;
 
     public long getpTagID() {
         return pTagID;
@@ -48,5 +50,13 @@ public class Tag {
 
     public void setAddtime(Date addtime) {
         this.addtime = addtime;
+    }
+
+    public List<TagStation> getTagStationList() {
+        return tagStationList;
+    }
+
+    public void setTagStationList(List<TagStation> tagStationList) {
+        this.tagStationList = tagStationList;
     }
 }

@@ -15,6 +15,14 @@ public class User {
     private int userCompanyID=-1;
     private Date addtime=new Date();
 
+    public Date getAddtime() {
+        return addtime;
+    }
+
+    public void setAddtime(Date addtime) {
+        this.addtime = addtime;
+    }
+
     public long getUserID() {
         return userID;
     }
@@ -95,13 +103,6 @@ public class User {
         this.userCompanyID = userCompanyID;
     }
 
-    public Date getAddTime() {
-        return addtime;
-    }
-
-    public void setAddTime(Date addtime) {
-        this.addtime = addtime;
-    }
     public User() {
     }
 }

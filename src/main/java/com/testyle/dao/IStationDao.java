@@ -7,7 +7,7 @@ import java.util.List;
 public interface IStationDao {
     List<Station> selectAll();
     List<Station> selectChildren(long pStaID);
-    Station selectStaton(long staID);
+    Station selectStation(long staID);
     int insertStation(Station station);
     int deleteStation(long staID);
     int updateStation(Station station);

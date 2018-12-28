@@ -5,9 +5,12 @@
         <id property="staID" column="staID"></id>
         <result property="staName" column="staName"></result>
         <result property="pStaID" column="pStaID"></result>
+        <result property="pStaName" column="pStaName"></result>
+        <result property="address" column="address"></result>
         <result property="depth" column="depth"></result>
         <result property="longitude" column="longitude"></result>
         <result property="latitude" column="latitude"></result>
+        <result property="devCount" column="devCount"></result>
     </resultMap>
 
     <select id="selectAll" resultMap="listStation">
@@ -22,9 +25,10 @@
     </select>
 
     <select id="selectStation" resultType="Station" parameterType="long">
-        select *
-        from station
-        where staID = #{staID}
+        select *, b.staName as pStaName
+        from station a
+                 LEFT JOIN station b on a.pStaID = b.staID
+        where a.staID = #{staID}
     </select>
 
     <insert id="insertStation" parameterType="Station">

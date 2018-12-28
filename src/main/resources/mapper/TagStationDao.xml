@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ITagStationDao">
+    <resultMap id="listTagStation" type="TagStation">
+        <id property="ID" column="ID"></id>
+        <result property="staID" column="staID"></result>
+        <result property="staName" column="staName"></result>
+        <result property="tagID" column="tagID"></result>
+        <result property="tagName" column="tagName"></result>
+    </resultMap>
+    <insert id="insert" parameterType="TagStation">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        insert into tagstation (tagID,staID,addtime)
+        values (#{tagID},#{staID},#{addtime} );
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into tagstation (tagID,staID,proName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="TagStation" index="index" separator="," close=";">
+            ( #{TagStation.tagID},#{TagStation.staID},#{TagStation.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="TagStation">
+        delete
+        from tagstation
+        where staID = #{staID}
+    </delete>
+    <update id="update" parameterType="TagStation">
+        update tagstation
+        set staID  = #{staID},
+            tagID   = #{tagID},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+    <select id="select" resultMap="listTagStation" parameterType="TagStation">
+        select * from tagstation a,tag b,station c
+        <where>
+            a.tagID=b.tagID and a.staID=c.staID
+            <if test="ID!=-1">
+                and a.ID=#{ID}
+            </if>
+            <if test="staID!=-1">
+                and a.staID=#{staID}
+            </if>
+            <if test="tagID!=-1">
+                and a.tagID=#{tagID}
+            </if>
+        </where>
+    </select>
+</mapper>

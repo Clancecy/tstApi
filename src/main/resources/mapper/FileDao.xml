@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IFileDao">
+    <resultMap id="listFile" type="File">
+        <id property="fileID" column="fileID"></id>
+        <result property="fileType" column="fileType"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="remark" column="remark"></result>
+        <result property="url" column="url"></result>
+    </resultMap>
+    <insert id="insert" parameterType="File">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="fileID">
+            SELECT @@IDENTITY
+        </selectKey>
+        insert into file (fileName,url,remark,fileType,addtime)
+        values (#{fileName},#{url},#{remark},#{fileType},#{addtime} );
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="fileID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into file (fileName,url,remark,fileType,proName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="File" index="index" separator="," close=";">
+            ( #{File.fileName},#{File.url},#{File.remark},#{File.fileType},#{File.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="File">
+        delete
+        from file
+        where fileType = #{fileType}
+    </delete>
+    <update id="update" parameterType="File">
+        update file
+        set fileName = #{fileName},
+            url      = #{url},
+            fileType = #{fileType},
+            remark   = #{remark},
+            addtime  = #{addtime}
+        where fileID = #{fileID}
+    </update>
+    <select id="select" resultMap="listFile" parameterType="File">
+        select * from file a,tag b,station c
+        <where>
+            a.remark=b.remark and a.fileType=c.fileType
+            <if test="fileID!=-1">
+                and a.fileID=#{fileID}
+            </if>
+            <if test="fileType!=-1">
+                and a.fileType=#{fileType}
+            </if>
+        </where>
+    </select>
+</mapper>

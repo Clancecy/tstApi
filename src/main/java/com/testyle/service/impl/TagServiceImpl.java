@@ -3,10 +3,11 @@ package com.testyle.service.impl;
 import com.testyle.dao.ITagDao;
 import com.testyle.model.Tag;
 import com.testyle.service.ITagService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-
+@Service("tag")
 public class TagServiceImpl implements ITagService {
 
     @Resource
@@ -18,7 +19,7 @@ public class TagServiceImpl implements ITagService {
 
     @Override
     public List<Tag> select(List<Long> tagIDs) {
-        return tagDao.select(tagIDs);
+        return tagDao.selectByList(tagIDs);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ITagDao {
     List<Tag> select(Tag tag);
-    List<Tag> select(List<Long> tagIDs);
+    List<Tag> selectByList(List<Long> tagIDs);
     int insert(Tag tag);
     int delete(Tag tag);
     int update(Tag tag);

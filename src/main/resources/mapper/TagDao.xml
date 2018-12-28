@@ -5,7 +5,7 @@
         <id column="tagID" property="tagID"></id>
         <result column="tagName" property="tagName"></result>
     </resultMap>
-    <select id="select" parameterType="Tag" resultType="tagList">
+    <select id="select" parameterType="Tag" resultMap="tagList">
         select * from tag
         <where>
             <if test="tagID!=-1">
@@ -19,7 +19,7 @@
             </if>
         </where>
     </select>
-    <select id="select" parameterType="Tag" resultType="tagList">
+    <select id="selectByList" parameterType="Tag" resultMap="tagList">
         select * from tag where tagID
         in
         <foreach collection="list" item="tagID" open="(" close=")" separator=",">
@@ -33,7 +33,7 @@
         insert into tag (tagName,tagType,pTagID,addtime)
         values (#{tagName},#{tagType},#{pTagID},#{addtime} );
     </insert>
-    <delete id="delete" parameterType="Long">
+    <delete id="delete" parameterType="Tag">
         delete
         from tag
         where tagID = #{tagID}
