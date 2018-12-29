@@ -291,9 +291,35 @@ public class StationController {
         }catch (Exception e){
             resContent.setCode(102);
             resContent.setMessage("上传失败");
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
         }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
     }
 
+    @RequestMapping("/delPic")
+    public void delPic(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long fileID = Long.parseLong(request.getParameter("fileID"));
+            long staID = Long.parseLong(request.getParameter("staID"));
+            StationFile stationFile=new StationFile();
+            stationFile.setStaID(staID);
+            stationFile.setFileID(fileID);
+            stationFileService.delete(stationFile);
+            resContent.setCode(101);
+            resContent.setMessage("删除成功");
+        }catch (Exception e){
+            resContent.setMessage("参数错误");
+            resContent.setCode(103);
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
 
     public List<Station> staCommon;
 
