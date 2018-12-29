@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100136
 File Encoding         : 65001
 
-Date: 2018-12-28 15:00:01
+Date: 2018-12-29 14:37:26
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,7 +23,7 @@ CREATE TABLE `company` (
   `compID` int(11) NOT NULL AUTO_INCREMENT,
   `compName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `compZM` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`compID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -45,7 +45,7 @@ CREATE TABLE `data` (
   `itemID` int(11) DEFAULT NULL,
   `devID` int(11) DEFAULT NULL,
   `dataVal` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`dataID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=558 DEFAULT CHARSET=latin1;
 
@@ -83,7 +83,7 @@ CREATE TABLE `defaultdata` (
   `recordID` int(11) DEFAULT NULL,
   `itemID` int(11) DEFAULT NULL,
   `dataval` varchar(255) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`defaultID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -101,7 +101,7 @@ CREATE TABLE `devattrval` (
   `attrName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `devID` int(11) DEFAULT NULL,
   `arrtVal` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -119,7 +119,7 @@ CREATE TABLE `device` (
   `devName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `devTypeID` int(11) DEFAULT NULL,
   `staID` int(11) DEFAULT NULL,
-  `addtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`devID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
@@ -136,7 +136,7 @@ CREATE TABLE `devicefile` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) DEFAULT NULL,
   `devID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -155,7 +155,7 @@ CREATE TABLE `devtype` (
   `pTypeID` int(11) DEFAULT NULL,
   `depth` int(11) DEFAULT NULL,
   `order` int(11) DEFAULT NULL,
-  `addTime` datetime DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `addTime` datetime DEFAULT NULL,
   PRIMARY KEY (`typeID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
@@ -183,7 +183,7 @@ DROP TABLE IF EXISTS `es`;
 CREATE TABLE `es` (
   `ID` int(11) NOT NULL,
   `ESUrl` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -201,7 +201,7 @@ CREATE TABLE `file` (
   `fileType` int(11) DEFAULT '0' COMMENT '0,文件1，图片',
   `url` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`fileID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
@@ -226,7 +226,7 @@ CREATE TABLE `instrument` (
   `manufacturer` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `isWork` int(11) DEFAULT '1' COMMENT '//1正常工作，0维修中，2报废',
   `isRepair` int(11) DEFAULT '0' COMMENT '0未检查，1已检查，2送检中',
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`insID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
@@ -318,7 +318,7 @@ CREATE TABLE `plan` (
   `cycType` int(11) DEFAULT '0' COMMENT '//0：不循环，1：每天，2：每周，3：每月，4：每个季度，5：每年',
   `builderID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '0未执行，1已执行，-1停止执行',
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`planID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
@@ -337,12 +337,12 @@ CREATE TABLE `plandan` (
   `planDanID` int(11) NOT NULL AUTO_INCREMENT,
   `planDanNumber` varchar(255) DEFAULT NULL,
   `cycType` int(11) DEFAULT NULL,
-  `cycTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `cycTime` datetime DEFAULT NULL,
   `staID` int(11) DEFAULT NULL,
   `planID` int(11) DEFAULT NULL,
   `builderID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`planDanID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -358,7 +358,7 @@ CREATE TABLE `plantest` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `planID` int(11) DEFAULT NULL,
   `soluID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
@@ -454,7 +454,7 @@ CREATE TABLE `report` (
   `planDanID` int(11) DEFAULT NULL,
   `testID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '0进行中，1已完成',
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`reportID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=latin1;
 
@@ -481,7 +481,7 @@ CREATE TABLE `repprofile` (
   `url` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `workerID` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '0正在进行，1已完成',
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
 
@@ -509,7 +509,7 @@ CREATE TABLE `solupro` (
   `soluID` int(11) DEFAULT NULL,
   `proID` int(11) DEFAULT NULL,
   `proName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
@@ -534,7 +534,7 @@ CREATE TABLE `solution` (
   `soluName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `devTypeID` int(11) DEFAULT NULL,
   `builder` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`soluID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
@@ -558,7 +558,7 @@ CREATE TABLE `station` (
   `longitude` float(255,6) DEFAULT NULL,
   `latitude` float(255,6) DEFAULT NULL,
   `address` varchar(255) DEFAULT '',
-  `addTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addTime` datetime DEFAULT NULL,
   PRIMARY KEY (`staID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
@@ -586,7 +586,7 @@ CREATE TABLE `stationfile` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) DEFAULT NULL,
   `staID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
@@ -607,7 +607,7 @@ CREATE TABLE `tag` (
   `tagName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `tagType` int(11) DEFAULT '0' COMMENT '0,站点tag，1设备tag',
   `pTagID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`tagID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
@@ -627,7 +627,7 @@ CREATE TABLE `tagdevice` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `tagID` int(11) DEFAULT NULL,
   `devID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -643,7 +643,7 @@ CREATE TABLE `tagstation` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `tagID` int(11) DEFAULT NULL,
   `staID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -674,7 +674,7 @@ CREATE TABLE `task` (
   `url` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '完成状态',
   `remark` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`taskID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
@@ -693,7 +693,7 @@ CREATE TABLE `taskfile` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) DEFAULT NULL,
   `taskID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -710,7 +710,7 @@ CREATE TABLE `taskpro` (
   `taskID` int(11) DEFAULT NULL,
   `proID` int(11) DEFAULT NULL,
   `proName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
@@ -730,7 +730,7 @@ CREATE TABLE `taskuser` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `taskID` int(11) DEFAULT NULL,
   `userID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 
@@ -756,7 +756,7 @@ CREATE TABLE `test` (
   `builderID` int(11) DEFAULT NULL,
   `url` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `status` int(11) DEFAULT '0',
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`testID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
 
@@ -778,7 +778,7 @@ CREATE TABLE `testuser` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `testID` int(11) DEFAULT NULL,
   `userID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=latin1;
 
@@ -806,7 +806,7 @@ CREATE TABLE `typeattr` (
   `attrID` int(11) NOT NULL AUTO_INCREMENT,
   `attrName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `typeID` int(11) DEFAULT NULL,
-  `addtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`attrID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -829,7 +829,7 @@ CREATE TABLE `user` (
   `userMail` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `userNumber` int(11) DEFAULT NULL,
   `userCompanyID` int(11) DEFAULT NULL,
-  `addtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=latin1;
 
