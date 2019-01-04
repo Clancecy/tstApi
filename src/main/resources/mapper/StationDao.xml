@@ -35,8 +35,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="staID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into station (staName,pStaID,longitude,latitude,addtime) values (#{staName},
-        #{pStaID},#{longitude},#{latitude},#{addtime})
+        INSERT into station (staName,pStaID,address,longitude,latitude,addtime) values (#{staName},
+        #{pStaID},#{address},#{longitude},#{latitude},#{addtime})
     </insert>
 
     <delete id="deleteStation" parameterType="long">
@@ -49,6 +49,7 @@
         update Station
         set staName   = #{staName},
             longitude = #{longitude},
+            address   = #{address},
             latitude  = #{latitude},
             addtime   = #{addtime}
         where staID = #{staID}

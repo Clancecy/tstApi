@@ -62,8 +62,8 @@ public class StationController {
         addTagStation(tagList);
         List<Object> tagTree = ToTagTree(tagList);
         resContent.setCode(101);
-        resContent.setMessage("获取成功");
         resContent.setData(tagTree);
+        resContent.setMessage("获取成功");
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
