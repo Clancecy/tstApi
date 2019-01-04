@@ -7,7 +7,8 @@ public class Solution {
     long soluID=-1;
     String soluName;
     long devTypeID = -1;
-    long builder = -1;
+    long builderID = -1;
+    String userName;
     Date addtime=new Date();
     List<SoluPro> pros;
 
@@ -35,13 +36,6 @@ public class Solution {
         this.devTypeID = devTypeID;
     }
 
-    public long getBuilder() {
-        return builder;
-    }
-
-    public void setBuilder(long builder) {
-        this.builder = builder;
-    }
 
     public Date getAddtime() {
         return addtime;
@@ -57,5 +51,21 @@ public class Solution {
 
     public void setPros(List<SoluPro> pros) {
         this.pros = pros;
+    }
+
+    public long getBuilderID() {
+        return builderID;
+    }
+
+    public void setBuilderID(long builderID) {
+        this.builderID = builderID;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

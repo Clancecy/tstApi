@@ -12,8 +12,25 @@ public class Plan {
 //    Date cyctime=new Date();
     int status=0; //0未执行，1已执行，2停止执行
     Date addtime=new Date();
+    long builderID=-1;
+    String userName;
     List<PlanTest> planTestList;
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public long getBuilderID() {
+        return builderID;
+    }
+
+    public void setBuilderID(long builderID) {
+        this.builderID = builderID;
+    }
 
     public int getStatus() {
         return status;

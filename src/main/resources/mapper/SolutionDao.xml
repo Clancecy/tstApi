@@ -5,13 +5,14 @@
         <id column="soluID" property="soluID"></id>
         <result property="soluName" column="soluName"></result>
         <result property="devTypeID" column="devTypeID"></result>
-        <result property="builder" column="builder"></result>
+        <result property="buliderID" column="buliderID"></result>
+        <result property="userName" column="userName"></result>
     </resultMap>
 
     <select id="getSolution" resultType="Solution" parameterType="long">
         select *
-        from solution
-        where soluID = #{soluID}
+        from solution a and user b
+        where a.builderID=b.userID and a.soluID = #{soluID}
     </select>
     <select id="selOne" resultType="long" parameterType="Solution">
         select IFNULL(max(soluID),0) as soluID from solution
@@ -26,8 +27,9 @@
 
     </select>
     <select id="select" resultMap="listSolution" parameterType="Solution">
-        select * from solution
+        select * from solution a and user b
         <where>
+            a.builderID=b.userID
             <if test="soluID!=-1">
                 and soluID=#{soluID}
             </if>
@@ -43,8 +45,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="soluID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into solution (soluName,devTypeID,builder,addtime) values (#{soluName},
-        #{devTypeID},#{builder},#{addtime})
+        INSERT into solution (soluName,devTypeID,buliderID,addtime) values (#{soluName},
+        #{devTypeID},#{buliderID},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -56,7 +58,7 @@
         update solution
         set soluName  = #{soluName},
             devTypeID = #{devTypeID},
-            builder   = #{builder},
+            buliderID   = #{buliderID},
             addtime   = #{addtime}
         where soluID = #{soluID}
     </update>
