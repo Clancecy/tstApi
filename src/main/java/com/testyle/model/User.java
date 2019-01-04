@@ -13,7 +13,44 @@ public class User {
     private String userMail;
     private String userNumber;
     private int userCompanyID=-1;
+    String companyName;
+    long deptID=-1;
+    String deptName;
+    String userPic;
     private Date addtime=new Date();
+
+    public long getDeptID() {
+        return deptID;
+    }
+
+    public void setDeptID(long deptID) {
+        this.deptID = deptID;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public String getUserPic() {
+        return userPic;
+    }
+
+    public void setUserPic(String userPic) {
+        this.userPic = userPic;
+    }
 
     public Date getAddtime() {
         return addtime;

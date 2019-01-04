@@ -5,13 +5,17 @@
 <mapper namespace="com.testyle.dao.IUserDao">
     <resultMap id="listUser" type="User">
         <id column="userID" property="userID"></id>
-        <result property="userName" column="userName"></result>
         <result property="userRealName" column="userRealName"></result>
         <result property="userType" column="userType"></result>
+        <result property="userPic" column="userPic"></result>
+        <result property="companyName" column="companyName"></result>
+        <result property="userMobile" column="userMobile"></result>
+        <result property="userMail" column="userMail"></result>
+        <result property="deptName" column="deptName"></result>
     </resultMap>
     <select id="selectUser" resultType="User" parameterType="long">
-        SELECT *
-        FROM user
+        SELECT *,b.tagName as deptName,c.compName as companyName
+        FROM (user a left join tag b on a.deptID=b.tagID) left join company c on a.userCompanyID=c.compID
         WHERE userID = #{userID}
     </select>
 
@@ -30,8 +34,10 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="userID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into user (userName,userPassword,userRealName,addtime) values (#{userName},
-        #{userPassword},#{userRealName},#{addtime})
+        INSERT into user (userType,userRealName,userPassword,userSex,userMobile,
+        userMail,userNumber,userCompanyID,deptID,userPic,addtime)
+        values (#{userType},#{userRealName},#{userPassword},#{userSex},#{userMobile},#{userMail},
+        #{userNumber},#{userCompanyID},#{deptID},#{userPic},#{addtime})
     </insert>
 
     <delete id="deleteUser" parameterType="long" statementType="PREPARED">
@@ -44,7 +50,8 @@
     </delete>
 
     <select id="select" resultMap="listUser" parameterType="User">
-        select * from user
+        select *, b.tagName as deptName,c.compName as companyName from
+         (user a left join tag b on a.deptID=b.tagID) left join company c on a.userCompanyID=c.compID
         <where>
             <if test="userID!=-1">
                 and userID=#{userID}
@@ -59,10 +66,18 @@
     </select>
     <update id="update" parameterType="User">
         update user
-        set userName     = #{userName},
-            userPassword = #{userPassword},
-            userRealName = #{userRealName},
-            addtime      = #{addtime}
+        set
+        userType     = #{userType},
+        userRealName     = #{userRealName},
+        userPassword     = #{userPassword},
+        userSex     = #{userSex},
+        userMobile     = #{userMobile},
+        userMail     = #{userMail},
+        userNumber     = #{userNumber},
+        userCompanyID     = #{userCompanyID},
+        deptID = #{deptID},
+        userPic = #{userPic},
+        addtime      = #{addtime}
         where userID = #{userID}
     </update>
 </mapper>

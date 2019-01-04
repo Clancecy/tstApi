@@ -33,8 +33,9 @@ public class InstrumentController {
     IFileService fileservice;
     String charact = "UTF-8";
     String imageRoot = "E:/image/";
+
     @RequestMapping("/add")
-    public void addIns(Instrument instrument,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void addIns(Instrument instrument, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         if (instrument.getInsName() == null
@@ -61,19 +62,18 @@ public class InstrumentController {
             }
             String url = imageRoot + file.getOriginalFilename();
             long insID = Long.parseLong(request.getParameter("insID"));
-            Instrument instrument=instrumentService.selectByID(insID);
+            Instrument instrument = instrumentService.selectByID(insID);
             instrument.setInsUrl(url);
             instrumentService.update(instrument);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
             return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("上传失败");
             resContent.setCode(102);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -85,7 +85,7 @@ public class InstrumentController {
     }
 
     @RequestMapping("/plate")
-    public void plate(@RequestParam("plate") MultipartFile file,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void plate(@RequestParam("plate") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         try {
@@ -96,19 +96,18 @@ public class InstrumentController {
             }
             String url = imageRoot + file.getOriginalFilename();
             long insID = Long.parseLong(request.getParameter("insID"));
-            Instrument instrument=instrumentService.selectByID(insID);
+            Instrument instrument = instrumentService.selectByID(insID);
             instrument.setPlateUrl(url);
             instrumentService.update(instrument);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
             return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("上传失败");
             resContent.setCode(102);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -124,7 +123,7 @@ public class InstrumentController {
         response.setCharacterEncoding(charact);
         long insID = Long.parseLong(request.getParameter("insID"));
         int count = instrumentService.delete(insID);
-        InstrumentFile instrumentFile=new InstrumentFile();
+        InstrumentFile instrumentFile = new InstrumentFile();
         instrumentFile.setInsID(insID);
         instrumentFileService.delete(instrumentFile);
         ResContent resContent = new ResContent();
@@ -134,7 +133,7 @@ public class InstrumentController {
     }
 
     @RequestMapping("/update")
-    public void updateIns(Instrument instrument,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void updateIns(Instrument instrument, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         if (instrument.getInsID() != -1) {
@@ -190,14 +189,13 @@ public class InstrumentController {
             instrumentFileService.insert(instrumentFile);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
             return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("上传失败");
             resContent.setCode(102);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -209,19 +207,19 @@ public class InstrumentController {
     }
 
     @RequestMapping("/delFile")
-    public void delPic(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public void delPic(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
-        ResContent resContent=new ResContent();
+        ResContent resContent = new ResContent();
         try {
             long fileID = Long.parseLong(request.getParameter("fileID"));
             long insID = Long.parseLong(request.getParameter("insID"));
-            InstrumentFile instrumentFile=new InstrumentFile();
+            InstrumentFile instrumentFile = new InstrumentFile();
             instrumentFile.setInsID(insID);
             instrumentFile.setFileID(fileID);
             instrumentFileService.delete(instrumentFile);
             resContent.setCode(101);
             resContent.setMessage("删除成功");
-        }catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
