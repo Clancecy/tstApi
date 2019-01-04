@@ -19,7 +19,24 @@ public class Station {
     private Date addtime =new Date();
 
     private List<Station> childSta=new ArrayList<Station>();
-    List<StationFile> fileList;
+    List<StationFile> fileList=new ArrayList<>();
+    List<Device> deviceList=new ArrayList<>();
+
+    public int getDevCount() {
+        return devCount;
+    }
+
+    public void setDevCount(int devCount) {
+        this.devCount = devCount;
+    }
+
+    public List<Device> getDeviceList() {
+        return deviceList;
+    }
+
+    public void setDeviceList(List<Device> deviceList) {
+        this.deviceList = deviceList;
+    }
 
     public long getStaID() {
         return staID;

@@ -11,6 +11,15 @@ public class Tag {
     Date addtime=new Date();
 
     List<TagStation> tagStationList;
+    List<TagDevice> tagDeviceList;
+
+    public List<TagDevice> getTagDeviceList() {
+        return tagDeviceList;
+    }
+
+    public void setTagDeviceList(List<TagDevice> tagDeviceList) {
+        this.tagDeviceList = tagDeviceList;
+    }
 
     public long getpTagID() {
         return pTagID;

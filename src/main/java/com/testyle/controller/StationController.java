@@ -206,29 +206,31 @@ public class StationController {
 
     private void addTag(Station station) {
         String tagString = station.getTagString();
-        String[] tags = tagString.split(",");
-        long staID = station.getStaID();
-        List<TagStation> tagStationList = new ArrayList<>();
-        for (int i = 0; i < tags.length; i++) {
-            Tag tag = new Tag();
-            tag.setTagType(0);
-            tag.setTagName(tags[i]);
-            List<Tag> tagList = tagService.select(tag);
-            if (tagList.size() == 0) {
-                int ic = tagService.insert(tag);
-                TagStation tagStation = new TagStation();
-                tagStation.setStaID(staID);
-                tagStation.setTagID(tag.getTagID());
-                tagStationList.add(tagStation);
-            } else {
-                tag = tagList.get(0);
-                TagStation tagStation = new TagStation();
-                tagStation.setStaID(staID);
-                tagStation.setTagID(tag.getTagID());
-                tagStationList.add(tagStation);
+        if(tagString!=null&&!tagString.equals("")) {
+            String[] tags = tagString.split(",");
+            long staID = station.getStaID();
+            List<TagStation> tagStationList = new ArrayList<>();
+            for (int i = 0; i < tags.length; i++) {
+                Tag tag = new Tag();
+                tag.setTagType(0);
+                tag.setTagName(tags[i]);
+                List<Tag> tagList = tagService.select(tag);
+                if (tagList.size() == 0) {
+                    int ic = tagService.insert(tag);
+                    TagStation tagStation = new TagStation();
+                    tagStation.setStaID(staID);
+                    tagStation.setTagID(tag.getTagID());
+                    tagStationList.add(tagStation);
+                } else {
+                    tag = tagList.get(0);
+                    TagStation tagStation = new TagStation();
+                    tagStation.setStaID(staID);
+                    tagStation.setTagID(tag.getTagID());
+                    tagStationList.add(tagStation);
+                }
             }
+            tagStationService.insert(tagStationList);
         }
-        tagStationService.insert(tagStationList);
     }
 
     @RequestMapping("/delete")
@@ -320,7 +322,8 @@ public class StationController {
             stationFileService.delete(stationFile);
             resContent.setCode(101);
             resContent.setMessage("删除成功");
-        }catch (Exception e){
+        }
+        catch (Exception e){
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
