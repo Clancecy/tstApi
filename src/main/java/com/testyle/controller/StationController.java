@@ -144,8 +144,6 @@ public class StationController {
         ResContent resContent = new ResContent();
         long staID = 0;
         try {
-            String t = request.getParameter("staID");
-            System.out.println(t);
             staID = Long.parseLong(request.getParameter("staID"));
         } catch (Exception e) {
             resContent.setCode(103);

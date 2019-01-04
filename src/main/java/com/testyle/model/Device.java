@@ -24,13 +24,13 @@ public class Device {
     String staName;
     Date addtime =new Date();
 
-    List<String> fileList;
+    List<DeviceFile> fileList;
 
-    public List<String> getFileList() {
+    public List<DeviceFile> getFileList() {
         return fileList;
     }
 
-    public void setFileList(List<String> fileList) {
+    public void setFileList(List<DeviceFile> fileList) {
         this.fileList = fileList;
     }
 

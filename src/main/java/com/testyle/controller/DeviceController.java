@@ -339,4 +339,50 @@ public class DeviceController {
         }
     }
 
+
+    @RequestMapping("/show")
+    public void selectDevice(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        long devID = 0;
+        try {
+            devID = Long.parseLong(request.getParameter("devID"));
+        } catch (Exception e) {
+            resContent.setCode(103);
+            resContent.setMessage("参数错误");
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+        }
+        Device device = deviceService.selectByID(devID);
+        TagDevice tagDevice = new TagDevice();
+        tagDevice.setDevID(devID);
+        List<TagDevice> tagDeviceList = tagDeviceService.select(tagDevice);
+        String tagString="";
+        if(tagDeviceList!=null)
+            tagString = tagToString(tagDeviceList);
+        DeviceFile deviceFile = new DeviceFile();
+        deviceFile.setDevID(devID);
+        List<DeviceFile> fileList = deviceFileService.select(deviceFile);
+        if (device == null) {
+            resContent.setCode(102);
+            resContent.setMessage("没有该站点");
+        } else {
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            device.setTagString(tagString);
+            device.setFileList(fileList);
+            resContent.setData(device);
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+    private String tagToString(List<TagDevice> tagDeviceList) {
+        String result = "";
+        for (TagDevice tagDevice : tagDeviceList) {
+            result += tagDevice.getTagName() + ",";
+        }
+        if(!result.equals(""))
+            result=result.substring(0, result.length() - 1);
+        return result;
+    }
 }
