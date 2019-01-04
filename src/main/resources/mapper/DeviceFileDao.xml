@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IDeviceFileDao">
+    <resultMap id="listDeviceFile" type="DeviceFile">
+        <id property="ID" column="ID"></id>
+        <result property="devID" column="devID"></result>
+        <result property="fileID" column="fileID"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="url" column="url"></result>
+        <result property="remark" column="remark"></result>
+    </resultMap>
+    <insert id="insert" parameterType="DeviceFile">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        insert into devicefile (fileID,devID,addtime)
+        values (#{fileID},#{devID},#{addtime} );
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into devicefile (fileID,devID,proName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="DeviceFile" index="index" separator="," close=";">
+            ( #{DeviceFile.fileID},#{DeviceFile.devID},#{DeviceFile.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="DeviceFile">
+        delete
+        from devicefile
+        <where>
+            <if test="ID!=-1">
+                and ID=#{ID}
+            </if>
+            <if test="devID!=-1">
+                and devID=#{devID}
+            </if>
+            <if test="fileID!=-1">
+                and fileID=#{fileID}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="DeviceFile">
+        update devicefile
+        set devID  = #{devID},
+            fileID   = #{fileID},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+    <select id="select" resultMap="listDeviceFile" parameterType="DeviceFile">
+        select * from devicefile a,file b
+        <where>
+            a.fileID=b.fileID
+            <if test="ID!=-1">
+                and a.ID=#{ID}
+            </if>
+            <if test="devID!=-1">
+                and a.devID=#{devID}
+            </if>
+            <if test="fileID!=-1">
+                and a.fileID=#{fileID}
+            </if>
+        </where>
+    </select>
+</mapper>

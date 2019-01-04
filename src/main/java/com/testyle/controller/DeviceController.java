@@ -99,7 +99,6 @@ public class DeviceController {
     public void deleteDevice(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         long devID = Long.parseLong(request.getParameter("devID"));
-        devAttrValService.delete(devID);
         int count = deviceService.delete(devID);
         TagDevice tagDevice = new TagDevice();
         tagDevice.setDevID(devID);
@@ -206,6 +205,75 @@ public class DeviceController {
         }
     }
 
+    @RequestMapping("/devPic")
+    public void devPic(@RequestParam("devPic") MultipartFile file,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        try {
+            if (!file.isEmpty()) {
+                FileUtils.copyInputStreamToFile(file.getInputStream(), new java.io.File(
+                        imageRoot,
+                        file.getOriginalFilename()));
+            }
+            String url = imageRoot + file.getOriginalFilename();
+            long devID = Long.parseLong(request.getParameter("devID"));
+            Device device=deviceService.selectByID(devID);
+            device.setDevUrl(url);
+            deviceService.update(device);
+            resContent.setCode(101);
+            resContent.setMessage("上传成功");
+        }catch (NumberFormatException ne){
+            resContent.setMessage("参数错误");
+            resContent.setCode(103);
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+            return;
+        }
+        catch (Exception e){
+            resContent.setMessage("上传失败");
+            resContent.setCode(102);
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+            return;
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/plate")
+    public void plate(@RequestParam("plate") MultipartFile file,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        try {
+            if (!file.isEmpty()) {
+                FileUtils.copyInputStreamToFile(file.getInputStream(), new java.io.File(
+                        imageRoot,
+                        file.getOriginalFilename()));
+            }
+            String url = imageRoot + file.getOriginalFilename();
+            long devID = Long.parseLong(request.getParameter("devID"));
+            Device device=deviceService.selectByID(devID);
+            device.setPlateUrl(url);
+            deviceService.update(device);
+            resContent.setCode(101);
+            resContent.setMessage("上传成功");
+        }catch (NumberFormatException ne){
+            resContent.setMessage("参数错误");
+            resContent.setCode(103);
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+            return;
+        }
+        catch (Exception e){
+            resContent.setMessage("上传失败");
+            resContent.setCode(102);
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+            return;
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
 
     @RequestMapping("/upload")
     public void doUpload(@RequestParam("file") MultipartFile file, com.testyle.model.File file1, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -328,7 +396,6 @@ public class DeviceController {
         }
         System.out.println(JSON.toJSONString(list));
         return list;
-
     }
 
     private void addTagDevice(List<Tag> tagList) {
