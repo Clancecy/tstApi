@@ -34,7 +34,7 @@ public class ReportController {
             private ITaskDanService taskDanService;
 
     String charact = "UTF-8";
-    String Esurl = "http://192.168.168.34:8080/";
+    String Esurl = "http://127.0.0.1:8080/";
 
     @RequestMapping("/list")
     public void getReportList(Report report, HttpServletResponse response) throws IOException {

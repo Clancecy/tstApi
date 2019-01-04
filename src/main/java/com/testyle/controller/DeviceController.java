@@ -107,7 +107,7 @@ public class DeviceController {
             DevAttrVal devAttrVal = new DevAttrVal();
             devAttrVal.setDevID(dev.getDevID());
             List<DevAttrVal> devAttrValList = devAttrValService.select(devAttrVal);
-            dev.setDevAttrValList(devAttrValList);
+//            dev.setDevAttrValList(devAttrValList);
         }
     }
 

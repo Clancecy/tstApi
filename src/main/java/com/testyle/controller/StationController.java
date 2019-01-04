@@ -276,6 +276,7 @@ public class StationController {
             }
             String url = imageRoot + file.getOriginalFilename();
             long staID = Long.parseLong(request.getParameter("staID"));
+
             String temp = file.getOriginalFilename();
             String fileName = temp.split("\\.")[0];
             file1.setUrl(url);
@@ -288,11 +289,19 @@ public class StationController {
             stationFileService.insert(stationFile);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (Exception e){
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage("参数错误");
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
+            return;
+        }
+        catch (Exception e){
             resContent.setCode(102);
             resContent.setMessage("上传失败");
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
+            return;
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();

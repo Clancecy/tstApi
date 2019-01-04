@@ -36,7 +36,7 @@ public class DataController {
     @Resource
     private IReportProFileService reportProFileService;
 
-    String Esurl = "http://192.168.168.34:8080/";
+    String Esurl = "http://127.0.0.1:8080/";
 
     String charact = "UTF-8";
 
