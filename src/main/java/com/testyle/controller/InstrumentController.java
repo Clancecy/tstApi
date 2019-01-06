@@ -11,6 +11,10 @@ import com.testyle.service.IFileService;
 import com.testyle.service.IInstrumentFileService;
 import com.testyle.service.IInstrumentService;
 import org.apache.commons.io.FileUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -246,5 +250,24 @@ public class InstrumentController {
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
+    }
+    @RequestMapping("/download")
+    public ResponseEntity<byte[]> filedownload(InstrumentFile instrumentFile) throws Exception {
+        ResContent resContent = new ResContent();
+        List<InstrumentFile> instrumentFileList = instrumentFileService.select(instrumentFile);
+        if (instrumentFileList.size() == 0) {
+            resContent.setCode(103);
+            resContent.setMessage("没有文件");
+            return null;
+        } else {
+            instrumentFile = instrumentFileList.get(0);
+            String downLoadPath = instrumentFile.getUrl();
+            String fileName = instrumentFile.getFileName();
+            java.io.File file = new java.io.File(downLoadPath);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDispositionFormData("attachment", fileName);
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.OK);
+        }
     }
 }
