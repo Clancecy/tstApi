@@ -4,8 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.*;
+import com.testyle.model.File;
 import com.testyle.service.*;
 import org.apache.commons.io.FileUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.awt.image.RescaleOp;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,7 +47,7 @@ public class DeviceController {
     String imageRoot = "E:/image/";
 
     @RequestMapping("/add")
-    public void addDevice(Device device,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void addDevice(Device device, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
 //        String values=request.getParameter("values");
@@ -61,7 +67,7 @@ public class DeviceController {
 
     private void addTag(Device device) {
         String tagString = device.getTagString();
-        if(tagString!=null&&!tagString.equals("")) {
+        if (tagString != null && !tagString.equals("")) {
             String[] tags = tagString.split(",");
             long devID = device.getDevID();
             List<TagDevice> tagDeviceList = new ArrayList<>();
@@ -89,7 +95,7 @@ public class DeviceController {
     }
 
     private void addListDevAttrVal(long devID, List<DevAttrVal> devAttrValList) {
-        for (DevAttrVal devAttrVal:devAttrValList){
+        for (DevAttrVal devAttrVal : devAttrValList) {
             devAttrVal.setDevID(devID);
         }
         devAttrValService.insertList(devAttrValList);
@@ -110,7 +116,7 @@ public class DeviceController {
     }
 
     @RequestMapping("/update")
-    public void updateDevice(Device device,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void updateDevice(Device device, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         if (device.getDevID() != -1) {
@@ -134,7 +140,7 @@ public class DeviceController {
         ResContent resContent = new ResContent();
         List<Station> stationList = stationService.selectAll();
         addDeviceList(stationList);
-        List<Object> devTree=toDevTree(stationList);
+        List<Object> devTree = toDevTree(stationList);
         if (devTree.size() == 0) {
             resContent.setMessage("没有数据");
             resContent.setCode(102);
@@ -162,7 +168,7 @@ public class DeviceController {
         return list;
     }
 
-    private  List<?> staChild(long staID, List<Station> stationList) {
+    private List<?> staChild(long staID, List<Station> stationList) {
         List<Object> list = new ArrayList<>();
         for (Station station : stationList) {
             if (station.getpStaID() == staID) {
@@ -188,8 +194,8 @@ public class DeviceController {
     }
 
     private void addDeviceList(List<Station> stationList) {
-        for (Station station:stationList){
-            Device device=new Device();
+        for (Station station : stationList) {
+            Device device = new Device();
             device.setStaID(station.getStaID());
             List<Device> devices = deviceService.select(device);
             station.setDeviceList(devices);
@@ -206,7 +212,7 @@ public class DeviceController {
     }
 
     @RequestMapping("/devPic")
-    public void devPic(@RequestParam("devPic") MultipartFile file,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void devPic(@RequestParam("devPic") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         try {
@@ -217,19 +223,18 @@ public class DeviceController {
             }
             String url = imageRoot + file.getOriginalFilename();
             long devID = Long.parseLong(request.getParameter("devID"));
-            Device device=deviceService.selectByID(devID);
+            Device device = deviceService.selectByID(devID);
             device.setDevUrl(url);
             deviceService.update(device);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
             return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("上传失败");
             resContent.setCode(102);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -241,7 +246,7 @@ public class DeviceController {
     }
 
     @RequestMapping("/plate")
-    public void plate(@RequestParam("plate") MultipartFile file,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void plate(@RequestParam("plate") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         try {
@@ -252,19 +257,18 @@ public class DeviceController {
             }
             String url = imageRoot + file.getOriginalFilename();
             long devID = Long.parseLong(request.getParameter("devID"));
-            Device device=deviceService.selectByID(devID);
+            Device device = deviceService.selectByID(devID);
             device.setPlateUrl(url);
             deviceService.update(device);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
             return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("上传失败");
             resContent.setCode(102);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -289,7 +293,8 @@ public class DeviceController {
             long devID = Long.parseLong(request.getParameter("devID"));
 
             String temp = file.getOriginalFilename();
-            String fileName = temp.split("\\.")[0];
+//            String fileName = temp.split("\\.")[0];
+            String fileName=temp;
             file1.setUrl(url);
             file1.setFileName(fileName);
             file1.setFileType(1);
@@ -300,14 +305,13 @@ public class DeviceController {
             deviceFileService.insert(deviceFile);
             resContent.setCode(101);
             resContent.setMessage("上传成功");
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
             return;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("上传失败");
             resContent.setCode(102);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -318,20 +322,39 @@ public class DeviceController {
         response.getWriter().close();
     }
 
+    @RequestMapping("/download")
+    public ResponseEntity<byte[]> filedownload(DeviceFile deviceFile) throws Exception {
+        List<DeviceFile> deviceFileList = deviceFileService.select(deviceFile);
+        ResContent resContent = new ResContent();
+        if (deviceFileList.size() == 0) {
+            resContent.setCode(103);
+            resContent.setMessage("没有文件");
+            return null;
+        } else {
+            deviceFile = deviceFileList.get(0);
+            String downLoadPath = deviceFile.getUrl();
+            String fileName = deviceFile.getFileName();
+            java.io.File file = new java.io.File(downLoadPath);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDispositionFormData("attachment", fileName);
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.OK);
+        }
+    }
     @RequestMapping("/delFile")
-    public void delPic(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public void delPic(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
-        ResContent resContent=new ResContent();
+        ResContent resContent = new ResContent();
         try {
             long fileID = Long.parseLong(request.getParameter("fileID"));
             long devID = Long.parseLong(request.getParameter("devID"));
-            DeviceFile deviceFile=new DeviceFile();
+            DeviceFile deviceFile = new DeviceFile();
             deviceFile.setDevID(devID);
             deviceFile.setFileID(fileID);
             deviceFileService.delete(deviceFile);
             resContent.setCode(101);
             resContent.setMessage("删除成功");
-        }catch (Exception e){
+        } catch (Exception e) {
             resContent.setMessage("参数错误");
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
@@ -419,20 +442,21 @@ public class DeviceController {
             resContent.setMessage("参数错误");
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();
+            return;
         }
         Device device = deviceService.selectByID(devID);
         TagDevice tagDevice = new TagDevice();
         tagDevice.setDevID(devID);
         List<TagDevice> tagDeviceList = tagDeviceService.select(tagDevice);
-        String tagString="";
-        if(tagDeviceList!=null)
+        String tagString = "";
+        if (tagDeviceList != null)
             tagString = tagToString(tagDeviceList);
         DeviceFile deviceFile = new DeviceFile();
         deviceFile.setDevID(devID);
         List<DeviceFile> fileList = deviceFileService.select(deviceFile);
         if (device == null) {
             resContent.setCode(102);
-            resContent.setMessage("没有该站点");
+            resContent.setMessage("没有该设备");
         } else {
             resContent.setCode(101);
             resContent.setMessage("获取成功");
@@ -443,13 +467,14 @@ public class DeviceController {
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
+
     private String tagToString(List<TagDevice> tagDeviceList) {
         String result = "";
         for (TagDevice tagDevice : tagDeviceList) {
             result += tagDevice.getTagName() + ",";
         }
-        if(!result.equals(""))
-            result=result.substring(0, result.length() - 1);
+        if (!result.equals(""))
+            result = result.substring(0, result.length() - 1);
         return result;
     }
 }

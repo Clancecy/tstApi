@@ -10,20 +10,43 @@
         <result property="planID" column="planID"></result>
         <result property="planName" column="planName"></result>
         <result property="builderID" column="builderID"></result>
+        <result property="builder" column="builder"></result>
+        <result property="leaderID" column="leaderID"></result>
+        <result property="leader" column="leader"></result>
+        <result property="endtime" column="endtime"></result>
         <result property="status" column="status"></result>
         <result property="addtime" column="addtime"></result>
     </resultMap>
 
     <select id="selectList" resultMap="listPlan" parameterType="List">
-        select * from planDan where a.planDanID in
+        SELECT a.*,b.planName,c.userName as builder,d.userName as leader,e.staName FROM
+        (((`plandan` a
+        LEFT JOIN plan b on a.planID=b.planID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN station e on a.staID=e.staID
+        where a.planDanID in
         <foreach collection="list" item="planDanID" open="(" close=")" separator=",">
             #{planDanID}
         </foreach>
     </select>
+    <select id="selectByID" resultType="PlanDan" parameterType="Long">
+        SELECT a.*,b.planName,c.userName as builder,d.userName as leader,e.staName FROM
+        (((`plandan` a
+        LEFT JOIN plan b on a.planID=b.planID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN station e on a.staID=e.staID
+        where a.planDanID=#{planDanID}
+    </select>
     <select id="select" resultMap="listPlan" parameterType="Plan">
-        select * from planDan a,plan b,user c
+        SELECT a.*,b.planName,c.userName as builder,d.userName as leader,e.staName FROM
+        (((`plandan` a
+        LEFT JOIN plan b on a.planID=b.planID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN station e on a.staID=e.staID
         <where>
-            a.planID=b.planID and a.builderID=c.userID
             <if test="planDanID!=-1">
                 and planDanID=#{planDanID}
             </if>
@@ -45,9 +68,9 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planDanID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into planDan (staID,cycType,cyctime,planDanNumber,planID,builderID,status,addtime)
+        INSERT into planDan (staID,cycType,cyctime,planDanNumber,planID,builderID,status,leaderID,endtime,addtime)
         values (#{staID},#{cycType},#{cyctime},
-        #{planDanNumber},#{planID},#{builderID},#{status},#{addtime})
+        #{planDanNumber},#{planID},#{builderID},#{status},#{leaderID},#{endtime},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -64,6 +87,8 @@
             planID        = #{planID},
             builderID     = #{builderID},
             status        = #{status},
+            leaderID      = #{leaderID},
+            endtime        = #{endtime},
             addtime       = #{addtime}
         where planDanID = #{planDanID}
     </update>

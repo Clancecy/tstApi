@@ -11,18 +11,20 @@ public class Test {
     String planDanNumber;
     String soluName;
     long builderID=-1;
-    String userName;
+    String builder;
+    long leaderID=-1;
+    String leader;
     int status=0;
     Date addtime=new Date();
 
     List<TestUser> testUserList;
 
-    public int getStatus() {
-        return status;
+    public long getTestID() {
+        return testID;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setTestID(long testID) {
+        this.testID = testID;
     }
 
     public String getTestNumber() {
@@ -31,6 +33,14 @@ public class Test {
 
     public void setTestNumber(String testNumber) {
         this.testNumber = testNumber;
+    }
+
+    public long getSoluID() {
+        return soluID;
+    }
+
+    public void setSoluID(long soluID) {
+        this.soluID = soluID;
     }
 
     public long getPlanDanID() {
@@ -49,22 +59,6 @@ public class Test {
         this.planDanNumber = planDanNumber;
     }
 
-    public List<TestUser> getTestUserList() {
-        return testUserList;
-    }
-
-    public void setTestUserList(List<TestUser> testUserList) {
-        this.testUserList = testUserList;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getSoluName() {
         return soluName;
     }
@@ -73,21 +67,44 @@ public class Test {
         this.soluName = soluName;
     }
 
-
-    public long getTestID() {
-        return testID;
+    public long getBuilderID() {
+        return builderID;
     }
 
-    public void setTestID(long testID) {
-        this.testID = testID;
+    public void setBuilderID(long builderID) {
+        this.builderID = builderID;
     }
 
-    public long getSoluID() {
-        return soluID;
+    public String getBuilder() {
+        return builder;
     }
 
-    public void setSoluID(long soluID) {
-        this.soluID = soluID;
+    public void setBuilder(String builder) {
+        this.builder = builder;
+    }
+
+    public long getLeaderID() {
+        return leaderID;
+    }
+
+    public void setLeaderID(long leaderID) {
+        this.leaderID = leaderID;
+    }
+
+    public String getLeader() {
+        return leader;
+    }
+
+    public void setLeader(String leader) {
+        this.leader = leader;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Date getAddtime() {
@@ -98,11 +115,11 @@ public class Test {
         this.addtime = addtime;
     }
 
-    public long getBuilderID() {
-        return builderID;
+    public List<TestUser> getTestUserList() {
+        return testUserList;
     }
 
-    public void setBuilderID(long builderID) {
-        this.builderID = builderID;
+    public void setTestUserList(List<TestUser> testUserList) {
+        this.testUserList = testUserList;
     }
 }

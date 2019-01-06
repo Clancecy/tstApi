@@ -146,6 +146,26 @@ public class InstrumentController {
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
+    @RequestMapping("/show")
+    public void showIns(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        ResContent resContent=new ResContent();
+        response.setCharacterEncoding(charact);
+        try {
+            long insID=Long.parseLong(request.getParameter("insID"));
+            Instrument ins=instrumentService.selectByID(insID);
+            InstrumentFile instrumentFile=new InstrumentFile();
+            instrumentFile.setInsID(insID);
+            ins.setFileList(instrumentFileService.select(instrumentFile));
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(ins);
+        }catch (NumberFormatException ne){
+            resContent.setCode(102);
+            resContent.setMessage("参数错误");
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
 
     @RequestMapping("/list")
     public void getDev(Instrument instrument, HttpServletResponse response) throws IOException {
@@ -176,11 +196,10 @@ public class InstrumentController {
             }
             String url = imageRoot + file.getOriginalFilename();
             long insID = Long.parseLong(request.getParameter("insID"));
-
             String temp = file.getOriginalFilename();
-            String fileName = temp.split("\\.")[0];
+           // String fileName = temp.split("\\.")[0];
             file1.setUrl(url);
-            file1.setFileName(fileName);
+            file1.setFileName(temp);
             file1.setFileType(1);
             int ic = fileservice.insert(file1);
             InstrumentFile instrumentFile = new InstrumentFile();
@@ -207,7 +226,7 @@ public class InstrumentController {
     }
 
     @RequestMapping("/delFile")
-    public void delPic(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void delFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         try {
@@ -220,7 +239,7 @@ public class InstrumentController {
             resContent.setCode(101);
             resContent.setMessage("删除成功");
         } catch (Exception e) {
-            resContent.setMessage("参数错误");
+            resContent.setMessage(e.getMessage());
             resContent.setCode(103);
             response.getWriter().write(JSON.toJSONString(resContent));
             response.getWriter().close();

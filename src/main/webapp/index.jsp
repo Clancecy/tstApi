@@ -18,7 +18,7 @@
         <button type="submit">提交</button>
     </form>
 
-
+    <a href="/device/download?devID=1&fileID=16" download="1">点击下载</a>
     <script>
         function selectUser() {
             var xmlhttp = new XMLHttpRequest();

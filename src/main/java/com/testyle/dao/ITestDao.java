@@ -10,4 +10,5 @@ public interface ITestDao {
     int delete(long testID);
     int update(Test test);
     List<Test> selectList(List<Long> testIDs);
+    Test selectByID(long testID);
 }

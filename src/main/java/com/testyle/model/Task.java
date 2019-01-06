@@ -6,21 +6,88 @@ import java.util.List;
 public class Task {
     long taskID = -1;
     String taskNumber;
-    long workerID = -1;
-    String userName;
+    long leaderID = -1;
+    String leader;
+    long builderID=-1;
+    String builder;
     long testID = -1;
     String testNumber;
     long proID=-1;
     String proName;
     long devID=-1;
-    Device device;
+    String devName;
     long insID=-1;
-    Instrument instrument;
+    String insName;
+    String url;
     int status=0;
     Date addtime = new Date();
 
-//    List<TaskPro> taskProList;
     List<TaskUser> taskUserList;
+
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public long getTaskID() {
+        return taskID;
+    }
+
+    public void setTaskID(long taskID) {
+        this.taskID = taskID;
+    }
+
+    public String getTaskNumber() {
+        return taskNumber;
+    }
+
+    public void setTaskNumber(String taskNumber) {
+        this.taskNumber = taskNumber;
+    }
+
+    public long getLeaderID() {
+        return leaderID;
+    }
+
+    public void setLeaderID(long leaderID) {
+        this.leaderID = leaderID;
+    }
+
+    public String getLeader() {
+        return leader;
+    }
+
+    public void setLeader(String leader) {
+        this.leader = leader;
+    }
+
+    public long getBuilderID() {
+        return builderID;
+    }
+
+    public void setBuilderID(long builderID) {
+        this.builderID = builderID;
+    }
+
+    public String getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(String builder) {
+        this.builder = builder;
+    }
+
+    public long getTestID() {
+        return testID;
+    }
+
+    public void setTestID(long testID) {
+        this.testID = testID;
+    }
 
     public String getTestNumber() {
         return testNumber;
@@ -54,12 +121,12 @@ public class Task {
         this.devID = devID;
     }
 
-    public Device getDevice() {
-        return device;
+    public String getDevName() {
+        return devName;
     }
 
-    public void setDevice(Device device) {
-        this.device = device;
+    public void setDevName(String devName) {
+        this.devName = devName;
     }
 
     public long getInsID() {
@@ -70,12 +137,12 @@ public class Task {
         this.insID = insID;
     }
 
-    public Instrument getInstrument() {
-        return instrument;
+    public String getInsName() {
+        return insName;
     }
 
-    public void setInstrument(Instrument instrument) {
-        this.instrument = instrument;
+    public void setInsName(String insName) {
+        this.insName = insName;
     }
 
     public int getStatus() {
@@ -86,12 +153,12 @@ public class Task {
         this.status = status;
     }
 
-    public String getUserName() {
-        return userName;
+    public Date getAddtime() {
+        return addtime;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setAddtime(Date addtime) {
+        this.addtime = addtime;
     }
 
     public List<TaskUser> getTaskUserList() {
@@ -100,45 +167,5 @@ public class Task {
 
     public void setTaskUserList(List<TaskUser> taskUserList) {
         this.taskUserList = taskUserList;
-    }
-
-    public long getTaskID() {
-        return taskID;
-    }
-
-    public void setTaskID(long taskID) {
-        this.taskID = taskID;
-    }
-
-    public String getTaskNumber() {
-        return taskNumber;
-    }
-
-    public void setTaskNumber(String taskNumber) {
-        this.taskNumber = taskNumber;
-    }
-
-    public long getWorkerID() {
-        return workerID;
-    }
-
-    public void setWorkerID(long workerID) {
-        this.workerID = workerID;
-    }
-
-    public long getTestID() {
-        return testID;
-    }
-
-    public void setTestID(long testID) {
-        this.testID = testID;
-    }
-
-    public Date getAddtime() {
-        return addtime;
-    }
-
-    public void setAddtime(Date addtime) {
-        this.addtime = addtime;
     }
 }

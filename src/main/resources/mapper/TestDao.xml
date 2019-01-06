@@ -9,43 +9,62 @@
         <result property="planDanID" column="planDanID"></result>
         <result property="planDanName" column="planDanName"></result>
         <result property="builderID" column="builderID"></result>
-        <result property="userName" column="userName"></result>
+        <result property="builder" column="builder"></result>
+        <result property="leaderID" column="leaderID"></result>
+        <result property="leader" column="leader"></result>
         <result property="status" column="status"></result>
         <result property="addtime" column="addtime"></result>
     </resultMap>
 
+    <select id="selectByID" parameterType="Long" resultType="Test">
+        SELECT a.*,b.planDanNumber,c.userName as builder,d.userName as leader,e.soluName FROM
+        (((`test` a
+        LEFT JOIN plandan b on a.planDanID=b.planDanID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN solution e on a.soluID=e.soluID
+        where a.testID =#{testID}
+    </select>
     <select id="selectList" resultMap="listTest" parameterType="List">
-        select a.testID,a.testNumber,a.soluID,b.soluName,a.planDanID,c.planDanName,a.builderID,d.userName from test
-        a,solution
-        b,planDan c,user d
-        where a.soluID=b.soluID and a.planDanID=c.planDanID and a.builderID=d.userID and a.testID in
+        SELECT a.*,b.planDanNumber,c.userName as builder,d.userName as leader,e.soluName FROM
+        (((`test` a
+        LEFT JOIN plandan b on a.planDanID=b.planDanID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN solution e on a.soluID=e.soluID
+        where a.testID IN
         <foreach collection="list" item="testID" open="(" close=")" separator=",">
             #{testID}
         </foreach>
     </select>
     <select id="select" resultMap="listTest" parameterType="Test">
-        select a.testID,a.testNumber,a.soluID,b.soluName,a.planDanID,c.planDanName,a.builderID,d.userName from test
-        a,solution
-        b,palnDan c,user d
+        SELECT a.*,b.planDanNumber,c.userName as builder,d.userName as leader,e.soluName FROM
+        (((`test` a
+        LEFT JOIN plandan b on a.planDanID=b.planDanID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN solution e on a.soluID=e.soluID
         <where>
-            a.soluID=b.soluID and a.planDanID=c.planDanID and a.builderID=d.userID
             <if test="testID!=-1">
-                and testID=#{testID}
+                and a.testID=#{testID}
             </if>
             <if test="testNumber!=null">
-                and testNumber=#{testNumber}
+                and a.testNumber=#{testNumber}
             </if>
             <if test="soluID!=-1">
-                and soluID=#{soluID}
+                and a.soluID=#{soluID}
             </if>
             <if test="planDanID!=-1">
-                and planDanID=#{planDanID}
+                and a.planDanID=#{planDanID}
             </if>
             <if test="builderID!=-1">
-                and builderID=#{builderID}
+                and a.builderID=#{builderID}
+            </if>
+            <if test="leaderID!=-1">
+                and a.leaderID=#{leaderID}
             </if>
             <if test="status!=-1">
-                and status=#{status}
+                and a.status=#{status}
             </if>
         </where>
     </select>
@@ -53,8 +72,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="testID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into test (testNumber,soluID,planDanID,builderID,status,addtime) values (#{testNumber},#{soluID},
-        #{planDanID},#{builderID},#{status},#{addtime})
+        INSERT into test (testNumber,soluID,planDanID,builderID,leaderID,status,addtime) values (#{testNumber},#{soluID},
+        #{planDanID},#{builderID},#{leaderID},#{status},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -68,6 +87,7 @@
             soluID     = #{soluID},
             planDanID  = #{planDanID},
             builderID  = #{builderID},
+            leaderID  = #{leaderID},
             status     = #{status},
             addtime    = #{addtime}
         where testID = #{testID}

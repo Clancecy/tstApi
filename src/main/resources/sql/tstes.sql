@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100136
 File Encoding         : 65001
 
-Date: 2018-12-29 14:30:36
+Date: 2019-01-05 13:55:10
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -89,7 +89,7 @@ CREATE TABLE `devtype` (
   `pTypeID` int(11) DEFAULT NULL,
   `depth` int(11) DEFAULT NULL,
   `order` int(11) DEFAULT NULL,
-  `addTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `addTime` datetime DEFAULT NULL,
   PRIMARY KEY (`typeID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 
@@ -113,7 +113,7 @@ CREATE TABLE `instype` (
   `insTypeID` int(11) NOT NULL AUTO_INCREMENT,
   `insTypeName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `pTypeID` int(11) DEFAULT NULL,
-  `addtime` datetime NOT NULL,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`insTypeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -332,7 +332,7 @@ CREATE TABLE `pro` (
   `url` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `devTypeID` int(11) DEFAULT NULL,
   `proType` int(11) DEFAULT '0' COMMENT '0,实测值，1，出厂值',
-  `addtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`proID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=latin1;
 
@@ -445,7 +445,7 @@ CREATE TABLE `typeattr` (
   `attrID` int(11) NOT NULL AUTO_INCREMENT,
   `attrName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `typeID` int(11) DEFAULT NULL,
-  `addtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`attrID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

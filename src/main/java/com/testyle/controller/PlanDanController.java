@@ -36,6 +36,7 @@ public class PlanDanController {
     private IPlanTestService planTestService;
     @Resource
     private ITestService testService;
+
     @RequestMapping("/list")
     public void planDanList(PlanDan planDan, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -62,9 +63,11 @@ public class PlanDanController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            Plan plan=planService.selectByID(planDan.getPlanID());
-            int cycType=plan.getCycType();
-            planDan.setCycType(cycType);
+//            Plan plan=planService.selectByID(planDan.getPlanID());
+//            int cycType=plan.getCycType();
+//            planDan.setCycType(cycType);
+            planDan.setPlanDanNumber(Utils.getNumberForPK());
+            planDan.setStatus(0);
             int count = planDanService.insert(planDan);
             Utils.dealForAdd(resContent, count);
         }
@@ -76,20 +79,14 @@ public class PlanDanController {
     public void updatePlan(PlanDan planDan, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> testIDs = JSON.parseArray(request.getParameter("tests"), Long.class);
-        if (planDan.getPlanDanID()== -1) {
+//        List<Long> testIDs = JSON.parseArray(request.getParameter("tests"), Long.class);
+        if (planDan.getPlanDanID() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            planDan.setStatus(0);
-            List<PlanDan> planDanList = planDanService.select(planDan);
-            if (planDanList.size() == 0) {
-                resContent.setCode(105);
-                resContent.setMessage("计划已经开始了");
-            } else {
-                int count = planDanService.update(planDan);
-                Utils.dealForUpdate(count, resContent);
-            }
+            Utils.claCyctime(planDan);
+            int count = planDanService.update(planDan);
+            Utils.dealForUpdate(count, resContent);
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
@@ -110,6 +107,54 @@ public class PlanDanController {
         response.getWriter().close();
     }
 
+    @RequestMapping("/load")
+    public void loadPlan(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long planID = Long.parseLong(request.getParameter("planID"));
+            long planDanID=Long.parseLong(request.getParameter("planDanID"));
+            PlanDan planDan=planDanService.select(planDanID);
+            planDan.setPlanID(planID);
+            addTest(planDan);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage(ne.getMessage());
+        }catch (Exception e){
+            resContent.setCode(104);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/save")
+    public void savePlan(Plan plan,HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        long planDanID=Long.parseLong(request.getParameter("planDanID"));
+        Test test=new Test();
+        test.setPlanDanID(planDanID);
+        List<Test> testList=testService.select(test);
+        plan.setBuilderID(1);
+        planService.insert(plan);
+        long planID=plan.getPlanID();
+        int count=addPlanTest(testList,planID);
+        Utils.dealForAdd(resContent,count);
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    private int addPlanTest(List<Test> testList, long planID) {
+        List<PlanTest> planTestList=new ArrayList<>();
+        for(Test test:testList){
+            PlanTest planTest=new PlanTest();
+            planTest.setPlanID(planID);
+            planTest.setSoluID(test.getSoluID());
+            planTestList.add(planTest);
+        }
+        return planTestService.insertList(planTestList);
+    }
 
 
     /**
@@ -132,10 +177,10 @@ public class PlanDanController {
      */
     @Scheduled(cron = "0 15 01 ? * *")
 
-    public void testTask(){
+    public void testTask() {
         System.out.println(System.currentTimeMillis());
-        PlanDan planDan=new PlanDan();
-        List<PlanDan> planDanList=planDanService.select(planDan);
+        PlanDan planDan = new PlanDan();
+        List<PlanDan> planDanList = planDanService.select(planDan);
         addNewPlanDan(planDanList);
 
     }
@@ -144,11 +189,11 @@ public class PlanDanController {
         Date curDate = new Date();
         SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
         String curdf = dft.format(curDate);
-        for (PlanDan planDan:planDanList){
-            String cycdf = dft.format( planDan.getCyctime());
+        for (PlanDan planDan : planDanList) {
+            String cycdf = dft.format(planDan.getCyctime());
             System.out.println("当前时间：" + curdf + "," + "计划时间：" + cycdf);
             if (curdf.equals(cycdf)) {
-                PlanDan newPlanDan=new PlanDan();
+                PlanDan newPlanDan = new PlanDan();
                 newPlanDan.setPlanDanNumber(Utils.getNumberForPK());
                 newPlanDan.setPlanID(planDan.getPlanID());
                 newPlanDan.setStatus(0);
@@ -157,6 +202,7 @@ public class PlanDanController {
                 Utils.claCyctime(newPlanDan);
                 newPlanDan.setStaID(planDan.getStaID());
                 newPlanDan.setBuilderID(planDan.getBuilderID());
+                newPlanDan.setLeaderID(planDan.getLeaderID());
                 planDanService.insert(newPlanDan);
                 addTest(newPlanDan);
             }
@@ -164,102 +210,17 @@ public class PlanDanController {
     }
 
     private void addTest(PlanDan planDan) {
-       PlanTest planTest=new PlanTest();
-       planTest.setPlanID(planDan.getPlanID());
-       List<PlanTest> planTestList=planTestService.select(planTest);
-       for(PlanTest test:planTestList){
-           Test newTest=new Test();
-           newTest.setSoluID(test.getSoluID());
-           newTest.setBuilderID(planDan.getBuilderID());
-           newTest.setTestNumber(Utils.getNumberForPK());
-           newTest.setPlanDanID(planDan.getPlanDanID());
-           newTest.setStatus(0);
-           testService.insert(newTest);
-       }
+        PlanTest planTest = new PlanTest();
+        planTest.setPlanID(planDan.getPlanID());
+        List<PlanTest> planTestList = planTestService.select(planTest);
+        for (PlanTest test : planTestList) {
+            Test newTest = new Test();
+            newTest.setSoluID(test.getSoluID());
+            newTest.setBuilderID(planDan.getBuilderID());
+            newTest.setTestNumber(Utils.getNumberForPK());
+            newTest.setPlanDanID(planDan.getPlanDanID());
+            newTest.setStatus(0);
+            testService.insert(newTest);
+        }
     }
-//    public void testTask() {
-//        System.out.println(System.currentTimeMillis());
-//        Plan plan = new Plan();
-//        plan.setStatus(0);
-//        List<Plan> planList = planService.select(plan);
-//        plan.setStatus(1);
-//        planList.addAll(planService.select(plan));
-//        Date curDate = new Date();
-//        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
-//        String curdf = dft.format(curDate);
-//        for (Plan pt : planList) {
-//            String cycdf = dft.format(pt.getCyctime());
-//            System.out.println("当前时间：" + curdf + "," + "计划时间：" + cycdf);
-//            if (curdf.equals(cycdf)) {
-//                addPlanDan(pt);
-//                pt.setStatus(1);
-//                Utils.claCyctime(pt);
-//                System.out.println(pt.getPlanName() + ":" + JSON.toJSONString(pt));
-//                planService.update(pt);
-//            }
-//        }
-//    }
-//
-//    public void addPlanDan(Plan plan) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        PlanDan planDan = new PlanDan();
-//        String name=plan.getPlanName() + sdf.format(plan.getCyctime());
-//        planDan.setPlanID(plan.getPlanID());
-//        planDan.setPlanDanNumber(Utils.getNumberForPK());
-//        planDan.setPlanDanName( name+ "-计划单"+planDan.getPlanDanNumber());
-//        planDanService.insert(planDan);
-//        PlanTest planTest = new PlanTest();
-//        planTest.setPlanID(plan.getPlanID());
-//        List<PlanTest> planTestList = planTestService.select(planTest);
-//        for (PlanTest test : planTestList) {
-//            Report report = new Report();
-//            long testID = test.getTestID();
-//            report.setTestID(testID);
-//            report.setPlanDanID(planDan.getPlanDanID());
-//            report.setReportCode(Utils.getNumberForPK());
-//            report.setReportName(name+"-试验单"+report.getReportCode());
-//            reportService.insert(report);
-//            addTaskDan(report.getTestID(),report.getReportID(),name);
-//            List<ReportProFile> reportProFileList = new ArrayList<>();
-//            addListReportProFile(report.getTestID(), report.getReportID(), reportProFileList);
-//            int count = reportProFileService.insertList(reportProFileList);
-//            System.out.println("项目数："+count);
-//        }
-//    }
-//
-//    private void addTaskDan(long testID, long reportID,String name) {
-//        Task task = new Task();
-//        task.setTestID(testID);
-//        List<Task> taskList = taskService.select(task);
-//        for (Task temp : taskList) {
-//            TaskDan taskDan=new TaskDan();
-//            taskDan.setTaskDanName(name+"-任务单"+Utils.getNumberForPK());
-//            taskDan.setTaskID(temp.getTaskID());
-//            taskDan.setReportID(reportID);
-//            taskDanService.insert(taskDan);
-//        }
-//    }
-//
-//    public void addListReportProFile(long testID, long reportID, List<ReportProFile> reportProFileList) {
-//        Task task = new Task();
-//        task.setTestID(testID);
-//        List<Task> taskList = taskService.select(task);
-//        dealReportProFile(reportID, reportProFileList, taskList, taskProService);
-//    }
-//
-//    public static void dealReportProFile(long reportID, List<ReportProFile> reportProFileList, List<Task> taskList, ITaskProService taskProService) {
-//        for (Task temp : taskList) {
-//            TaskPro taskPro = new TaskPro();
-//            taskPro.setTaskID(temp.getTaskID());
-//            List<TaskPro> taskProList = taskProService.select(taskPro);
-//            for (TaskPro tp : taskProList) {
-//                ReportProFile reportProFile = new ReportProFile();
-//                reportProFile.setReportID(reportID);
-//                reportProFile.setTaskID(tp.getTaskID());
-//                reportProFile.setProID(tp.getProID());
-//                reportProFile.setWorkerID(temp.getWorkerID());
-//                reportProFileList.add(reportProFile);
-//            }
-//        }
-//    }
 }

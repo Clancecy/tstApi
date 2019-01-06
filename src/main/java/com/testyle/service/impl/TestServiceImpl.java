@@ -40,4 +40,9 @@ public class TestServiceImpl implements ITestService {
     public List<Test> selectList(List<Long> testIDs) {
         return testDao.selectList(testIDs);
     }
+
+    @Override
+    public Test select(long testID) {
+        return testDao.selectByID(testID);
+    }
 }

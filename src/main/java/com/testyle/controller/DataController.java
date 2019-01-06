@@ -34,7 +34,7 @@ public class DataController {
     @Resource
     private ITestService testService;
     @Resource
-    private IReportProFileService reportProFileService;
+    private ITaskService taskService;
 
     String Esurl = "http://127.0.0.1:8080/";
 
@@ -55,22 +55,12 @@ public class DataController {
             resContent.setCode(107);
             resContent.setMessage("参数错误");
         } else {
-            ReportProFile reportProFile = new ReportProFile();
-            reportProFile.setReportID(data.getTestID());
-            reportProFile.setTaskID(data.getTaskID());
-            reportProFile.setProID(data.getProID());
-            List<ReportProFile> reportProFileList = new ArrayList<>();
-            reportProFileList = reportProFileService.select(reportProFile);
-            if (reportProFileList.size() == 0) {
-                resContent.setCode(108);
-                resContent.setMessage("没有该项目");
-            } else {
-                reportProFile = reportProFileList.get(0);
-                reportProFile.setUrl(fname);
-                reportProFile.setStatus(data.getStatus());
-//                System.out.println("datastatus:"+data.getStatus());
-                reportProFileService.update(reportProFile);
-                try {
+            Task task=new Task();
+            task.setTaskID(data.getTaskID());
+            task=taskService.select(task).get(0);
+            task.setUrl(fname);
+            taskService.update(task);
+            try {
                     String url = Esurl + "data/add";
                     FormBody formBody = new FormBody.Builder()
                             .add("url", fname)
@@ -90,33 +80,29 @@ public class DataController {
                     resContent.setCode(109);
                     resContent.setMessage(jsone.getMessage());
                 }
-            }
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
 
     @RequestMapping("/proStatus")
-    public void changeStatus(ReportProFile reportProFile, HttpServletResponse response) throws IOException {
+    public void changeStatus(Task task, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        if (reportProFile.getReportID() == -1 ||
-                reportProFile.getTaskID() == -1 ||
-                reportProFile.getProID() == -1||
-        reportProFile.getStatus()==-1) {
+        if (task.getTaskID()==-1 ||
+        task.getStatus()==-1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            int status=reportProFile.getStatus();
-            List<ReportProFile> reportProFileList = reportProFileService.select(reportProFile);
-            if (reportProFileList.size() == 0) {
+            int status=task.getStatus();
+            List<Task> taskList = taskService.select(task);
+            if (taskList.size() == 0) {
                 resContent.setCode(104);
                 resContent.setMessage("没有该记录");
             } else {
-                reportProFile = reportProFileList.get(0);
-                reportProFile.setStatus(status);
-                int count = reportProFileService.update(reportProFile);
-
+                task = taskList.get(0);
+                task.setStatus(status);
+                int count = taskService.update(task);
                 Utils.dealForUpdate(count, resContent);
             }
         }

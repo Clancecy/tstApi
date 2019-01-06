@@ -98,21 +98,11 @@ public class TaskController {
             resContent.setCode(101);
             resContent.setMessage("获取成功");
             getTaskUserList(taskList);
-            getInsAndIns(taskList);
             resContent.setData(taskList);
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
 
-    }
-
-    private void getInsAndIns(List<Task> taskList) {
-        for (Task task:taskList) {
-            Instrument instrument = instrumentService.selectByID(task.getInsID());
-            task.setInstrument(instrument);
-            Device device= deviceService.selectByID(task.getDevID());
-            task.setDevice(device);
-        }
     }
 
     @RequestMapping("/delete")

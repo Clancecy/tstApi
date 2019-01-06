@@ -5,26 +5,44 @@ import java.util.Date;
 import java.util.List;
 
 public class Instrument {
-    long insID;
+    long insID=-1;
     String insName;
     String insNumber;
     String factory;//出厂厂商
     String initNumber;
+    String modNumber;
     Date usetime;
     Date inittime;
     Date valtime;
     int status=0;
     String insUrl;
     String plateUrl;
+    String remark;
     Date addtime=new Date();
 
-    List<String> fileList=new ArrayList<>();
+    List<InstrumentFile> fileList=new ArrayList<>();
 
-    public List<String> getFileList() {
+    public String getModNumber() {
+        return modNumber;
+    }
+
+    public void setModNumber(String modNumber) {
+        this.modNumber = modNumber;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public List<InstrumentFile> getFileList() {
         return fileList;
     }
 
-    public void setFileList(List<String> fileList) {
+    public void setFileList(List<InstrumentFile> fileList) {
         this.fileList = fileList;
     }
 

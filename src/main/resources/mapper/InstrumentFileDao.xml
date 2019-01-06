@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.testyle.dao.IDeviceFileDao">
-    <resultMap id="listDeviceFile" type="DeviceFile">
+<mapper namespace="com.testyle.dao.IInstrumentFileDao">
+    <resultMap id="listInstrumentFile" type="InstrumentFile">
         <id property="ID" column="ID"></id>
         <result property="insID" column="insID"></result>
         <result property="fileID" column="fileID"></result>
@@ -9,26 +9,26 @@
         <result property="url" column="url"></result>
         <result property="remark" column="remark"></result>
     </resultMap>
-    <insert id="insert" parameterType="DeviceFile">
+    <insert id="insert" parameterType="InstrumentFile">
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
             SELECT @@IDENTITY
         </selectKey>
-        insert into devicefile (fileID,insID,addtime)
+        insert into Instrumentfile (fileID,insID,addtime)
         values (#{fileID},#{insID},#{addtime} );
     </insert>
     <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
         <selectKey resultType="long" keyProperty="ID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into devicefile (fileID,insID,proName,addtime) values
+        INSERT into Instrumentfile (fileID,insID,proName,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
-        <foreach collection="list" item="DeviceFile" index="index" separator="," close=";">
-            ( #{DeviceFile.fileID},#{DeviceFile.insID},#{DeviceFile.addtime})
+        <foreach collection="list" item="InstrumentFile" index="index" separator="," close=";">
+            ( #{InstrumentFile.fileID},#{InstrumentFile.insID},#{InstrumentFile.addtime})
         </foreach>
     </insert>
-    <delete id="delete" parameterType="DeviceFile">
+    <delete id="delete" parameterType="InstrumentFile">
         delete
-        from devicefile
+        from Instrumentfile
         <where>
             <if test="ID!=-1">
                 and ID=#{ID}
@@ -41,15 +41,15 @@
             </if>
         </where>
     </delete>
-    <update id="update" parameterType="DeviceFile">
-        update devicefile
+    <update id="update" parameterType="InstrumentFile">
+        update Instrumentfile
         set insID  = #{insID},
             fileID   = #{fileID},
             addtime = #{addtime}
         where ID = #{ID}
     </update>
-    <select id="select" resultMap="listDeviceFile" parameterType="DeviceFile">
-        select * from devicefile a,file b
+    <select id="select" resultMap="listInstrumentFile" parameterType="InstrumentFile">
+        select * from Instrumentfile a,file b
         <where>
             a.fileID=b.fileID
             <if test="ID!=-1">

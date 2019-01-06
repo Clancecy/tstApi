@@ -39,4 +39,9 @@ public class PlanDanServiceImpl implements IPlanDanService {
     public List<PlanDan> selectList(List<Long> planIDs) {
         return planDanDao.selectList(planIDs);
     }
+
+    @Override
+    public PlanDan select(long planDanID) {
+        return planDanDao.selectByID(planDanID);
+    }
 }
