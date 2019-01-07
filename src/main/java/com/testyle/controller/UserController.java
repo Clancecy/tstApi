@@ -6,7 +6,9 @@ import com.alibaba.fastjson.JSON;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.Solution;
+import com.testyle.model.Tag;
 import com.testyle.model.User;
+import com.testyle.service.ITagService;
 import com.testyle.service.IUserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,11 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.awt.image.RescaleOp;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/user")
@@ -27,14 +27,20 @@ public class UserController {
 
     @Resource
     private IUserService userService;
+    @Resource
+    ITagService tagService;
 
     @RequestMapping("/show")
     public void selectUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        ResContent resContent=new ResContent();
         long userId = Long.parseLong(request.getParameter("userID"));
         User user = this.userService.selectUser(userId);
-        response.getWriter().write(JSON.toJSONString(user));
+        resContent.setCode(101);
+        resContent.setMessage("获取成功");
+        resContent.setData(user);
+        response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
 
@@ -188,6 +194,82 @@ public class UserController {
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
+    }
+
+    @RequestMapping("/tag")
+    public void tagList(HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        ResContent resContent = new ResContent();
+        Tag tag = new Tag();
+        tag.setTagType(2);
+        List<Tag> tagList = tagService.select(tag);
+        addTagUser(tagList);
+        List<Object> tagTree = ToTagTree(tagList);
+        resContent.setCode(101);
+        resContent.setData(tagTree);
+        resContent.setMessage("获取成功");
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/addTag")
+    public void addTag(Tag tag,HttpServletResponse response) throws IOException{
+        response.setCharacterEncoding("UTF-8");
+        ResContent resContent=new ResContent();
+        tag.setTagType(2);
+        int count=tagService.insert(tag);
+        Utils.dealForAdd(resContent,count);
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    private void addTagUser(List<Tag> tagList) {
+        for(Tag tag:tagList) {
+            User user = new User();
+            user.setDeptID(tag.getTagID());
+            tag.setUserList(userService.select(user));
+        }
+    }
+    private List<Object> ToTagTree(List<Tag> tagList) {
+        List<Object> list = new ArrayList<>();
+        for (Tag tag : tagList) {
+            Map<String, Object> map = new LinkedHashMap<String, Object>();
+            if (tag.getpTagID() == 0) {
+                map.put("tagName", tag.getTagName());
+                map.put("pTagID", tag.getpTagID());
+                map.put("tagID", tag.getTagID());
+                if (tagChild(tag.getTagID(), tagList).size() > 0)
+                    map.put("children", tagChild(tag.getTagID(), tagList));
+                list.add(map);
+            }
+        }
+        return list;
+    }
+
+    private List<?> tagChild(long tagID, List<Tag> tagList) {
+        List<Object> list = new ArrayList<>();
+        for (Tag tag : tagList) {
+            if (tag.getpTagID() == tagID) {
+                Map<String, Object> map = new LinkedHashMap<String, Object>();
+                map.put("tagName", tag.getTagName());
+                map.put("tagID", tag.getTagID());
+                if (tagChild(tag.getTagID(), tagList).size() > 0)
+                    map.put("children", tagChild(tag.getTagID(), tagList));
+                list.add(map);
+            }
+            if (tag.getTagID() == tagID) {
+                for (User user : tag.getUserList()) {
+                    Map<String, Object> temp = new LinkedHashMap<String, Object>();
+                    temp.put("userRealName", user.getUserRealName());
+                    temp.put("userID", user.getUserID());
+                    temp.put("userPic",user.getUserPic());
+                    list.add(temp);
+                }
+            }
+
+        }
+        System.out.println(JSON.toJSONString(list));
+        return list;
     }
 
     private boolean checkUser(User user){

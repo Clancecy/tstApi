@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.ITaskFileDao">
+    <resultMap id="listTaskFile" type="TaskFile">
+        <id property="ID" column="ID"></id>
+        <result property="taskID" column="taskID"></result>
+        <result property="fileID" column="fileID"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="url" column="url"></result>
+        <result property="remark" column="remark"></result>
+    </resultMap>
+    <insert id="insert" parameterType="TaskFile">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        insert into taskfile (fileID,taskID,addtime)
+        values (#{fileID},#{taskID},#{addtime} );
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into taskfile (fileID,taskID,proName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="TaskFile" index="index" separator="," close=";">
+            ( #{TaskFile.fileID},#{TaskFile.taskID},#{TaskFile.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="TaskFile">
+        delete
+        from taskfile
+        <where>
+            <if test="ID!=-1">
+                and ID=#{ID}
+            </if>
+            <if test="taskID!=-1">
+                and taskID=#{taskID}
+            </if>
+            <if test="fileID!=-1">
+                and fileID=#{fileID}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="TaskFile">
+        update taskfile
+        set taskID  = #{taskID},
+            fileID   = #{fileID},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+    <select id="select" resultMap="listTaskFile" parameterType="TaskFile">
+        select * from taskfile a,file b
+        <where>
+            a.fileID=b.fileID
+            <if test="ID!=-1">
+                and a.ID=#{ID}
+            </if>
+            <if test="taskID!=-1">
+                and a.taskID=#{taskID}
+            </if>
+            <if test="fileID!=-1">
+                and a.fileID=#{fileID}
+            </if>
+        </where>
+    </select>
+</mapper>

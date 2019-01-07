@@ -31,13 +31,13 @@
         <where>
             a.builderID=b.userID
             <if test="soluID!=-1">
-                and soluID=#{soluID}
+                and a.soluID=#{soluID}
             </if>
             <if test="soluName!=null">
-                and soluName=#{soluName}
+                and a.soluName=#{soluName}
             </if>
             <if test="devTypeID!=-1">
-                and devTypeID=#{devTypeID}
+                and a.devTypeID=#{devTypeID}
             </if>
         </where>
     </select>

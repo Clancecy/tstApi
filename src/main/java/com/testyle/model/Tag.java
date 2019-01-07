@@ -12,6 +12,15 @@ public class Tag {
 
     List<TagStation> tagStationList;
     List<TagDevice> tagDeviceList;
+    List<User> userList;
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
 
     public List<TagDevice> getTagDeviceList() {
         return tagDeviceList;

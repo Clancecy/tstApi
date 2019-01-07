@@ -19,11 +19,19 @@ public class Task {
     long insID=-1;
     String insName;
     String url;
+    String remark;
     int status=0;
     Date addtime = new Date();
 
     List<TaskUser> taskUserList;
 
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public String getUrl() {
         return url;
