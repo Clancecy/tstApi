@@ -23,7 +23,7 @@
     </resultMap>
 
     <select id="selectList" resultMap="listTask" parameterType="List">
-        SELECT a.*,b.testNumber,c.userName as builder,d.userName as leader,e.devName,f.insName FROM
+        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName FROM
         ((((`task` a
         LEFT JOIN test b on a.testID=b.testID)
         LEFT JOIN user c on a.builderID=c.userID)
@@ -36,7 +36,7 @@
         </foreach>
     </select>
     <select id="select" resultMap="listTask" parameterType="Task">
-        SELECT a.*,b.testNumber,c.userName as builder,d.userName as leader,e.devName,f.insName FROM
+        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName FROM
         ((((`task` a
         LEFT JOIN test b on a.testID=b.testID)
         LEFT JOIN user c on a.builderID=c.userID)

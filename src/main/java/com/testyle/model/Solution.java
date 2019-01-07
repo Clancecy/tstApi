@@ -8,7 +8,7 @@ public class Solution {
     String soluName;
     long devTypeID = -1;
     long builderID = -1;
-    String userName;
+    String userRealName;
     Date addtime=new Date();
     List<SoluPro> pros;
 
@@ -61,11 +61,11 @@ public class Solution {
         this.builderID = builderID;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserRealName() {
+        return userRealName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserRealName(String userRealName) {
+        this.userRealName = userRealName;
     }
 }

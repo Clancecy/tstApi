@@ -12,6 +12,7 @@
         <result property="userMobile" column="userMobile"></result>
         <result property="userMail" column="userMail"></result>
         <result property="deptName" column="deptName"></result>
+        <result property="deptID" column="deptID"></result>
     </resultMap>
     <select id="selectUser" resultType="User" parameterType="long">
         SELECT *,b.tagName as deptName,c.compName as companyName
@@ -22,8 +23,11 @@
     <select id="checkUser" resultType="long" parameterType="User">
         select IFNULL(max(userID),0) as userID FROM user
         <where>
-            <if test="userName!=null">
-                and userName=#{userName}
+            <if test="userRealName!=null">
+                and userRealName=#{userRealName}
+            </if>
+            <if test="userMobile!=null">
+                and userMobile=#{userMobile}
             </if>
             <if test="userPassword!=null">
                 and userPassword=#{userPassword}
@@ -40,13 +44,9 @@
         #{userNumber},#{userCompanyID},#{deptID},#{userPic},#{addtime})
     </insert>
 
-    <delete id="deleteUser" parameterType="long" statementType="PREPARED">
+    <delete id="deleteUser" parameterType="Long">
         delete from user
-        <where>
-            <if test="userID!=-1">
-                and userID=#{userID}
-            </if>
-        </where>
+        where userID=#{userID}
     </delete>
 
     <select id="select" resultMap="listUser" parameterType="User">
@@ -72,7 +72,6 @@
         set
         userType     = #{userType},
         userRealName     = #{userRealName},
-        userPassword     = #{userPassword},
         userSex     = #{userSex},
         userMobile     = #{userMobile},
         userMail     = #{userMail},

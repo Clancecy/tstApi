@@ -19,7 +19,7 @@
     </resultMap>
 
     <select id="selectList" resultMap="listPlan" parameterType="List">
-        SELECT a.*,b.planName,c.userName as builder,d.userName as leader,e.staName FROM
+        SELECT a.*,b.planName,c.userRealName as builder,d.userRealName as leader,e.staName FROM
         (((`plandan` a
         LEFT JOIN plan b on a.planID=b.planID)
         LEFT JOIN user c on a.builderID=c.userID)
@@ -31,7 +31,7 @@
         </foreach>
     </select>
     <select id="selectByID" resultType="PlanDan" parameterType="Long">
-        SELECT a.*,b.planName,c.userName as builder,d.userName as leader,e.staName FROM
+        SELECT a.*,b.planName,c.userRealName as builder,d.userRealName as leader,e.staName FROM
         (((`plandan` a
         LEFT JOIN plan b on a.planID=b.planID)
         LEFT JOIN user c on a.builderID=c.userID)
@@ -40,7 +40,7 @@
         where a.planDanID=#{planDanID}
     </select>
     <select id="select" resultMap="listPlan" parameterType="Plan">
-        SELECT a.*,b.planName,c.userName as builder,d.userName as leader,e.staName FROM
+        SELECT a.*,b.planName,c.userRealName as builder,d.userRealName as leader,e.staName FROM
         (((`plandan` a
         LEFT JOIN plan b on a.planID=b.planID)
         LEFT JOIN user c on a.builderID=c.userID)

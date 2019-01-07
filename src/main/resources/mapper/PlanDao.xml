@@ -6,35 +6,34 @@
         <result property="planName" column="planName"></result>
         <result property="cycType" column="cycType"></result>
         <result property="addtime" column="addtime"></result>
-        <result property="buliderID" column="builderID"></result>
-        <result property="userName" column="userName"></result>
+        <result property="builderID" column="builderID"></result>
+        <result property="userRealName" column="userRealName"></result>
         <result property="status" column="status"></result>
     </resultMap>
 
     <select id="selectByID" resultType="Plan" parameterType="Long">
-        select * from plan a,user b where a.builderID=b.userID and a.planID=#{planID}
+        select a.*,b.userRealName from plan a LEFT JOIN `user` b on a.builderID=b.userID where a.planID=#{planID}
     </select>
     <select id="selectList" resultMap="listPlan" parameterType="List">
-        select * from plan a,user b where a.builderID=b.userID and a.planID in
+        select a.*,b.userRealName from plan a LEFT JOIN `user` b on a.builderID=b.userID where a.planID in
         <foreach collection="list" item="planID" open="(" close=")" separator=",">
             #{planID}
         </foreach>
     </select>
     <select id="select" resultMap="listPlan" parameterType="Plan">
-        select * from plan a,user b
+        select a.*,b.userRealName from plan a LEFT JOIN `user` b on a.builderID=b.userID
         <where>
-            a.builderID=b.userID
             <if test="planID!=-1">
-                and planID=#{planID}
+                and a.planID=#{planID}
             </if>
             <if test="planName!=null">
-                and planName=#{planName}
+                and a.planName=#{planName}
             </if>
             <if test="cycType!=-1">
-                and cycType=#{cycType}
+                and a.cycType=#{cycType}
             </if>
             <if test="status!=-1">
-                and status=#{status}
+                and a.status=#{status}
             </if>
         </where>
     </select>

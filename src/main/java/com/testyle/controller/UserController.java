@@ -63,7 +63,7 @@ public class UserController {
         response.getWriter().close();
     }
 
-    @RequestMapping("/register")
+    @RequestMapping("/add")
     public void addUser(User user, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         Map<String, Object> res = new HashMap<>();
@@ -117,7 +117,7 @@ public class UserController {
                 res.put("message", "登录成功");
                 long userID = userService.checkUser(user);
                 HttpSession session = request.getSession();
-                session.setAttribute("userName", user.getUserName());
+                session.setAttribute("userMobile", user.getUserMobile());
                 session.setAttribute("userID", userID);
             } else {
                 res.put("code", 103);
@@ -166,8 +166,8 @@ public class UserController {
     @RequestMapping("/delete")
     public void deleteUser(HttpServletRequest request,HttpServletResponse response)throws IOException{
         response.setCharacterEncoding("UTF-8");
-        long userId = Long.parseLong(request.getParameter("userID"));
-        int delete=userService.deleteUser(userId);
+        long userID = Long.parseLong(request.getParameter("userID"));
+        int delete=userService.deleteUser(userID);
         Map<String, Object> res = new HashMap<>();
         if(delete>0) {
             res.put("code", 101);
@@ -176,6 +176,8 @@ public class UserController {
             res.put("code", 102);
             res.put("message", "删除失败");
         }
+        response.getWriter().write(JSON.toJSONString(res));
+        response.getWriter().close();
     }
 
     @RequestMapping("/list")
@@ -212,6 +214,20 @@ public class UserController {
         response.getWriter().close();
     }
 
+    @RequestMapping("/tagList")
+    public void tagListNop(HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        ResContent resContent = new ResContent();
+        Tag tag = new Tag();
+        tag.setTagType(2);
+        List<Tag> tagList = tagService.select(tag);
+        List<Object> tagTree = ToTagTree(tagList);
+        resContent.setCode(101);
+        resContent.setData(tagTree);
+        resContent.setMessage("获取成功");
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
     @RequestMapping("/addTag")
     public void addTag(Tag tag,HttpServletResponse response) throws IOException{
         response.setCharacterEncoding("UTF-8");
@@ -219,6 +235,31 @@ public class UserController {
         tag.setTagType(2);
         int count=tagService.insert(tag);
         Utils.dealForAdd(resContent,count);
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+    @RequestMapping("/updateTag")
+    public void updateTag(HttpServletRequest request,HttpServletResponse response) throws IOException{
+        response.setCharacterEncoding("UTF-8");
+        ResContent resContent=new ResContent();
+        long tagID = Long.parseLong(request.getParameter("tagID"));
+        String tagName=request.getParameter("tagName");
+        Tag tag=new Tag();
+        tag.setTagID(tagID);
+        tag=tagService.select(tag).get(0);
+        tag.setTagName(tagName);
+        int count=tagService.update(tag);
+        Utils.dealForUpdate(count,resContent);
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+    @RequestMapping("/delTag")
+    public void delTag(Tag tag,HttpServletResponse response) throws IOException{
+        response.setCharacterEncoding("UTF-8");
+        ResContent resContent=new ResContent();
+        tag.setTagType(2);
+        int count=tagService.delete(tag);
+        Utils.dealForDel(count,resContent);
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
@@ -258,12 +299,14 @@ public class UserController {
                 list.add(map);
             }
             if (tag.getTagID() == tagID) {
-                for (User user : tag.getUserList()) {
-                    Map<String, Object> temp = new LinkedHashMap<String, Object>();
-                    temp.put("userRealName", user.getUserRealName());
-                    temp.put("userID", user.getUserID());
-                    temp.put("userPic",user.getUserPic());
-                    list.add(temp);
+                if(tag.getUserList()!=null) {
+                    for (User user : tag.getUserList()) {
+                        Map<String, Object> temp = new LinkedHashMap<String, Object>();
+                        temp.put("userRealName", user.getUserRealName());
+                        temp.put("userID", user.getUserID());
+                        temp.put("userPic", user.getUserPic());
+                        list.add(temp);
+                    }
                 }
             }
 
@@ -281,8 +324,8 @@ public class UserController {
     }
 
     private boolean isEmptyUser(User user){
-        if (user.getUserName() == null|| user.getUserName().isEmpty()
-                ||user.getUserPassword()==null||user.getUserPassword().isEmpty()) {
+        if (user.getUserMobile() == null|| user.getUserMobile().isEmpty()
+                ||user.getUserRealName()==null||user.getUserRealName().isEmpty()) {
             return true;
         }else
             return false;

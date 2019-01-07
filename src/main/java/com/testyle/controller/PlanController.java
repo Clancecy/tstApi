@@ -48,7 +48,7 @@ public class PlanController {
     public void addPlan(Plan plan, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> soluIDs = (JSON.parseArray(request.getParameter("solus"), Long.class));
+        List<Long> soluIDs = (JSON.parseArray(request.getParameter("soluIDs"), Long.class));
         if (plan.getPlanName() == null ||
                 plan.getCycType() == -1 || soluIDs.size() == 0) {
             resContent.setCode(103);
@@ -71,28 +71,21 @@ public class PlanController {
     public void updatePlan(Plan plan, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> soluIDs = JSON.parseArray(request.getParameter("solus"), Long.class);
+        List<Long> soluIDs = JSON.parseArray(request.getParameter("soluIDs"), Long.class);
         if (plan.getPlanName() == null ||
                 plan.getCycType() == -1 ||
                 plan.getPlanID() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            plan.setStatus(0);
-            List<Plan> planList = planService.select(plan);
-            if (planList.size() == 0) {
-                resContent.setCode(105);
-                resContent.setMessage("计划已经开始了");
+            int count = planService.update(plan);
+            if (count > 0) {
+                planTestService.delete(plan.getPlanID());
+                addListPlanTest(plan.getPlanID(), soluIDs);
+                Utils.dealForUpdate(count, resContent);
             } else {
-                int count = planService.update(plan);
-                if (count > 0) {
-                    planTestService.delete(plan.getPlanID());
-                    addListPlanTest(plan.getPlanID(), soluIDs);
-                    Utils.dealForUpdate(count, resContent);
-                } else {
-                    resContent.setCode(104);
-                    resContent.setMessage("更新失败");
-                }
+                resContent.setCode(104);
+                resContent.setMessage("更新失败");
             }
         }
         response.getWriter().write(JSON.toJSONString(resContent));

@@ -1,16 +1,21 @@
 package com.testyle.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.*;
 import com.testyle.service.*;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,10 +30,11 @@ public class TaskController {
     @Resource
     private ITaskUserService taskUserService;
     @Resource
-    private IDeviceService deviceService;
+    private IFileService fileService;
     @Resource
-    private IInstrumentService instrumentService;
+    private ITaskFileService taskFileService;
     String charact = "UTF-8";
+    String imageRoot = "E:/image/";
 
     @RequestMapping("/add")
     public void addTask(Task task, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -36,9 +42,9 @@ public class TaskController {
         ResContent resContent = new ResContent();
         List<Long> userIDs = (JSON.parseArray(request.getParameter("users"), Long.class));
         if (task.getTestID() == -1 ||
-        task.getProID()==-1||
-        task.getDevID()==-1||
-        task.getInsID()==-1) {
+                task.getProID() == -1 ||
+                task.getDevID() == -1 ||
+                task.getInsID() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
@@ -61,11 +67,11 @@ public class TaskController {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         List<Long> userIDs = JSON.parseArray(request.getParameter("users"), Long.class);
-         if (task.getTestID() == -1 ||
-                 task.getProID()==-1||
-                 task.getDevID()==-1||
-                 task.getInsID()==-1||
-                 task.getTaskID() == -1) {
+        if (task.getTestID() == -1 ||
+                task.getProID() == -1 ||
+                task.getDevID() == -1 ||
+                task.getInsID() == -1 ||
+                task.getTaskID() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
@@ -130,16 +136,16 @@ public class TaskController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            TaskUser taskUser=new TaskUser();
+            TaskUser taskUser = new TaskUser();
             taskUser.setUserID(userID);
-            List<TaskUser> taskUserList=taskUserService.select(taskUser);
-            List<Long> taskIDs=new ArrayList<>();
-            addTaskIDList(taskUserList,taskIDs);
-            List<Task> taskList=taskService.selectList(taskIDs);
-            if(taskList.size()==0){
+            List<TaskUser> taskUserList = taskUserService.select(taskUser);
+            List<Long> taskIDs = new ArrayList<>();
+            addTaskIDList(taskUserList, taskIDs);
+            List<Task> taskList = taskService.selectList(taskIDs);
+            if (taskList.size() == 0) {
                 resContent.setCode(102);
                 resContent.setMessage("没有任务");
-            }else {
+            } else {
                 resContent.setCode(101);
                 resContent.setMessage("获取成功");
                 resContent.setData(taskList);
@@ -149,8 +155,50 @@ public class TaskController {
         response.getWriter().close();
     }
 
+    @RequestMapping("/upload")
+    public void doUpload(@RequestParam("files") MultipartFile[]
+                                 files,HttpServletRequest request,
+                         HttpServletResponse response) throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        String remarks=request.getParameter("remarks");
+        long taskID=Long.parseLong(request.getParameter("taskID"));
+        int fileType=Integer.parseInt(request.getParameter("fileType"));
+        try {
+            List<String> remarkList=JSON.parseArray(remarks,String.class);
+            int index=0;
+            for(MultipartFile file:files){
+                if (!file.isEmpty()) {
+                    FileUtils.copyInputStreamToFile(file.getInputStream(), new File(
+                            imageRoot,
+                            file.getOriginalFilename()));
+                }
+                String url = imageRoot + file.getOriginalFilename();
+                com.testyle.model.File file1=new com.testyle.model.File();
+                file1.setFileName(file.getOriginalFilename());
+                file1.setFileType(fileType);
+                file1.setUrl(url);
+                file1.setRemark(remarkList.get(index++));
+                fileService.insert(file1);
+                TaskFile taskFile=new TaskFile();
+                taskFile.setFileID(file1.getFileID());
+                taskFile.setTaskID(taskID);
+                int count=taskFileService.insert(taskFile);
+                Utils.dealForAdd(resContent,count);
+            }
+        }catch (JSONException je){
+            resContent.setCode(103);
+            resContent.setMessage(je.getMessage());
+        }catch (IOException ie){
+            resContent.setCode(104);
+            resContent.setMessage(ie.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
     private void addTaskIDList(List<TaskUser> taskUserList, List<Long> taskIDs) {
-        for (TaskUser taskUser:taskUserList){
+        for (TaskUser taskUser : taskUserList) {
             taskIDs.add(taskUser.getTaskID());
         }
     }
@@ -173,7 +221,6 @@ public class TaskController {
         int count = taskUserService.insertList(taskUsers);
         return count;
     }
-
 
 
     private void dealUserIDList(long taskID, List<Long> userIDs, List<TaskUser> taskUsers) {

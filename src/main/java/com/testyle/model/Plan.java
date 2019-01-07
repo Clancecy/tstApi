@@ -10,18 +10,18 @@ public class Plan {
     int cycType=-1; //0：不循环，1：每天，2：每周，3：每月，4：每个季度，5：每年
 //    Date firsttime=new Date();
 //    Date cyctime=new Date();
-    int status=0; //0未执行，1已执行，2停止执行
+    int status=-1;
     Date addtime=new Date();
     long builderID=-1;
-    String userName;
+    String userRealName;
     List<PlanTest> planTestList;
 
-    public String getUserName() {
-        return userName;
+    public String getUserRealName() {
+        return userRealName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserRealName(String userRealName) {
+        this.userRealName = userRealName;
     }
 
     public long getBuilderID() {

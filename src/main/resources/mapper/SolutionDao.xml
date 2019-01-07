@@ -6,13 +6,11 @@
         <result property="soluName" column="soluName"></result>
         <result property="devTypeID" column="devTypeID"></result>
         <result property="buliderID" column="buliderID"></result>
-        <result property="userName" column="userName"></result>
+        <result property="userRealName" column="userRealName"></result>
     </resultMap>
 
     <select id="getSolution" resultType="Solution" parameterType="long">
-        select *
-        from solution a and user b
-        where a.builderID=b.userID and a.soluID = #{soluID}
+        select a.*,b.userRealName from solution a LEFT JOIN `user` b on a.builderID=b.userID where a.soluID = #{soluID}
     </select>
     <select id="selOne" resultType="long" parameterType="Solution">
         select IFNULL(max(soluID),0) as soluID from solution
@@ -27,9 +25,8 @@
 
     </select>
     <select id="select" resultMap="listSolution" parameterType="Solution">
-        select * from solution a and user b
+        select a.*,b.userRealName from solution a LEFT JOIN `user` b on a.builderID=b.userID
         <where>
-            a.builderID=b.userID
             <if test="soluID!=-1">
                 and a.soluID=#{soluID}
             </if>
