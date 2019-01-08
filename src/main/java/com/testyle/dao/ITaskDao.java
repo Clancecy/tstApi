@@ -10,4 +10,5 @@ public interface ITaskDao {
     int delete(long taskID);
     int update(Task task);
     List<Task> selectList(List<Long>taskIDs);
+    long getCount(Task task);
 }

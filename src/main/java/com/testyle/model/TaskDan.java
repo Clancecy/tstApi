@@ -7,7 +7,7 @@ public class TaskDan {
     String taskDanName;
     long reportID=-1;
     long taskID=-1;
-    int status=0;
+    int status=-1;
     Date addtime=new Date();
 
     public String getTaskDanName() {

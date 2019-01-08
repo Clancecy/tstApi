@@ -9,7 +9,7 @@ public class Report {
     String reportName;
     long planDanID=-1;
     String url;
-    int status=0;
+    int status=-1;
     Date addtime=new Date();
 
     public long getPlanDanID() {

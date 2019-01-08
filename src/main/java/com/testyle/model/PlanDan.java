@@ -8,17 +8,26 @@ public class PlanDan {
     int cycType=0;
     Date cyctime=new Date();
     long staID=-1;
+    String staName;
     long planID=-1;
     String planName;
     long builderID=-1;
     String builder;
     long leaderID=-1;
     String leader;
-    int status=0;
+    int status=-1;
     Date addtime=new Date();
     Date endtime;
     String testRate;
     String taskRate;
+
+    public String getStaName() {
+        return staName;
+    }
+
+    public void setStaName(String staName) {
+        this.staName = staName;
+    }
 
     public long getPlanDanID() {
         return planDanID;

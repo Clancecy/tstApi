@@ -37,38 +37,65 @@ public class SolutionController {
             resContent.setMessage("参数错误");
         }else {
             try {
-                List<SoluPro>soluProList=JSON.parseArray(request.getParameter("items"),SoluPro.class);
+                List<SoluPro>soluProList=JSON.parseArray(request.getParameter("soluPros"),SoluPro.class);
                 solution.setPros(soluProList);
+                solution.setBuilderID(1);
+                int count = solutionService.insert(solution);
+                long SoluID = solution.getSoluID();
+                if (count > 0) {
+                    if(solution.getPros()!=null&&solution.getPros().size()>0) {
+                        count = addListSoluPro(SoluID, solution.getPros());
+                    }
+                    Utils.dealForAdd(resContent, count);
+                } else {
+                    resContent.setCode(104);
+                    resContent.setMessage("新增失败");
+                }
             }catch (JSONException e){
                 resContent.setCode(104);
                 resContent.setMessage(e.getMessage());
             }
-            int count = solutionService.insert(solution);
-            long SoluID = solution.getSoluID();
-            if (count > 0) {
-                if(solution.getPros()!=null&&solution.getPros().size()>0) {
-                    count = addListSoluPro(SoluID, solution.getPros());
-                }
-                Utils.dealForAdd(resContent, count);
-            } else {
+            catch (Exception e){
                 resContent.setCode(104);
-                resContent.setMessage("新增失败");
+                resContent.setMessage(e.getMessage());
             }
+
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
-
+    @RequestMapping("/show")
+    public void showSolution(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long soluID=Long.parseLong(request.getParameter("soluID"));
+            Solution solution=solutionService.select(soluID);
+            SoluPro soluPro =new SoluPro();
+            soluPro.setSoluID(soluID);
+            List<SoluPro> soluProList =soluProService.select(soluPro);
+            solution.setPros(soluProList);
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(solution);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage(ne.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
     @RequestMapping("/update")
     public void updateSolution(Solution solution,HttpServletRequest request,HttpServletResponse response)throws IOException{
         response.setCharacterEncoding(charact);
         ResContent resContent=new ResContent();
-        solution.setPros(JSON.parseArray(request.getParameter("items"),SoluPro.class));
+        solution.setPros(JSON.parseArray(request.getParameter("soluPros"),SoluPro.class));
         if(solution.getSoluID()==-1||solution.getSoluName()==null||
                 solution.getDevTypeID()==-1){
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         }else {
+            solution.setBuilderID(1);
             int count = solutionService.update(solution);
             if (count > 0) {
                 soluProService.delete(solution.getSoluID());

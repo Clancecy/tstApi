@@ -45,4 +45,9 @@ public class TestServiceImpl implements ITestService {
     public Test select(long testID) {
         return testDao.selectByID(testID);
     }
+
+    @Override
+    public long getCount(Test test) {
+        return testDao.getCount(test);
+    }
 }

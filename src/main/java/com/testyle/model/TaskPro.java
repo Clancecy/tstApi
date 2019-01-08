@@ -7,7 +7,7 @@ public class TaskPro {
     long taskID=-1;
     long proID=-1;
     String proName;
-    int status=0;
+    int status=-1;
     Date addtime =new Date();
 
     public int getStatus() {

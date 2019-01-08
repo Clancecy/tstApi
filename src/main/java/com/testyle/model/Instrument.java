@@ -14,7 +14,7 @@ public class Instrument {
     Date usetime;
     Date inittime;
     Date valtime;
-    int status=0;
+    int status=-1;
     String insUrl;
     String plateUrl;
     String remark;

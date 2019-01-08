@@ -7,7 +7,7 @@ public class ReportTask {
     long taskID=-1;
     long reportID=-1;
     String taskName;
-    int status=0;
+    int status=-1;
     Date addtime =new Date();
 
     public int getStatus() {

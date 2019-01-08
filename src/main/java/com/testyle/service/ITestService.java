@@ -11,4 +11,5 @@ public interface ITestService {
     int update(Test test);
     List<Test> selectList(List<Long> testIDs);
     Test select(long testID);
+    long getCount(Test test);
 }

@@ -43,4 +43,9 @@ public class TaskServiceImpl implements ITaskService {
     public List<Task> selectList(List<Long> taskIDs) {
         return taskDao.selectList(taskIDs);
     }
+
+    @Override
+    public long getCount(Task task) {
+        return taskDao.getCount(task);
+    }
 }

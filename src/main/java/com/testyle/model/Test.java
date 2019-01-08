@@ -14,8 +14,10 @@ public class Test {
     String builder;
     long leaderID=-1;
     String leader;
-    int status=0;
+    int status=-1;
     Date addtime=new Date();
+
+    String taskRate;
 
     List<TestUser> testUserList;
 
@@ -121,5 +123,13 @@ public class Test {
 
     public void setTestUserList(List<TestUser> testUserList) {
         this.testUserList = testUserList;
+    }
+
+    public String getTaskRate() {
+        return taskRate;
+    }
+
+    public void setTaskRate(String taskRate) {
+        this.taskRate = taskRate;
     }
 }

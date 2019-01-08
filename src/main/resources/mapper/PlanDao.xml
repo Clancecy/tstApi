@@ -41,8 +41,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="planID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into plan (planName,cycType,buliderID,status,addtime)
-        values (#{planName},#{cycType},#{buliderID},#{status},#{addtime})
+        INSERT into plan (planName,cycType,builderID,status,addtime)
+        values (#{planName},#{cycType},#{builderID},#{status},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -54,7 +54,7 @@
         update plan
         set planName = #{planName},
             cycType  = #{cycType},
-            buliderID  = #{buliderID},
+            builderID  = #{builderID},
             status   = #{status},
             addtime  = #{addtime}
         where planID = #{planID}

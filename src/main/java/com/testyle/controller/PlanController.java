@@ -43,6 +43,27 @@ public class PlanController {
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
+    @RequestMapping("/show")
+    public void showPlan(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long planID=Long.parseLong(request.getParameter("planID"));
+            Plan plan=planService.selectByID(planID);
+            PlanTest planTest = new PlanTest();
+            planTest.setPlanID(planID);
+            List<PlanTest> planTests = planTestService.select(planTest);
+            plan.setPlanTestList(planTests);
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(plan);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage(ne.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
 
     @RequestMapping("/add")
     public void addPlan(Plan plan, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -54,6 +75,7 @@ public class PlanController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
+            plan.setBuilderID(1);
             int count = planService.insert(plan);
             if (count > 0) {
                 count = addListPlanTest(plan.getPlanID(), soluIDs);
@@ -78,6 +100,7 @@ public class PlanController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
+            plan.setBuilderID(1);
             int count = planService.update(plan);
             if (count > 0) {
                 planTestService.delete(plan.getPlanID());

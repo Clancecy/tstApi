@@ -5,11 +5,11 @@
         <id column="soluID" property="soluID"></id>
         <result property="soluName" column="soluName"></result>
         <result property="devTypeID" column="devTypeID"></result>
-        <result property="buliderID" column="buliderID"></result>
+        <result property="builderID" column="builderID"></result>
         <result property="userRealName" column="userRealName"></result>
     </resultMap>
 
-    <select id="getSolution" resultType="Solution" parameterType="long">
+    <select id="selectByID" resultType="Solution" parameterType="long">
         select a.*,b.userRealName from solution a LEFT JOIN `user` b on a.builderID=b.userID where a.soluID = #{soluID}
     </select>
     <select id="selOne" resultType="long" parameterType="Solution">
@@ -42,8 +42,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="soluID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into solution (soluName,devTypeID,buliderID,addtime) values (#{soluName},
-        #{devTypeID},#{buliderID},#{addtime})
+        INSERT into solution (soluName,devTypeID,builderID,addtime) values (#{soluName},
+        #{devTypeID},#{builderID},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -55,7 +55,7 @@
         update solution
         set soluName  = #{soluName},
             devTypeID = #{devTypeID},
-            buliderID   = #{buliderID},
+            builderID   = #{builderID},
             addtime   = #{addtime}
         where soluID = #{soluID}
     </update>

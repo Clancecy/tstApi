@@ -16,6 +16,26 @@
         <result property="addtime" column="addtime"></result>
     </resultMap>
 
+    <select id="getCount" resultType="Long" parameterType="Test">
+        select count(testID) from test
+        <where>
+            <if test="testID!=-1">
+                and testID=#{testID}
+            </if>
+            <if test="planDanID!=-1">
+                and planDanID=#{planDanID}
+            </if>
+            <if test="builderID!=-1">
+                and builderID=#{builderID}
+            </if>
+            <if test="leaderID!=-1">
+                and leaderID=#{leaderID}
+            </if>
+            <if test="status!=-1">
+                and status=#{status}
+            </if>
+        </where>
+    </select>
     <select id="selectByID" parameterType="Long" resultType="Test">
         SELECT a.*,b.planDanNumber,c.userRealName as builder,d.userRealName as leader,e.soluName FROM
         (((`test` a

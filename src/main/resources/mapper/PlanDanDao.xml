@@ -5,6 +5,7 @@
         <id column="planDanID" property="planDanID"></id>
         <result property="planDanNumber" column="planDanNumber"></result>
         <result property="staID" column="staID"></result>
+        <result property="staName" column="staName"></result>
         <result property="cycType" column="cycType"></result>
         <result property="cyctime" column="cyctime"></result>
         <result property="planID" column="planID"></result>
@@ -48,19 +49,19 @@
         LEFT JOIN station e on a.staID=e.staID
         <where>
             <if test="planDanID!=-1">
-                and planDanID=#{planDanID}
+                and a.planDanID=#{planDanID}
             </if>
             <if test="staID!=-1">
-                and staID=#{staID}
+                and a.staID=#{staID}
             </if>
             <if test="planID!=-1">
-                and planID=#{planID}
+                and a.planID=#{planID}
             </if>
             <if test="builderID!=-1">
-                and builderID=#{builderID}
+                and a.builderID=#{builderID}
             </if>
             <if test="status!=-1">
-                and status=#{status}
+                and a.status=#{status}
             </if>
         </where>
     </select>

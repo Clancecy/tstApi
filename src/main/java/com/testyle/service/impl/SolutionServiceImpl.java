@@ -19,6 +19,11 @@ public class SolutionServiceImpl implements ISolutionService {
     }
 
     @Override
+    public Solution select(long soluID) {
+        return solutionDao.selectByID(soluID);
+    }
+
+    @Override
     public int insert(Solution solution) {
         return solutionDao.insert(solution);
     }

@@ -20,7 +20,7 @@ public class Task {
     String insName;
     String url;
     String remark;
-    int status=0;
+    int status=-1;
     Date addtime = new Date();
 
     List<TaskUser> taskUserList;

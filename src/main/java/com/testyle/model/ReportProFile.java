@@ -9,7 +9,7 @@ public class ReportProFile {
     long proID=-1;
     long workerID=-1;
     String Url;
-    int status=0;
+    int status=-1;
     Date addtime=new Date();
 
     public long getWorkerID() {

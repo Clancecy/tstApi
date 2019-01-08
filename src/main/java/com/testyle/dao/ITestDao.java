@@ -11,4 +11,5 @@ public interface ITestDao {
     int update(Test test);
     List<Test> selectList(List<Long> testIDs);
     Test selectByID(long testID);
+    long getCount(Test test);
 }

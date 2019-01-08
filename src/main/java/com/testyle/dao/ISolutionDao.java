@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ISolutionDao {
     List<Solution> select(Solution solution);
+    Solution selectByID(long soluID);
     int insert(Solution solution);
     int delete(long SoluID);
     int update(Solution solution);

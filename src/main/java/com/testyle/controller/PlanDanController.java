@@ -1,16 +1,12 @@
 package com.testyle.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
-import com.testyle.model.Plan;
-import com.testyle.model.PlanDan;
-import com.testyle.model.PlanTest;
-import com.testyle.model.Test;
-import com.testyle.service.IPlanDanService;
-import com.testyle.service.IPlanService;
-import com.testyle.service.IPlanTestService;
-import com.testyle.service.ITestService;
+import com.testyle.model.*;
+import com.testyle.service.*;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +32,8 @@ public class PlanDanController {
     private IPlanTestService planTestService;
     @Resource
     private ITestService testService;
+    @Resource
+    private ITaskService taskService;
 
     @RequestMapping("/list")
     public void planDanList(PlanDan planDan, HttpServletResponse response) throws IOException {
@@ -49,6 +47,10 @@ public class PlanDanController {
         } else {
             resContent.setMessage("获取成功");
             resContent.setCode(101);
+            for (PlanDan t:planDanList){
+                t.setTestRate(getTestRate(t.getPlanDanID()));
+                t.setTaskRate(getTaskRate(t.getPlanDanID()));
+            }
             resContent.setData(planDanList);
         }
         response.getWriter().write(JSON.toJSONString(resContent));
@@ -59,7 +61,7 @@ public class PlanDanController {
     public void addPlan(PlanDan planDan, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        if (planDan.getPlanID() == -1) {
+        if (1!=1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
@@ -70,6 +72,7 @@ public class PlanDanController {
             planDan.setStatus(0);
             int count = planDanService.insert(planDan);
             Utils.dealForAdd(resContent, count);
+            resContent.setData(planDan);
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
@@ -87,6 +90,7 @@ public class PlanDanController {
             Utils.claCyctime(planDan);
             int count = planDanService.update(planDan);
             Utils.dealForUpdate(count, resContent);
+            resContent.setData(planDan);
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
@@ -106,6 +110,45 @@ public class PlanDanController {
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
+    @RequestMapping("/show")
+    public void showPlanDan(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long planDanID=Long.parseLong(request.getParameter("planDanID"));
+            PlanDan planDan=planDanService.select(planDanID);
+            planDan.setTestRate(getTestRate(planDanID));
+            planDan.setTaskRate(getTaskRate(planDanID));
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(planDan);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage(ne.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+//    @RequestMapping("/getTest")
+//    public void getTestList(HttpServletRequest request,HttpServletResponse response)throws IOException{
+//        response.setCharacterEncoding(charact);
+//        ResContent resContent=new ResContent();
+//        try {
+//            long planDanID=Long.parseLong(request.getParameter("planDanID"));
+//            Test test=new Test();
+//            test.setPlanDanID(planDanID);
+//            List<Test> testList=testService.select(test);
+//            resContent.setCode(101);
+//            resContent.setMessage("获取成功");
+//            resContent.setData(testList);
+//        }catch (NumberFormatException ne){
+//            resContent.setCode(103);
+//            resContent.setMessage(ne.getMessage());
+//        }
+//        response.getWriter().write(JSON.toJSONString(resContent));
+//        response.getWriter().close();
+//    }
 
     @RequestMapping("/load")
     public void loadPlan(HttpServletRequest request,HttpServletResponse response)throws IOException{
@@ -156,6 +199,33 @@ public class PlanDanController {
         return planTestService.insertList(planTestList);
     }
 
+    String getTestRate(long planDanID){
+        Test test=new Test();
+        test.setPlanDanID(planDanID);
+        long testCount=testService.getCount(test);
+        test.setStatus(1);
+        long doneCount=testService.getCount(test);
+        return doneCount+"/"+testCount;
+    }
+
+    String getTaskRate(long planDanID){
+        Test test=new Test();
+        test.setPlanDanID(planDanID);
+        List<Test> testList=testService.select(test);
+        long taskCount=0;
+        long doneCount=0;
+        for(Test test1:testList){
+            Task task =new Task();
+            task.setTestID(test1.getTestID());
+            long temp=taskService.getCount(task);
+            taskCount+=temp;
+            task.setStatus(1);
+            temp=taskService.getCount(task);
+            doneCount+=temp;
+        }
+        return doneCount+"/"+taskCount;
+    }
+
 
     /**
      * CRON表达式                含义
@@ -204,8 +274,23 @@ public class PlanDanController {
                 newPlanDan.setBuilderID(planDan.getBuilderID());
                 newPlanDan.setLeaderID(planDan.getLeaderID());
                 planDanService.insert(newPlanDan);
-                addTest(newPlanDan);
+                addSolu(newPlanDan);
             }
+        }
+    }
+
+    void addSolu(PlanDan planDan){
+        Test test=new Test();
+        test.setPlanDanID(planDan.getPlanDanID());
+        List<Test> testList=testService.select(test);
+        for (Test temp : testList) {
+            Test newTest = new Test();
+            newTest.setSoluID(temp.getSoluID());
+            newTest.setBuilderID(planDan.getBuilderID());
+            newTest.setTestNumber(Utils.getNumberForPK());
+            newTest.setPlanDanID(planDan.getPlanDanID());
+            newTest.setStatus(0);
+            testService.insert(newTest);
         }
     }
 

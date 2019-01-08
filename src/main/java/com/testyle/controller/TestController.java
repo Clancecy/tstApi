@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.*;
-import com.testyle.service.IPlanTestService;
-import com.testyle.service.ISoluProService;
-import com.testyle.service.ITestService;
-import com.testyle.service.ITestUserService;
+import com.testyle.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -27,6 +24,8 @@ public class TestController {
     private ITestUserService testUserService;
     @Resource
     private ISoluProService soluProService;
+    @Resource
+    private ITaskService taskService;
     String charact = "UTF-8";
 
     @RequestMapping("/add")
@@ -78,11 +77,32 @@ public class TestController {
         ResContent resContent = new ResContent();
         List<Test> testList = new ArrayList<>();
         testList = testService.select(test);
+        for (Test t:testList){
+            t.setTaskRate(getTaskRate(t.getTestID()));
+        }
         dealTestList(resContent, testList);
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
 
+    @RequestMapping("/show")
+    public void showTest(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long testID=Long.parseLong(request.getParameter("testID"));
+            Test test=testService.select(testID);
+            test.setTaskRate(getTaskRate(testID));
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(test);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage(ne.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
     @RequestMapping("/delete")
     public void deleteTest(Test test, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -125,21 +145,21 @@ public class TestController {
 //    }
 
     @RequestMapping("/load")
-    public void loadTest(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public void loadTest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
-        ResContent resContent=new ResContent();
+        ResContent resContent = new ResContent();
         try {
             long soluID = Long.parseLong(request.getParameter("soluID"));
-            long testID=Long.parseLong(request.getParameter("testID"));
-            Test test=new Test();
+            long testID = Long.parseLong(request.getParameter("testID"));
+            Test test = new Test();
             test.setTestID(testID);
-            test=testService.select(testID);
+            test = testService.select(testID);
             test.setSoluID(soluID);
             addTask(test);
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setCode(103);
             resContent.setMessage(ne.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             resContent.setCode(104);
             resContent.setMessage(e.getMessage());
         }
@@ -148,10 +168,10 @@ public class TestController {
     }
 
     private void addTask(Test test) {
-        SoluPro soluPro=new SoluPro();
+        SoluPro soluPro = new SoluPro();
         soluPro.setSoluID(test.getSoluID());
-        List<SoluPro> soluProList=soluProService.select(soluPro);
-        for (SoluPro pro:soluProList){
+        List<SoluPro> soluProList = soluProService.select(soluPro);
+        for (SoluPro pro : soluProList) {
         }
     }
 
@@ -192,5 +212,16 @@ public class TestController {
             testUser.setUserID(userID);
             testUsers.add(testUser);
         }
+    }
+
+    String getTaskRate(long testID) {
+        long taskCount = 0;
+        long doneCount = 0;
+        Task task = new Task();
+        task.setTestID(testID);
+        taskCount = taskService.getCount(task);
+        task.setStatus(1);
+        doneCount = taskService.getCount(task);
+        return doneCount + "/" + taskCount;
     }
 }

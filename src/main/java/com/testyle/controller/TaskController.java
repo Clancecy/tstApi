@@ -111,6 +111,25 @@ public class TaskController {
 
     }
 
+    @RequestMapping("/show")
+    public void showTask(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long taskID=Long.parseLong(request.getParameter("taskID"));
+            Task task=new Task();
+             task.setTaskID(taskID);
+            task=taskService.select(task).get(0);
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(task);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage(ne.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
     @RequestMapping("/delete")
     public void deleteTask(Task task, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
