@@ -160,6 +160,8 @@ public class PlanDanController {
             PlanDan planDan=planDanService.select(planDanID);
             planDan.setPlanID(planID);
             addTest(planDan);
+            resContent.setCode(101);
+            resContent.setMessage("导入成功");
         }catch (NumberFormatException ne){
             resContent.setCode(103);
             resContent.setMessage(ne.getMessage());
@@ -184,6 +186,7 @@ public class PlanDanController {
         long planID=plan.getPlanID();
         int count=addPlanTest(testList,planID);
         Utils.dealForAdd(resContent,count);
+        resContent.setMessage("保存成功");
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }

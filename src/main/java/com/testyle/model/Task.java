@@ -21,9 +21,18 @@ public class Task {
     String url;
     String remark;
     int status=-1;
+    Date endtime;
     Date addtime = new Date();
 
     List<TaskUser> taskUserList;
+
+    public Date getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
+    }
 
     public String getRemark() {
         return remark;

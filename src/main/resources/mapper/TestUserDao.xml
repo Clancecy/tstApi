@@ -5,7 +5,7 @@
         <id column="ID" property="ID"></id>
         <result column="testID" property="testID"></result>
         <result column="userID" property="userID"></result>
-        <result column="userName" property="userName"></result>
+        <result column="userRealName" property="userRealName"></result>
     </resultMap>
 
     <select id="getTestUser" resultType="TestUser" parameterType="long">
@@ -26,7 +26,7 @@
 
     </select>
     <select id="select" resultMap="listTestUser" parameterType="TestUser">
-        select a.ID,a.testID,a.userID,b.userName from TestUser a,user b
+        select a.ID,a.testID,a.userID,b.userRealName from TestUser a,user b
         <where>
             a.userID=b.userID
             <if test="ID!=-1">

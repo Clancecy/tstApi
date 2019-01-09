@@ -181,9 +181,11 @@ public class TaskController {
         response.setCharacterEncoding(charact);
         ResContent resContent=new ResContent();
         String remarks=request.getParameter("remarks");
+        System.out.println(remarks);
         long taskID=Long.parseLong(request.getParameter("taskID"));
         int fileType=Integer.parseInt(request.getParameter("fileType"));
         try {
+
             List<String> remarkList=JSON.parseArray(remarks,String.class);
             int index=0;
             for(MultipartFile file:files){

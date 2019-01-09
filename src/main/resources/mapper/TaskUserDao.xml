@@ -5,7 +5,7 @@
         <id column="ID" property="ID"></id>
         <result column="taskID" property="taskID"></result>
         <result column="userID" property="userID"></result>
-        <result column="userName" property="userName"></result>
+        <result column="userRealName" property="userRealName"></result>
     </resultMap>
 
     <select id="getTaskUser" resultType="TaskUser" parameterType="long">
@@ -26,7 +26,7 @@
 
     </select>
     <select id="select" resultMap="listTaskUser" parameterType="TaskUser">
-        select a.ID,a.taskID,a.userID,b.userName from TaskUser a,user b
+        select a.ID,a.taskID,a.userID,b.userRealName from TaskUser a,user b
         <where>
             a.userID=b.userID
             <if test="ID!=-1">

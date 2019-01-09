@@ -6,15 +6,15 @@ public class TestUser {
     long ID=-1;
     long testID=-1;
     long userID=-1;
-    String userName;
+    String userRealName;
     Date addtime=new Date();
 
-    public String getUserName() {
-        return userName;
+    public String getUserRealName() {
+        return userRealName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserRealName(String userRealName) {
+        this.userRealName = userRealName;
     }
 
     public long getID() {

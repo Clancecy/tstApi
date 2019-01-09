@@ -32,25 +32,21 @@ public class TestController {
     public void addTest(Test test, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> userIDs = (JSON.parseArray(request.getParameter("items"), Long.class));
         test.setStatus(0);
         test.setBuilderID(1);
         test.setTestNumber(Utils.getNumberForPK());
-        int count = testService.insert(test);
-        if (count > 0) {
-            count = addListTestUser(test.getTestID(), userIDs);
-            Utils.dealForAdd(resContent, count);
-        } else {
-            resContent.setCode(104);
-            resContent.setMessage("新建失败");
-        }
+        testService.insert(test);
+        resContent.setCode(101);
+        resContent.setMessage("新建成功");
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
     }
 
     @RequestMapping("/update")
     public void updateTest(Test test, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> userIDs = JSON.parseArray(request.getParameter("items"), Long.class);
+        List<Long> userIDs = JSON.parseArray(request.getParameter("userIDs"), Long.class);
         if (test.getTestID() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
@@ -92,6 +88,10 @@ public class TestController {
         try {
             long testID=Long.parseLong(request.getParameter("testID"));
             Test test=testService.select(testID);
+            TestUser testUser = new TestUser();
+            testUser.setTestID(testID);
+            List<TestUser> testUsers = testUserService.select(testUser);
+            test.setTestUserList(testUsers);
             test.setTaskRate(getTaskRate(testID));
             resContent.setCode(101);
             resContent.setMessage("获取成功");
@@ -155,7 +155,10 @@ public class TestController {
             test.setTestID(testID);
             test = testService.select(testID);
             test.setSoluID(soluID);
+            testService.update(test);
             addTask(test);
+            resContent.setCode(101);
+            resContent.setMessage("导入成功");
         } catch (NumberFormatException ne) {
             resContent.setCode(103);
             resContent.setMessage(ne.getMessage());
@@ -172,6 +175,14 @@ public class TestController {
         soluPro.setSoluID(test.getSoluID());
         List<SoluPro> soluProList = soluProService.select(soluPro);
         for (SoluPro pro : soluProList) {
+            Task task=new Task();
+            task.setStatus(0);
+            task.setTestID(test.getTestID());
+            task.setBuilderID(1);
+            task.setTaskNumber(Utils.getNumberForPK());
+            task.setProID(pro.getProID());
+            task.setProName(pro.getProName());
+            taskService.insert(task);
         }
     }
 

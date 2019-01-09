@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IDefaultDataDao">
+    <resultMap id="listDefaultData" type="DefaultData">
+        <id column="defaultID" property="defaultID"></id>
+        <result property="devID" column="devID"></result>
+        <result property="proID" column="proID"></result>
+        <result property="dataVal" column="dataVal"></result>
+        <result property="recordID" column="recordID"></result>
+        <result property="itemID" column="itemID"></result>
+        <result property="devID" column="devID"></result>
+        <result property="testOrder" column="testOrder"></result>
+    </resultMap>
+
+    <select id="getDefaultData" resultType="DefaultData" parameterType="long">
+        select *
+        from ${table}
+        where defaultID = #{defaultID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="DefaultData">
+        select IFNULL(max(defaultID),0) as defaultID from ${table}
+        <where>
+            <if test="devID!=-1">
+                and devID=#{devID}
+            </if>
+            <if test="recordID!=-1">
+                and recordID=#{recordID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="testOrder!=-1">
+                and testOrder=#{testOrder}
+            </if>
+            <if test="itemID!=-1">
+                and itemID=#{itemID}
+            </if>
+            <if test="devID!=-1">
+                and devID=#{devID}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listDefaultData" parameterType="DefaultData">
+        select * from ${table}
+        <where>
+            <if test="defaultID!=-1">
+                and defaultID=#{defaultID}
+            </if>
+            <if test="devID!=-1">
+                and devID=#{devID}
+            </if>
+            <if test="recordID!=-1">
+                and recordID=#{recordID}
+            </if>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="testOrder!=-1">
+                and testOrder=#{testOrder}
+            </if>
+            <if test="itemID!=-1">
+                and itemID=#{itemID}
+            </if>
+            <if test="devID!=-1">
+                and devID=#{devID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="DefaultData">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="defaultID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into ${table} (devID,proID,dataVal,recordID,
+        testOrder,itemID,devID,addtime)
+        values (#{devID},#{proID},#{dataVal},#{recordID},
+        #{testOrder},#{itemID},#{devID},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true">
+        <selectKey resultType="long" keyProperty="defaultID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into ${table} (devID,proID,dataVal,recordID,
+        testOrder,itemID,devID,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="dataList" item="DefaultData" index="index" separator="," close=";">
+            (
+            #{DefaultData.devID},#{DefaultData.proID},#{DefaultData.dataVal},
+            #{DefaultData.recordID},#{DefaultData.testOrder},#{DefaultData.itemID},#{DefaultData.devID},
+            #{DefaultData.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from ${table}
+        where defaultID = #{defaultID}
+    </delete>
+
+    <update id="update" parameterType="DefaultData">
+        update ${table}
+        set devID  = #{devID},
+            proID     = #{proID},
+            dataVal   = #{dataVal},
+            recordID  = #{recordID},
+            testOrder = #{testOrder},
+            itemID    = #{itemID},
+            devID=#{devID},
+            addtime   = #{addtime}
+        where defaultID = #{defaultID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update ${table} set
+        devID =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.devID}
+        </foreach>
+        ,proID =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.proID}
+        </foreach>
+        ,recordID =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.recordID}
+        </foreach>
+        ,testOrder =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.testOrder}
+        </foreach>
+        ,itemID =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.itemID}
+        </foreach>
+        ,devID =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.devID}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.addtime}
+        </foreach>
+        ,dataVal =
+        <foreach collection="list" item="DefaultData" index="index"
+                 separator=" " open="case DefaultDataID" close="end">
+            when #{DefaultData.defaultID} then
+            #{DefaultData.dataVal}
+        </foreach>
+    </update>
+
+</mapper>

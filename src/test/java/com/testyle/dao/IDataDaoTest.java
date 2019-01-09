@@ -1,6 +1,17 @@
 package com.testyle.dao;
 
 import com.alibaba.fastjson.JSON;
+import com.github.abel533.echarts.Option;
+import com.github.abel533.echarts.axis.CategoryAxis;
+import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.Tool;
+import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.data.PieData;
+import com.github.abel533.echarts.feature.MagicType;
+import com.github.abel533.echarts.series.Bar;
+import com.github.abel533.echarts.series.Line;
+import com.github.abel533.echarts.series.Pie;
 import com.testyle.common.Utils;
 import com.testyle.model.Data;
 import com.testyle.model.Item;
@@ -12,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:spring-mybatis.xml"})
@@ -170,5 +178,50 @@ public class IDataDaoTest {
         dataList.add(data);
         dataList.add(data);
         dataDao.updateList(data.getTable(),dataList);
+    }
+
+    @Test
+    public void testEchart(){
+        List<Map<String, Object>> list =new ArrayList<>();
+
+           for(int i=0;i<10;i++) {
+               Map<String, Object> map=new HashMap<>();
+               map.put("NAME", "张三"+i);
+               map.put("TOTAL", new Random().nextInt(50));
+               list.add(map);
+           }
+           
+           //创建Option
+           Option option = new Option();
+           option.title("剔除药品").tooltip(Trigger.axis).legend("金额（元）");
+           //横轴为值轴
+           option.yAxis(new ValueAxis().boundaryGap(0d, 0.01));
+           //创建类目轴
+           CategoryAxis category = new CategoryAxis();
+
+           //饼图数据
+           Pie pie = new Pie("金额（元）");
+           Line line=new Line("金额(元）");
+           //循环数据
+           for (Map<String, Object> objectMap : list) {
+           //设置类目
+           category.data(objectMap.get("NAME"));
+           System.out.println(objectMap.get("NAME"));
+
+           //饼图数据
+           System.out.println(objectMap.get("TOTAL"));
+           pie.data(new PieData(objectMap.get("NAME").toString(), objectMap.get("TOTAL")));
+           line.data(objectMap.get("TOTAL"));
+           }
+           //设置类目轴
+           option.xAxis(category);
+           //饼图的圆心和半径
+           pie.center(900,380).radius(100);
+           //设置数据
+           option.series(line, pie);
+           //由于药品名字过长，图表距离左侧距离设置180，关于grid可以看ECharts的官方文档
+           option.grid().x(180);
+
+        System.out.println(JSON.toJSONString(option));
     }
 }

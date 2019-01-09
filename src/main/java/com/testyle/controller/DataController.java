@@ -46,6 +46,7 @@ public class DataController {
         ResContent resContent = new ResContent();
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         String fname = request.getParameter("url");
+        String remark=request.getParameter("remark");
         if (data.getTestID() == -1
                 || data.getTaskID() == -1
                 || data.getProID() == -1
@@ -59,6 +60,7 @@ public class DataController {
             task.setTaskID(data.getTaskID());
             task=taskService.select(task).get(0);
             task.setUrl(fname);
+            task.setRemark(remark);
             taskService.update(task);
             try {
                     String url = Esurl + "data/add";
