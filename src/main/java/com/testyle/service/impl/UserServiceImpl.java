@@ -40,5 +40,10 @@ public class UserServiceImpl implements IUserService {
         return userDao.update(user);
     }
 
+    @Override
+    public List<User> select(List<Long> userIDs) {
+        return userDao.selectList(userIDs);
+    }
+
 
 }

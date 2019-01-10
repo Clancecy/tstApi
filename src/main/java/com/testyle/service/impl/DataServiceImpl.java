@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 
 @Service("dataService")
@@ -26,8 +27,8 @@ public class DataServiceImpl implements IDataService {
     }
 
     @Override
-    public int delete(String table,long dataID) {
-        return dataDao.delete(table,dataID);
+    public int delete(String table,long taskID) {
+        return dataDao.delete(table,taskID);
     }
 
     @Override
@@ -48,6 +49,16 @@ public class DataServiceImpl implements IDataService {
     @Override
     public int updateList(String table,List<Data> dataList) {
         return dataDao.updateList(table,dataList);
+    }
+
+    @Override
+    public List<Map<String, Object>> getRecord(long proID) {
+        return dataDao.getRecord(proID);
+    }
+
+    @Override
+    public List<Map<String, Object>> getItem(long recordID) {
+        return dataDao.getItem(recordID);
     }
 
 

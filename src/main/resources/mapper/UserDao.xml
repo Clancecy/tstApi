@@ -20,6 +20,15 @@
         WHERE userID = #{userID}
     </select>
 
+    <select id="selectList" resultMap="listUser" parameterType="List">
+        SELECT *,b.tagName as deptName,c.compName as companyName
+        FROM (user a left join tag b on a.deptID=b.tagID) left join company c on a.userCompanyID=c.compID
+        where a.userID IN
+        <foreach collection="list" item="userID" open="(" close=")" separator=",">
+            #{userID}
+        </foreach>
+    </select>
+
     <select id="checkUser" resultType="long" parameterType="User">
         select IFNULL(max(userID),0) as userID FROM user
         <where>

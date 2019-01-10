@@ -6,7 +6,10 @@ import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.*;
 import com.testyle.service.*;
+import okhttp3.*;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,12 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @Controller
 @RequestMapping("/task")
@@ -33,24 +38,41 @@ public class TaskController {
     private IFileService fileService;
     @Resource
     private ITaskFileService taskFileService;
+    @Resource
+    private ITestService testService;
+    @Resource
+    private IPlanDanService planDanService;
+    @Resource
+    private IStationService stationService;
+
     String charact = "UTF-8";
-    String imageRoot = "E:/image/";
+    @Value("${imgPath}")
+    String imageRoot;
+    @Value("${imgUrl}")
+    String imageUrl;
+    @Value("${EsUrl}")
+    String EsUrl;
+
+    @RequestMapping("/test")
+    public void t(HttpServletResponse response)throws IOException{
+        response.getWriter().write(JSON.toJSONString(imageRoot));
+        response.getWriter().close();
+    }
 
     @RequestMapping("/add")
     public void addTask(Task task, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> userIDs = (JSON.parseArray(request.getParameter("users"), Long.class));
-        if (task.getTestID() == -1 ||
-                task.getProID() == -1 ||
-                task.getDevID() == -1 ||
-                task.getInsID() == -1) {
+       // List<Long> userIDs = (JSON.parseArray(request.getParameter("users"), Long.class));
+        if (1!=1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
+            task.setTaskNumber(Utils.getNumberForPK());
+            task.setStatus(0);
+            task.setBuilderID(1);
             int count = taskService.insert(task);
             if (count > 0) {
-                count = addListTaskUser(task.getTaskID(), userIDs);
                 Utils.dealForAdd(resContent, count);
             } else {
                 resContent.setCode(104);
@@ -66,24 +88,26 @@ public class TaskController {
     public void updateTask(Task task, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        List<Long> userIDs = JSON.parseArray(request.getParameter("users"), Long.class);
-        if (task.getTestID() == -1 ||
-                task.getProID() == -1 ||
-                task.getDevID() == -1 ||
-                task.getInsID() == -1 ||
-                task.getTaskID() == -1) {
+        List<Long> userIDs = JSON.parseArray(request.getParameter("userIDs"), Long.class);
+        if (task.getTaskID() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            int count = taskService.update(task);
+            Task t=new Task();
+            t.setTaskID(task.getTaskID());
+            t=taskService.select(t).get(0);
+            t.setDevID(task.getDevID());
+            t.setProID(task.getProID());
+            t.setLeaderID(task.getLeaderID());
+            int count = taskService.update(t);
             if (count > 0) {
-                count = taskUserService.delete(task.getTaskID());
+                taskUserService.delete(task.getTaskID());
                 if (count > 0) {
                     count = addListTaskUser(task.getTaskID(), userIDs);
                     Utils.dealForUpdate(count, resContent);
                 } else {
                     resContent.setCode(104);
-                    resContent.setMessage("新建失败");
+                    resContent.setMessage("更新失败");
                 }
             }
         }
@@ -117,9 +141,11 @@ public class TaskController {
         ResContent resContent=new ResContent();
         try {
             long taskID=Long.parseLong(request.getParameter("taskID"));
-            Task task=new Task();
-             task.setTaskID(taskID);
-            task=taskService.select(task).get(0);
+            Task task=taskService.select(taskID);
+            TaskUser taskUser = new TaskUser();
+            taskUser.setTaskID(taskID);
+            List<TaskUser> taskUsers = taskUserService.select(taskUser);
+            task.setTaskUserList(taskUsers);
             resContent.setCode(101);
             resContent.setMessage("获取成功");
             resContent.setData(task);
@@ -161,6 +187,7 @@ public class TaskController {
             List<Long> taskIDs = new ArrayList<>();
             addTaskIDList(taskUserList, taskIDs);
             List<Task> taskList = taskService.selectList(taskIDs);
+            addStaionInfo(taskList);
             if (taskList.size() == 0) {
                 resContent.setCode(102);
                 resContent.setMessage("没有任务");
@@ -170,6 +197,29 @@ public class TaskController {
                 resContent.setData(taskList);
             }
         }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    private void addStaionInfo(List<Task> taskList) {
+        for (Task task:taskList){
+            Test test=testService.select(task.getTestID());
+            PlanDan planDan=planDanService.select(test.getPlanDanID());
+            Station station=stationService.selectStaton(planDan.getStaID());
+            task.setStaID(String.valueOf(station.getStaID()));
+            task.setStaName(station.getStaName());
+            task.setAddress(station.getAddress());
+        }
+    }
+
+    @RequestMapping("/taskFile")
+    public void taskList(TaskFile taskFile,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        List<TaskFile> taskFileList=taskFileService.select(taskFile);
+        resContent.setCode(101);
+        resContent.setMessage("获取成功");
+        resContent.setData(taskFileList);
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
@@ -185,7 +235,10 @@ public class TaskController {
         long taskID=Long.parseLong(request.getParameter("taskID"));
         int fileType=Integer.parseInt(request.getParameter("fileType"));
         try {
-
+            TaskFile temp=new TaskFile();
+            temp.setTaskID(taskID);
+            temp.setFileType(fileType);
+            taskFileService.delete(temp);
             List<String> remarkList=JSON.parseArray(remarks,String.class);
             int index=0;
             for(MultipartFile file:files){
@@ -194,7 +247,7 @@ public class TaskController {
                             imageRoot,
                             file.getOriginalFilename()));
                 }
-                String url = imageRoot + file.getOriginalFilename();
+                String url = imageUrl + file.getOriginalFilename();
                 com.testyle.model.File file1=new com.testyle.model.File();
                 file1.setFileName(file.getOriginalFilename());
                 file1.setFileType(fileType);
@@ -202,8 +255,9 @@ public class TaskController {
                 file1.setRemark(remarkList.get(index++));
                 fileService.insert(file1);
                 TaskFile taskFile=new TaskFile();
-                taskFile.setFileID(file1.getFileID());
                 taskFile.setTaskID(taskID);
+                taskFile.setFileType(fileType);
+                taskFile.setFileID(file1.getFileID());
                 int count=taskFileService.insert(taskFile);
                 Utils.dealForAdd(resContent,count);
             }
@@ -252,4 +306,64 @@ public class TaskController {
             taskUsers.add(taskUser);
         }
     }
+
+    @RequestMapping("/report")
+    public void report(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long taskID=Long.parseLong(request.getParameter("taskID"));
+            Task task=taskService.select(taskID);
+            if(task.getStatus()!=0) {
+                String fname = task.getProName() + "数据预览";
+                String path = task.getUrl();
+                OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+                String url = EsUrl + "project/report";
+                FormBody formBody = new FormBody.Builder()
+                        .add("path", path)
+                        .add("fname", fname)
+                        .build();
+                Request req = new Request.Builder().url(url)
+                        .post(formBody)
+                        .build();
+                Call call = okHttpClient.newCall(req);
+                Response response1 = call.execute();
+                String proStr = response1.body().string();
+                System.out.println(proStr);
+                resContent = JSON.parseObject(proStr, ResContent.class);
+            }else {
+                resContent.setCode(105);
+                resContent.setMessage("任务未完成");
+            }
+        }catch ( Exception e){
+            resContent.setCode(104);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/detail")
+    public void detail(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long taskID = Long.parseLong(request.getParameter("taskID"));
+            Task task=taskService.select(taskID);
+            long testID=task.getTestID();
+            Test test=testService.select(testID);
+            long planDanID=test.getPlanDanID();
+            PlanDan planDan=planDanService.select(planDanID);
+            task.setPlanDan(planDan);
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(task);
+        }catch ( Exception e){
+            resContent.setCode(104);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
 }

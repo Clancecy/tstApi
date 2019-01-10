@@ -14,8 +14,10 @@
         <result property="proName" column="proName"></result>
         <result property="devID" column="devID"></result>
         <result property="devName" column="devName"></result>
+        <result property="runNumber" column="runNumber"></result>
         <result property="insName" column="insName"></result>
         <result property="insID" column="insID"></result>
+        <result property="insNumber" column="insNumber"></result>
         <result property="url" column="url"></result>
         <result property="remark" column="remark"></result>
         <result property="status" column="status"></result>
@@ -53,7 +55,7 @@
         </where>
     </select>
     <select id="selectList" resultMap="listTask" parameterType="List">
-        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName FROM
+        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName,e.runNumber,f.insNumber FROM
         ((((`task` a
         LEFT JOIN test b on a.testID=b.testID)
         LEFT JOIN user c on a.builderID=c.userID)
@@ -65,8 +67,18 @@
             #{taskID}
         </foreach>
     </select>
+    <select id="selectByID" resultType="Task" parameterType="Long">
+        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName,e.runNumber,f.insNumber FROM
+        ((((`task` a
+        LEFT JOIN test b on a.testID=b.testID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN device	e on a.devID=e.devID)
+        LEFT JOIN instrument f on a.insID=f.insID
+        where a.taskID =#{taskID}
+    </select>
     <select id="select" resultMap="listTask" parameterType="Task">
-        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName FROM
+        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as leader,e.devName,f.insName,e.runNumber,f.insNumber FROM
         ((((`task` a
         LEFT JOIN test b on a.testID=b.testID)
         LEFT JOIN user c on a.builderID=c.userID)
@@ -98,6 +110,12 @@
             <if test="insID!=-1">
                 and a.insID=#{insID}
             </if>
+            <if test="atime!=null">
+                and DATE_FORMAT(endtime,'%Y-%m-%d') between DATE_FORMAT(#{atime},'%Y-%m-%d')
+            </if>
+            <if test="btime!=null">
+                and DATE_FORMAT(#{btime},'%Y-%m-%d')
+            </if>
         </where>
     </select>
     <insert id="insert" parameterType="Task">
@@ -124,6 +142,7 @@
             devID      = #{devID},
             insID      = #{insID},
             status     = #{status},
+            endtime=#{endtime},
             url=#{url},
             remark=#{remark},
             addtime    = #{addtime}

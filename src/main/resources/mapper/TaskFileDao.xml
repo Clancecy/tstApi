@@ -5,6 +5,7 @@
         <id property="ID" column="ID"></id>
         <result property="taskID" column="taskID"></result>
         <result property="fileID" column="fileID"></result>
+        <result property="fileType" column="fileType"></result>
         <result property="fileName" column="fileName"></result>
         <result property="url" column="url"></result>
         <result property="remark" column="remark"></result>

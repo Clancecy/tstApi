@@ -11,4 +11,5 @@ public interface ITaskService {
     int update(Task task);
     List<Task> selectList(List<Long>taskIDs);
     long getCount(Task task);
+    Task select(long taskID);
 }

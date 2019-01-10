@@ -3,6 +3,7 @@ package com.testyle.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.Solution;
@@ -194,6 +195,30 @@ public class UserController {
             resContent.setCode(101);
             resContent.setData(userList);
         }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+    @RequestMapping("/listByIDs")
+    public void listByIDs(HttpServletRequest request,HttpServletResponse response )throws IOException{
+        response.setCharacterEncoding("UTF-8");
+        ResContent resContent=new ResContent();
+        List<User> userList=new ArrayList<>();
+        try {
+            List<Long> userIDs=JSON.parseArray(request.getParameter("userIDs"),Long.class);
+            userList=userService.select(userIDs);
+            if(userList.size()==0){
+                resContent.setMessage("没有数据");
+                resContent.setCode(102);
+            }else {
+                resContent.setMessage("获取成功");
+                resContent.setCode(101);
+                resContent.setData(userList);
+            }
+        }catch (JSONException je){
+            resContent.setMessage("参数错误");
+            resContent.setCode(102);
+        }
+
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }

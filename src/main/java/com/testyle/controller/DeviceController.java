@@ -6,6 +6,7 @@ import com.testyle.common.Utils;
 import com.testyle.model.*;
 import com.testyle.model.File;
 import com.testyle.service.*;
+import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,7 @@ public class DeviceController {
     IFileService fileservice;
     String charact = "UTF-8";
     String imageRoot = "E:/image/";
-
+    String Esurl = "http://127.0.0.1:8080/";
     @RequestMapping("/add")
     public void addDevice(Device device, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -129,6 +130,23 @@ public class DeviceController {
         } else {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/getDevList")
+    public void getDevList(Device device,HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        List<Device> deviceList=deviceService.select(device);
+        if (deviceList.size() == 0) {
+            resContent.setMessage("没有数据");
+            resContent.setCode(102);
+        } else {
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(deviceList);
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
@@ -476,5 +494,37 @@ public class DeviceController {
         if (!result.equals(""))
             result = result.substring(0, result.length() - 1);
         return result;
+    }
+
+    @RequestMapping("/devPro")
+    public void devPro(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+            long devID=Long.parseLong(request.getParameter("devID"));
+            Device device=deviceService.selectByID(devID);
+            long devType=device.getDevTypeID();
+            String url = Esurl + "project/list";
+            FormBody formBody = new FormBody.Builder()
+                    .add("proType", "0")
+                    .add("devTypeID", String.valueOf(devType))
+                    .build();
+            Request req = new Request.Builder().url(url)
+                    .post(formBody)
+                    .build();
+            Call call = okHttpClient.newCall(req);
+            Response response1 = call.execute();
+            String proStr = response1.body().string();
+            resContent = JSON.parseObject(proStr, ResContent.class);
+        }catch (NumberFormatException ne){
+            resContent.setCode(103);
+            resContent.setMessage("参数错误");
+        }catch (Exception e){
+            resContent.setCode(104);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
     }
 }

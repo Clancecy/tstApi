@@ -2,6 +2,7 @@ package com.testyle.service.impl;
 
 import com.testyle.dao.ITaskDao;
 import com.testyle.dao.ITestDao;
+import com.testyle.model.Data;
 import com.testyle.model.Task;
 import com.testyle.model.Test;
 import com.testyle.service.ITaskService;
@@ -47,5 +48,10 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public long getCount(Task task) {
         return taskDao.getCount(task);
+    }
+
+    @Override
+    public Task select(long taskID) {
+        return taskDao.selectByID(taskID);
     }
 }

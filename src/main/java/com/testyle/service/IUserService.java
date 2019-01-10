@@ -11,4 +11,5 @@ public interface IUserService {
     int deleteUser(long userID);
     List<User> select(User user);
     int update(User user);
+    List<User> select(List<Long> userIDs);
 }

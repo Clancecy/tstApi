@@ -9,13 +9,49 @@ public class Data {
     long testID=-1;
     long taskID=-1;
     long proID = -1;
+    String proName;
     int testOrder=-1;
     long recordID = -1;
+    String recordName;
     long itemID = -1;
+    String itemName;
     long devID=-1;
+    String devName;
     int status=-1;
     String dataVal;
     Date addtime = new Date();
+
+    public String getProName() {
+        return proName;
+    }
+
+    public void setProName(String proName) {
+        this.proName = proName;
+    }
+
+    public String getRecordName() {
+        return recordName;
+    }
+
+    public void setRecordName(String recordName) {
+        this.recordName = recordName;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public String getDevName() {
+        return devName;
+    }
+
+    public void setDevName(String devName) {
+        this.devName = devName;
+    }
 
     public String getTable() {
         return table;

@@ -16,15 +16,91 @@ public class Task {
     String proName;
     long devID=-1;
     String devName;
+    String runNumber;
     long insID=-1;
     String insName;
+    String insNumber;
     String url;
     String remark;
     int status=-1;
     Date endtime;
     Date addtime = new Date();
 
+
+    Date atime;
+    Date btime;
+
+    String staID;
+    String staName;
+    String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getStaID() {
+        return staID;
+    }
+
+    public void setStaID(String staID) {
+        this.staID = staID;
+    }
+
+    public String getStaName() {
+        return staName;
+    }
+
+    public void setStaName(String staName) {
+        this.staName = staName;
+    }
+
+    public Date getAtime() {
+        return atime;
+    }
+
+    public void setAtime(Date atime) {
+        this.atime = atime;
+    }
+
+    public Date getBtime() {
+        return btime;
+    }
+
+    public void setBtime(Date btime) {
+        this.btime = btime;
+    }
+
     List<TaskUser> taskUserList;
+
+    PlanDan planDan;
+
+    public String getRunNumber() {
+        return runNumber;
+    }
+
+    public void setRunNumber(String runNumber) {
+        this.runNumber = runNumber;
+    }
+
+    public String getInsNumber() {
+        return insNumber;
+    }
+
+    public void setInsNumber(String insNumber) {
+        this.insNumber = insNumber;
+    }
+
+    public PlanDan getPlanDan() {
+        return planDan;
+    }
+
+    public void setPlanDan(PlanDan planDan) {
+        this.planDan = planDan;
+    }
 
     public Date getEndtime() {
         return endtime;

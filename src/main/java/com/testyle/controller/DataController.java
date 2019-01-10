@@ -2,6 +2,12 @@ package com.testyle.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.github.abel533.echarts.Option;
+import com.github.abel533.echarts.axis.CategoryAxis;
+import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.series.Line;
+import com.github.abel533.echarts.series.Series;
 import com.testyle.common.ExcelUtils;
 import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
@@ -17,10 +23,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("/data")
@@ -47,6 +51,9 @@ public class DataController {
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         String fname = request.getParameter("url");
         String remark=request.getParameter("remark");
+        try {
+        int status=Integer.parseInt(request.getParameter("status"));
+            System.out.println("进来的dataVal："+data.getDataVal());
         if (data.getTestID() == -1
                 || data.getTaskID() == -1
                 || data.getProID() == -1
@@ -56,11 +63,10 @@ public class DataController {
             resContent.setCode(107);
             resContent.setMessage("参数错误");
         } else {
-            Task task=new Task();
-            task.setTaskID(data.getTaskID());
-            task=taskService.select(task).get(0);
+            Task task=taskService.select(data.getTaskID());
             task.setUrl(fname);
             task.setRemark(remark);
+            task.setStatus(status);
             taskService.update(task);
             try {
                     String url = Esurl + "data/add";
@@ -77,17 +83,59 @@ public class DataController {
                     resContent = JSON.parseObject(Str, ResContent.class);
                     String RecStr = resContent.getData().toString();
                     List<Record> dataList = (List<Record>) JSON.parseArray(RecStr, Record.class);
-                    addDb(dataList, data, resContent);
+
+                    addDb(dataList, data,task, resContent);
                 } catch (JSONException jsone) {
                     resContent.setCode(109);
                     resContent.setMessage(jsone.getMessage());
                 }
         }
+        }catch (JSONException je){
+            resContent.setCode(110);
+            resContent.setMessage(je.getMessage());
+        }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
 
-    @RequestMapping("/proStatus")
+    @RequestMapping("/getRecord")
+    public void getRecord(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        long proID=Long.parseLong(request.getParameter("proID"));
+        List<Map<String,Object>> mapList=dataService.getRecord(proID);
+        if (mapList.size() == 0) {
+            resContent.setMessage("没有数据");
+            resContent.setCode(102);
+        } else {
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(mapList);
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/getItem")
+    public void getItem(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        long recordID=Long.parseLong(request.getParameter("recordID"));
+        List<Map<String,Object>> mapList=dataService.getItem(recordID);
+        if (mapList.size() == 0) {
+            resContent.setMessage("没有数据");
+            resContent.setCode(102);
+        } else {
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(mapList);
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+
+    @RequestMapping("/taskStatus")
     public void changeStatus(Task task, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
@@ -97,13 +145,16 @@ public class DataController {
             resContent.setMessage("参数错误");
         } else {
             int status=task.getStatus();
-            List<Task> taskList = taskService.select(task);
+            Task temp=new Task();
+            temp.setTaskID(task.getTaskID());
+            List<Task> taskList = taskService.select(temp);
             if (taskList.size() == 0) {
                 resContent.setCode(104);
                 resContent.setMessage("没有该记录");
             } else {
                 task = taskList.get(0);
                 task.setStatus(status);
+                task.setEndtime(new Date());
                 int count = taskService.update(task);
                 Utils.dealForUpdate(count, resContent);
             }
@@ -112,6 +163,114 @@ public class DataController {
         response.getWriter().close();
     }
 
+    @RequestMapping("/xDraw")
+    public void getOption_x(HttpServletRequest request,HttpServletResponse response)throws IOException {
+        response.setCharacterEncoding(charact);
+        String devIDs = request.getParameter("devIDs");
+        String itemIDs = request.getParameter("items");
+        try {
+            List<Long> devIDList = JSON.parseArray(devIDs, Long.class);
+            List<Long> itemIDList = JSON.parseArray(itemIDs, Long.class);
+            //创建Option
+            Option option = new Option();
+            //  option.title("剔除药品").tooltip(Trigger.axis).legend("金额（元）");
+            //横轴为值轴
+            option.yAxis(new ValueAxis().boundaryGap(0d, 0.01));
+            //创建类目轴
+            CategoryAxis category = new CategoryAxis();
+            //设置类目轴
+            option.xAxis(category);
+            for (long devID : devIDList) {
+
+            }
+            Line line = new Line();
+        } catch (JSONException je) {
+
+        }
+    }
+    @RequestMapping("/yDraw")
+    public void getOption_y(HttpServletRequest request,HttpServletResponse response)throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        try {
+            long devID=Long.parseLong(request.getParameter("devID"));
+            long recordID=Long.parseLong(request.getParameter("recordID"));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date aTime=sdf.parse(request.getParameter("atime"));
+            Date bTime=sdf.parse(request.getParameter("btime"));
+            String itemIDs = request.getParameter("itemIDs");
+            List<Long> itemIDList = JSON.parseArray(itemIDs, Long.class);
+            Task task=new Task();
+            task.setDevID(devID);
+            task.setStatus(1);
+            task.setAtime(aTime);
+            task.setBtime(bTime);
+            List<Task> taskList=taskService.select(task);
+            List<Series> seriesList=new ArrayList<>();
+            if(taskList.size()==0){
+                resContent.setCode(103);
+                resContent.setMessage("没有数据");
+            }else {
+                //创建Option
+                Option option = new Option();
+                option.tooltip(Trigger.axis);
+                //纵轴为值轴
+                option.yAxis(new ValueAxis().boundaryGap(false));
+                //创建类目轴
+                CategoryAxis category = new CategoryAxis().boundaryGap(false);
+                boolean isF=true;
+                for(long itemID:itemIDList){
+                    Data data=new Data();
+                    data.setRecordID(recordID);
+                    data.setItemID(itemID);
+                    List<Data> dataList=dataService.select(data);
+                    data=dataList.get(0);
+                    Line line = new Line(data.getItemName());
+                    option.legend(data.getItemName());
+                    for(Task t:taskList){
+                        SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        if(isF) {
+                            category.data(temp.format(t.getEndtime()));
+                        }
+                        long taskID=t.getTaskID();
+                        Data tdata=new Data();
+                        tdata.setTaskID(taskID);
+                        tdata.setRecordID(recordID);
+                        tdata.setItemID(itemID);
+                        List<Data> tdataList=dataService.select(tdata);
+                        if(tdataList.size()==0){
+                            resContent.setCode(105);
+                            resContent.setMessage("没有数据");
+                            break;
+                        }else {
+                            tdata=tdataList.get(0);
+//                            line.setStack("数值");
+                            line.data(tdata.getDataVal());
+                        }
+                    }
+                    isF=false;
+                    seriesList.add(line);
+                }
+                //设置类目轴
+                option.xAxis(category);
+                option.series(seriesList);
+                resContent.setCode(101);
+                resContent.setMessage("获取成功");
+                resContent.setData(option);
+                System.out.println(option);
+            }
+        }catch (JSONException je){
+            resContent.setCode(105);
+            resContent.setMessage(je.getMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            resContent.setCode(104);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
 
     @RequestMapping("/get")
     public void getData(Data data, HttpServletResponse response) throws IOException {
@@ -119,10 +278,13 @@ public class DataController {
         ResContent resContent = new ResContent();
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         try {
+            Task task=taskService.select(data.getTaskID());
             List<Data> dataList = dataService.select(data);
             String url = Esurl + "data/get";
             FormBody formBody = new FormBody.Builder()
                     .add("dataVal", JSON.toJSONString(dataList))
+                    .add("remark", task.getRemark())
+                    .add("url",task.getUrl())
                     .build();
             Request req = new Request.Builder().url(url)
                     .post(formBody)
@@ -131,6 +293,7 @@ public class DataController {
             Response response1 = call.execute();
             String proStr = response1.body().string();
             resContent = JSON.parseObject(proStr, ResContent.class);
+
         } catch (Exception e) {
             e.printStackTrace();
             resContent.setCode(102);
@@ -286,57 +449,45 @@ public class DataController {
         }
     }
 
-    private void addDb(List<Record> records, Data data, ResContent resContent) {
+    private void addDb(List<Record> records, Data data, Task task, ResContent resContent) {
         List<Data> List = new ArrayList<>();
-        boolean isExt = false;
+        dataService.delete(data.getTable(),task.getTaskID());
         for (Record chunk : records) {
             List<Record> recordList = chunk.getRecords();
             int recCount = recordList.size();
             for (int i = 0; i < recCount; i++) {
                 Record record = recordList.get(i);
                 long recordID = record.getRecordID();
+                String recordName=record.getRecordName();
                 int testOrder = i + 1;
                 for (Item item : record.getItemList()
                 ) {
                     Data tempData = new Data();
                     tempData.setTestID(data.getTestID());
                     tempData.setTaskID(data.getTaskID());
+                    tempData.setProName(task.getProName());
+                    tempData.setDevID(task.getDevID());
                     tempData.setProID(data.getProID());
                     long itemID = item.getItemID();
+                    String itemName=item.getItemName();
                     String dataVal = item.getItemVal();
                     tempData.setRecordID(recordID);
+                    tempData.setRecordName(recordName);
                     tempData.setTestOrder(testOrder);
                     tempData.setItemID(itemID);
+                    tempData.setItemName(itemName);
                     tempData.setDataVal(dataVal);
-                    long dataID = dataService.selOne(tempData);
-                    if (dataID == 0) {
-                        List.add(tempData);
-                    } else {
-                        isExt = true;
-                        tempData.setDataID(dataID);
-                        List.add(tempData);
-                    }
+                    List.add(tempData);
                 }
             }
         }
-        if (!isExt) {
-            int count = dataService.insertList(data.getTable(),List);
-            if (count > 0) {
-                resContent.setCode(101);
-                resContent.setMessage("新增成功，新增" + count + "条数据");
-            } else {
-                resContent.setCode(104);
-                resContent.setMessage("新增失败");
-            }
+        int count = dataService.insertList(data.getTable(), List);
+        if (count > 0) {
+            resContent.setCode(101);
+            resContent.setMessage("录入成功");
         } else {
-            int count = dataService.updateList(data.getTable(),List);
-            if (count > 0) {
-                resContent.setCode(101);
-                resContent.setMessage("更新成功，更新" + count + "条数据");
-            } else {
-                resContent.setCode(105);
-                resContent.setMessage("更新失败");
-            }
+            resContent.setCode(104);
+            resContent.setMessage("录入失败");
         }
 
     }

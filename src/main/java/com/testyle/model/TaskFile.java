@@ -6,10 +6,28 @@ public class TaskFile {
     long ID=-1;
     long taskID=-1;
     long fileID=-1;
+    int fileType=-1;
     String fileName;
     String url;
     String remark;
+    Date endtime;
     Date addtime=new Date();
+
+    public Date getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
+    }
+
+    public int getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(int fileType) {
+        this.fileType = fileType;
+    }
 
     public long getID() {
         return ID;

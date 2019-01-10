@@ -6,10 +6,14 @@
         <result property="testID" column="testID"></result>
         <result property="taskID" column="taskID"></result>
         <result property="proID" column="proID"></result>
+        <result property="proName" column="proName"></result>
         <result property="dataVal" column="dataVal"></result>
         <result property="recordID" column="recordID"></result>
+        <result property="recordName" column="recordName"></result>
         <result property="itemID" column="itemID"></result>
+        <result property="itemName" column="itemName"></result>
         <result property="devID" column="devID"></result>
+        <result property="devName" column="devName"></result>
         <result property="testOrder" column="testOrder"></result>
     </resultMap>
 
@@ -19,58 +23,36 @@
         where dataID = #{dataID}
     </select>
     <select id="selOne" resultType="long" parameterType="Data">
-        select IFNULL(max(dataID),0) as dataID from data
-        <where>
-            <if test="testID!=-1">
-                and testID=#{testID}
-            </if>
-            <if test="taskID!=-1">
-                and taskID=#{taskID}
-            </if>
-            <if test="recordID!=-1">
-                and recordID=#{recordID}
-            </if>
-            <if test="proID!=-1">
-                and proID=#{proID}
-            </if>
-            <if test="testOrder!=-1">
-                and testOrder=#{testOrder}
-            </if>
-            <if test="itemID!=-1">
-                and itemID=#{itemID}
-            </if>
-            <if test="devID!=-1">
-                and devID=#{devID}
-            </if>
-        </where>
+        select IFNULL(max(dataID),0) as dataID from data where dataID=#{dataID}
+
 
     </select>
     <select id="select" resultMap="listData" parameterType="Data">
-        select * from ${table}
+        select * from ${table} a left join device b on a.devID=b.devID
         <where>
             <if test="dataID!=-1">
-                and dataID=#{dataID}
+                and a.dataID=#{dataID}
             </if>
             <if test="testID!=-1">
-                and testID=#{testID}
+                and a.testID=#{testID}
             </if>
             <if test="taskID!=-1">
-                and taskID=#{taskID}
+                and a.taskID=#{taskID}
             </if>
             <if test="recordID!=-1">
-                and recordID=#{recordID}
+                and a.recordID=#{recordID}
             </if>
             <if test="proID!=-1">
-                and proID=#{proID}
+                and a.proID=#{proID}
             </if>
             <if test="testOrder!=-1">
-                and testOrder=#{testOrder}
+                and a.testOrder=#{testOrder}
             </if>
             <if test="itemID!=-1">
-                and itemID=#{itemID}
+                and a.itemID=#{itemID}
             </if>
             <if test="devID!=-1">
-                and devID=#{devID}
+                and a.devID=#{devID}
             </if>
         </where>
     </select>
@@ -79,28 +61,28 @@
             SELECT @@IDENTITY
         </selectKey>
         INSERT into ${table} (testID,taskID,proID,dataVal,recordID,
-        testOrder,itemID,devID,addtime)
+        testOrder,itemID,devID, proName,recordName,itemName,addtime)
         values (#{testID},#{taskID},#{proID},#{dataVal},#{recordID},
-        #{testOrder},#{itemID},#{devID},#{addtime})
+        #{testOrder},#{itemID},#{devID},#{proName},#{recordName},#{itemName},#{addtime})
     </insert>
     <insert id="insertList" useGeneratedKeys="true">
         <selectKey resultType="long" keyProperty="dataID">
             SELECT @@IDENTITY
         </selectKey>
         INSERT into ${table} (testID,taskID,proID,dataVal,recordID,
-        testOrder,itemID,devID,addtime) values
+        testOrder,itemID,devID, proName,recordName,itemName,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
         <foreach collection="dataList" item="Data" index="index" separator="," close=";">
             (
             #{Data.testID},#{Data.taskID},#{Data.proID},#{Data.dataVal},
             #{Data.recordID},#{Data.testOrder},#{Data.itemID},#{Data.devID},
-            #{Data.addtime})
+            #{Data.proName},#{Data.recordName},#{Data.itemName},#{Data.addtime})
         </foreach>
     </insert>
     <delete id="delete" parameterType="long">
         delete
         from ${table}
-        where dataID = #{dataID}
+        where taskID = #{taskID}
     </delete>
 
     <update id="update" parameterType="Data">
@@ -113,6 +95,9 @@
             testOrder = #{testOrder},
             itemID    = #{itemID},
             devID=#{devID},
+            proName = #{proName},
+            recordName    = #{recordName},
+            itemName=#{itemName},
             addtime   = #{addtime}
         where dataID = #{dataID}
     </update>
@@ -173,6 +158,30 @@
             when #{Data.dataID} then
             #{Data.dataVal}
         </foreach>
+        ,proName =
+        <foreach collection="list" item="Data" index="index"
+                 separator=" " open="case DataID" close="end">
+            when #{Data.dataID} then
+            #{Data.proName}
+        </foreach>
+        ,recordName =
+        <foreach collection="list" item="Data" index="index"
+                 separator=" " open="case DataID" close="end">
+            when #{Data.dataID} then
+            #{Data.recordName}
+        </foreach>
+        ,itemName =
+        <foreach collection="list" item="Data" index="index"
+                 separator=" " open="case DataID" close="end">
+            when #{Data.dataID} then
+            #{Data.itemName}
+        </foreach>
     </update>
 
+    <select id="getRecord" resultType="HashMap" parameterType="Long">
+        select DISTINCT recordID,recordName from data where proID=#{proID}
+    </select>
+    <select id="getItem" resultType="HashMap" parameterType="Long">
+        select DISTINCT itemID,itemName from data where recordID=#{recordID}
+    </select>
 </mapper>

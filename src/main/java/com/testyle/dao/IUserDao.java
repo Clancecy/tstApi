@@ -11,4 +11,5 @@ public interface IUserDao {
     int deleteUser(long userID);
     List<User> select(User user);
     int update(User user);
+    List<User> selectList(List<Long> userIDs);
 }
