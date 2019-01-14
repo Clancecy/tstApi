@@ -8,6 +8,7 @@ import com.testyle.model.File;
 import com.testyle.service.*;
 import okhttp3.*;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,8 +46,12 @@ public class DeviceController {
     @Resource
     IFileService fileservice;
     String charact = "UTF-8";
-    String imageRoot = "E:/image/";
-    String Esurl = "http://127.0.0.1:8080/";
+    @Value("${imgPath}")
+    String imageRoot;
+    @Value("${imgUrl}")
+    String imageUrl;
+    @Value("${EsUrl}")
+    String EsUrl;
     @RequestMapping("/add")
     public void addDevice(Device device, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -76,6 +81,7 @@ public class DeviceController {
                 Tag tag = new Tag();
                 tag.setTagType(1);
                 tag.setTagName(tags[i]);
+                tag.setpTagID(0);
                 List<Tag> tagList = tagService.select(tag);
                 if (tagList.size() == 0) {
                     int ic = tagService.insert(tag);
@@ -121,6 +127,11 @@ public class DeviceController {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         if (device.getDevID() != -1) {
+            Device oldDevice=deviceService.selectByID(device.getDevID());
+            device.setStaID(oldDevice.getStaID());
+            device.setPlateUrl(oldDevice.getPlateUrl());
+            device.setDevUrl(oldDevice.getDevUrl());
+            device.setRemark(oldDevice.getRemark());
             int count = deviceService.update(device);
             TagDevice tagDevice = new TagDevice();
             tagDevice.setDevID(device.getStaID());
@@ -239,7 +250,7 @@ public class DeviceController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long devID = Long.parseLong(request.getParameter("devID"));
             Device device = deviceService.selectByID(devID);
             device.setDevUrl(url);
@@ -273,7 +284,7 @@ public class DeviceController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long devID = Long.parseLong(request.getParameter("devID"));
             Device device = deviceService.selectByID(devID);
             device.setPlateUrl(url);
@@ -307,7 +318,7 @@ public class DeviceController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long devID = Long.parseLong(request.getParameter("devID"));
 
             String temp = file.getOriginalFilename();
@@ -505,7 +516,7 @@ public class DeviceController {
             long devID=Long.parseLong(request.getParameter("devID"));
             Device device=deviceService.selectByID(devID);
             long devType=device.getDevTypeID();
-            String url = Esurl + "project/list";
+            String url = EsUrl + "project/list";
             FormBody formBody = new FormBody.Builder()
                     .add("proType", "0")
                     .add("devTypeID", String.valueOf(devType))

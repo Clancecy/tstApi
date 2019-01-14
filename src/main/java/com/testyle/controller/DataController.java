@@ -16,6 +16,7 @@ import com.testyle.service.*;
 import okhttp3.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,7 +41,8 @@ public class DataController {
     @Resource
     private ITaskService taskService;
 
-    String Esurl = "http://127.0.0.1:8080/";
+    @Value("${EsUrl}")
+    String EsUrl;
 
     String charact = "UTF-8";
 
@@ -69,7 +71,7 @@ public class DataController {
             task.setStatus(status);
             taskService.update(task);
             try {
-                    String url = Esurl + "data/add";
+                    String url = EsUrl + "data/add";
                     FormBody formBody = new FormBody.Builder()
                             .add("url", fname)
                             .add("dataVal", data.getDataVal())
@@ -280,7 +282,7 @@ public class DataController {
         try {
             Task task=taskService.select(data.getTaskID());
             List<Data> dataList = dataService.select(data);
-            String url = Esurl + "data/get";
+            String url = EsUrl + "data/get";
             FormBody formBody = new FormBody.Builder()
                     .add("dataVal", JSON.toJSONString(dataList))
                     .add("remark", task.getRemark())

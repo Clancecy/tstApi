@@ -44,19 +44,19 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="devID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into Device (devName,runNumber,initNumber,lineNumber,volStep,buildtime,usetime,
+        INSERT into device (devName,runNumber,initNumber,lineNumber,volStep,buildtime,usetime,
         modNumber,factory,status,plateUrl,devUrl,remark,devTypeID,staID,addtime)
          values (#{devName},#{runNumber},#{initNumber},#{lineNumber},#{volStep},#{buildtime},#{usetime},
         #{modNumber},#{factory},#{status},#{plateUrl},#{devUrl},#{remark},#{devTypeID},#{staID},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
-        from Device
+        from device
         where devID = #{devID}
     </delete>
 
     <update id="update" parameterType="Device">
-        update Device
+        update device
         set devName   = #{devName},
             devTypeID = #{devTypeID},
             runNumber     = #{runNumber},

@@ -11,7 +11,7 @@
  Target Server Version : 100137
  File Encoding         : 65001
 
- Date: 10/01/2019 20:43:21
+ Date: 12/01/2019 15:29:36
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `company`  (
   `compID` int(11) NOT NULL AUTO_INCREMENT,
   `compName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `compZM` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`compID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -51,7 +51,7 @@ CREATE TABLE `data`  (
   `itemName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `devID` int(11) NULL DEFAULT NULL,
   `dataVal` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`dataID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 839 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
@@ -151,7 +151,7 @@ CREATE TABLE `defaultdata`  (
   `recordID` int(11) NULL DEFAULT NULL,
   `itemID` int(11) NULL DEFAULT NULL,
   `dataval` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`defaultID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -165,7 +165,7 @@ CREATE TABLE `devattrval`  (
   `attrName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `devID` int(11) NULL DEFAULT NULL,
   `arrtVal` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -180,8 +180,8 @@ CREATE TABLE `device`  (
   `initNumber` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `lineNumber` int(11) NULL DEFAULT NULL,
   `volStep` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `buildtime` datetime(0) NULL DEFAULT NULL,
-  `usetime` datetime(0) NULL DEFAULT NULL,
+  `buildtime` datetime NULL DEFAULT NULL,
+  `usetime` datetime NULL DEFAULT NULL,
   `modNumber` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `factory` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `status` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
@@ -190,7 +190,7 @@ CREATE TABLE `device`  (
   `devTypeID` int(11) NULL DEFAULT NULL,
   `staID` int(11) NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`devID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
@@ -208,7 +208,7 @@ CREATE TABLE `devicefile`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) NULL DEFAULT NULL,
   `devID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -228,7 +228,7 @@ CREATE TABLE `devtype`  (
   `pTypeID` int(11) NULL DEFAULT NULL,
   `depth` int(11) NULL DEFAULT NULL,
   `order` int(11) NULL DEFAULT NULL,
-  `addTime` datetime(0) NULL DEFAULT NULL,
+  `addTime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`typeID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -256,7 +256,7 @@ DROP TABLE IF EXISTS `es`;
 CREATE TABLE `es`  (
   `ID` int(11) NOT NULL,
   `ESUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -270,9 +270,9 @@ CREATE TABLE `file`  (
   `fileType` int(11) NULL DEFAULT 0 COMMENT '0,文件1，图片，2音频，3，视频',
   `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`fileID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 90 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 91 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of file
@@ -365,6 +365,7 @@ INSERT INTO `file` VALUES (86, '3.png', 1, '/upload/image/3.png', '2', '2019-01-
 INSERT INTO `file` VALUES (87, '1.png', 1, '/upload/image/1.png', '1', '2019-01-10 19:38:02');
 INSERT INTO `file` VALUES (88, '2.png', 1, '/upload/image/2.png', '2', '2019-01-10 19:38:02');
 INSERT INTO `file` VALUES (89, '3.png', 1, '/upload/image/3.png', '3', '2019-01-10 19:38:02');
+INSERT INTO `file` VALUES (90, 'address', 0, 'E:/image/address.png', NULL, '2019-01-11 21:00:51');
 
 -- ----------------------------
 -- Table structure for instrument
@@ -377,14 +378,14 @@ CREATE TABLE `instrument`  (
   `factory` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `status` int(11) NULL DEFAULT 1 COMMENT '//1正常工作，0维修中，2报废',
   `initNumber` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `usetime` datetime(0) NULL DEFAULT NULL,
-  `inittime` datetime(0) NULL DEFAULT NULL,
+  `usetime` datetime NULL DEFAULT NULL,
+  `inittime` datetime NULL DEFAULT NULL,
   `insUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `plateUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `valtime` datetime(0) NULL DEFAULT NULL,
+  `valtime` datetime NULL DEFAULT NULL,
   `modNumber` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`insID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
@@ -401,7 +402,7 @@ CREATE TABLE `instrumentfile`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) NULL DEFAULT NULL,
   `insID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -494,7 +495,7 @@ CREATE TABLE `plan`  (
   `cycType` int(11) NULL DEFAULT 0 COMMENT '//0：不循环，1：每天，2：每周，3：每月，4：每个季度，5：每年',
   `builderID` int(11) NULL DEFAULT NULL,
   `status` int(11) NULL DEFAULT 0 COMMENT '0未执行，1已执行，-1停止执行',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`planID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -515,22 +516,23 @@ CREATE TABLE `plandan`  (
   `planDanID` int(11) NOT NULL AUTO_INCREMENT,
   `planDanNumber` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `cycType` int(11) NULL DEFAULT NULL,
-  `cycTime` datetime(0) NULL DEFAULT NULL,
+  `cycTime` datetime NULL DEFAULT NULL,
   `staID` int(11) NULL DEFAULT NULL,
   `planID` int(11) NULL DEFAULT NULL,
   `builderID` int(11) NULL DEFAULT NULL,
   `leaderID` int(11) NULL DEFAULT NULL,
-  `endtime` datetime(0) NULL DEFAULT NULL,
+  `endtime` datetime NULL DEFAULT NULL,
   `status` int(11) NULL DEFAULT NULL COMMENT '0,进行中，1已完成，2已终止',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`planDanID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of plandan
 -- ----------------------------
 INSERT INTO `plandan` VALUES (1, '3526747235', 1, '2019-01-09 15:26:55', 11, 1, -1, 42, NULL, -1, '2019-01-08 15:26:55');
 INSERT INTO `plandan` VALUES (4, '', 0, '2019-01-08 15:30:07', 4, -1, -1, 43, NULL, -1, '2019-01-08 15:30:07');
+INSERT INTO `plandan` VALUES (5, '201901112111267271', 0, '2019-01-11 21:11:26', -1, -1, -1, -1, NULL, 0, '2019-01-11 21:11:26');
 
 -- ----------------------------
 -- Table structure for plantest
@@ -540,7 +542,7 @@ CREATE TABLE `plantest`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `planID` int(11) NULL DEFAULT NULL,
   `soluID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -656,7 +658,7 @@ CREATE TABLE `report`  (
   `planDanID` int(11) NULL DEFAULT NULL,
   `testID` int(11) NULL DEFAULT NULL,
   `status` int(11) NULL DEFAULT 0 COMMENT '0进行中，1已完成',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`reportID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -683,7 +685,7 @@ CREATE TABLE `repprofile`  (
   `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `workerID` int(11) NULL DEFAULT NULL,
   `status` int(11) NULL DEFAULT 0 COMMENT '0正在进行，1已完成',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 56 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -711,7 +713,7 @@ CREATE TABLE `solupro`  (
   `soluID` int(11) NULL DEFAULT NULL,
   `proID` int(11) NULL DEFAULT NULL,
   `proName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -735,7 +737,7 @@ CREATE TABLE `solution`  (
   `soluName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `devTypeID` int(11) NULL DEFAULT NULL,
   `builderID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`soluID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -759,7 +761,7 @@ CREATE TABLE `station`  (
   `longitude` float(255, 6) NULL DEFAULT NULL,
   `latitude` float(255, 6) NULL DEFAULT NULL,
   `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `addTime` datetime(0) NULL DEFAULT NULL,
+  `addTime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`staID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
@@ -773,7 +775,7 @@ INSERT INTO `station` VALUES (4, '二级1-2', 1, 2, NULL, 0.000000, 0.000000, ''
 INSERT INTO `station` VALUES (5, '二级1-3', 1, 2, NULL, 0.000000, 0.000000, '', '2018-12-18 14:41:06');
 INSERT INTO `station` VALUES (6, '二级2-1', 2, 2, NULL, 0.000000, 0.000000, '', '2018-12-18 14:41:09');
 INSERT INTO `station` VALUES (7, '二级2-2', 2, 2, NULL, NULL, NULL, '', '2018-11-16 13:50:52');
-INSERT INTO `station` VALUES (8, '洪山区珞瑜35kv变电站', 3, 3, NULL, 116.359779, 39.962406, '12131', '2019-01-04 13:38:35');
+INSERT INTO `station` VALUES (8, '洪山区珞瑜35kv变电站', 3, 3, NULL, 116.359779, 39.962406, '12131', '2019-01-11 20:56:38');
 INSERT INTO `station` VALUES (9, '三级2-2-1', 7, 3, NULL, 116.227257, 39.973984, '', '2018-12-18 14:40:19');
 INSERT INTO `station` VALUES (10, '三级1-3-1', 5, 3, NULL, 0.000000, 0.000000, '', '2018-12-18 15:38:55');
 INSERT INTO `station` VALUES (11, '江夏区35kv变电站', 3, 3, NULL, 116.227257, 39.911861, '', '2018-12-24 15:17:02');
@@ -787,21 +789,19 @@ CREATE TABLE `stationfile`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) NULL DEFAULT NULL,
   `staID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of stationfile
 -- ----------------------------
 INSERT INTO `stationfile` VALUES (1, 1, 11, '2018-12-28 12:41:42');
-INSERT INTO `stationfile` VALUES (2, 1, 8, '2018-12-28 12:42:12');
 INSERT INTO `stationfile` VALUES (3, 3, 11, '2018-12-28 13:31:31');
 INSERT INTO `stationfile` VALUES (4, 4, 11, '2018-12-28 13:31:38');
-INSERT INTO `stationfile` VALUES (10, 10, 8, '2019-01-04 13:58:07');
-INSERT INTO `stationfile` VALUES (11, 11, 8, '2019-01-04 13:58:37');
 INSERT INTO `stationfile` VALUES (14, 14, 8, '2019-01-04 15:18:07');
 INSERT INTO `stationfile` VALUES (15, 15, 11, '2019-01-04 15:18:17');
+INSERT INTO `stationfile` VALUES (16, 90, 8, '2019-01-11 21:00:52');
 
 -- ----------------------------
 -- Table structure for tag
@@ -812,7 +812,7 @@ CREATE TABLE `tag`  (
   `tagName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `tagType` int(11) NULL DEFAULT 0 COMMENT '0,站点tag，1设备tag，2人员组别',
   `pTagID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`tagID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -836,7 +836,7 @@ CREATE TABLE `tagdevice`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `tagID` int(11) NULL DEFAULT NULL,
   `devID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -848,7 +848,7 @@ CREATE TABLE `tagstation`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `tagID` int(11) NULL DEFAULT NULL,
   `staID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -880,8 +880,8 @@ CREATE TABLE `task`  (
   `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `status` int(11) NULL DEFAULT 0 COMMENT '完成状态',
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
-  `endtime` datetime(0) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `endtime` datetime NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`taskID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -908,7 +908,7 @@ CREATE TABLE `taskfile`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `fileID` int(11) NULL DEFAULT NULL,
   `taskID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 63 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -928,7 +928,7 @@ CREATE TABLE `taskpro`  (
   `taskID` int(11) NULL DEFAULT NULL,
   `proID` int(11) NULL DEFAULT NULL,
   `proName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -948,7 +948,7 @@ CREATE TABLE `taskuser`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `taskID` int(11) NULL DEFAULT NULL,
   `userID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -974,9 +974,9 @@ CREATE TABLE `test`  (
   `leaderID` int(11) NULL DEFAULT NULL,
   `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `status` int(11) NULL DEFAULT 0,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`testID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of test
@@ -985,6 +985,13 @@ INSERT INTO `test` VALUES (28, '346346', 2, 1, 1, 1, NULL, 0, '2018-12-11 15:34:
 INSERT INTO `test` VALUES (35, '37373', 10, 1, 44, 1, NULL, 1, '2018-12-11 15:17:05');
 INSERT INTO `test` VALUES (36, '4624524', 10, 1, 44, 1, NULL, 0, '2018-12-11 15:35:12');
 INSERT INTO `test` VALUES (37, '7288356', 2, 1, 1, 1, NULL, 0, '2018-12-11 15:36:11');
+INSERT INTO `test` VALUES (38, '201901112111468336', -1, 5, 1, -1, NULL, 0, '2019-01-11 21:11:46');
+INSERT INTO `test` VALUES (39, '201901112111561947', 2, 5, -1, -1, NULL, 0, '2019-01-11 21:11:56');
+INSERT INTO `test` VALUES (40, '201901112111568875', 10, 5, -1, -1, NULL, 0, '2019-01-11 21:11:56');
+INSERT INTO `test` VALUES (41, '201901112111566710', 2, 5, -1, -1, NULL, 0, '2019-01-11 21:11:56');
+INSERT INTO `test` VALUES (42, '201901112111563570', 10, 5, -1, -1, NULL, 0, '2019-01-11 21:11:56');
+INSERT INTO `test` VALUES (43, '201901112111569716', 2, 5, -1, -1, NULL, 0, '2019-01-11 21:11:56');
+INSERT INTO `test` VALUES (44, '201901112111564983', 10, 5, -1, -1, NULL, 0, '2019-01-11 21:11:56');
 
 -- ----------------------------
 -- Table structure for testuser
@@ -994,7 +1001,7 @@ CREATE TABLE `testuser`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `testID` int(11) NULL DEFAULT NULL,
   `userID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -1018,7 +1025,7 @@ CREATE TABLE `typeattr`  (
   `attrID` int(11) NOT NULL AUTO_INCREMENT,
   `attrName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `typeID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`attrID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -1038,7 +1045,7 @@ CREATE TABLE `user`  (
   `userNumber` int(11) NULL DEFAULT NULL,
   `userCompanyID` int(11) NULL DEFAULT NULL,
   `deptID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   `userPic` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   PRIMARY KEY (`userID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;

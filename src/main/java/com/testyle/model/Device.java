@@ -1,5 +1,7 @@
 package com.testyle.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +12,9 @@ public class Device {
     String initNumber;
     int lineNumber;
     String volStep;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     Date buildtime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     Date usetime;
     String modNumber;
     String factory;

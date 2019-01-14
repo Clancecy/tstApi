@@ -8,7 +8,7 @@
     </resultMap>
 
     <select id="select" resultMap="listDevType" parameterType="DevType">
-        select * from devType
+        select * from devtype
         <where>
             <if test="typeID!=-1">
                 and typeID=#{typeID}
@@ -27,12 +27,12 @@
     </insert>
     <delete id="delete" parameterType="long">
         delete
-        from devType
+        from devtype
         where typeID = #{typeID}
     </delete>
 
     <update id="update" parameterType="TypeAttr">
-        update devType
+        update devtype
         set typeName = #{typeName},
             pTypeID  = #{pTypeID},
             addtime  = #{addtime}

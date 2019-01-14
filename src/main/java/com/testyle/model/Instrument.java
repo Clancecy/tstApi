@@ -1,5 +1,7 @@
 package com.testyle.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +13,11 @@ public class Instrument {
     String factory;//出厂厂商
     String initNumber;
     String modNumber;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date usetime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date inittime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date valtime;
     int status=-1;
     String insUrl;

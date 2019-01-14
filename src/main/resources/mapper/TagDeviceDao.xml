@@ -19,7 +19,7 @@
         <selectKey resultType="long" keyProperty="ID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into tagdevice (tagID,devID,proName,addtime) values
+        INSERT into tagdevice (tagID,devID,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
         <foreach collection="list" item="TagDevice" index="index" separator="," close=";">
             ( #{TagDevice.tagID},#{TagDevice.devID},#{TagDevice.addtime})

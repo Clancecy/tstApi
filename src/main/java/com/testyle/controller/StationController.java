@@ -9,6 +9,7 @@ import com.testyle.model.Tag;
 import com.testyle.model.TagStation;
 import com.testyle.service.*;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +39,10 @@ public class StationController {
     @Resource
     IFileService fileservice;
     String charact = "UTF-8";
-    String imageRoot = "E:/image/";
+    @Value("${imgUrl}")
+    String imageUrl;
+    @Value("${imgPath}")
+    String imageRoot;
 
     @RequestMapping("/list")
     public void selectAll(HttpServletResponse response) throws IOException {
@@ -274,7 +278,7 @@ public class StationController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long staID = Long.parseLong(request.getParameter("staID"));
 
             String temp = file.getOriginalFilename();

@@ -7,6 +7,7 @@ import com.testyle.dao.IReportProFileDao;
 import com.testyle.model.*;
 import com.testyle.service.*;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,7 +35,8 @@ public class ReportController {
             private ITaskDanService taskDanService;
 
     String charact = "UTF-8";
-    String Esurl = "http://127.0.0.1:8080/";
+    @Value("${EsUrl}")
+    String EsUrl;
 
     @RequestMapping("/list")
     public void getReportList(Report report, HttpServletResponse response) throws IOException {
@@ -84,7 +86,7 @@ public class ReportController {
                         urlList.add(file.getUrl());
                     }
                     OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
-                    String url = Esurl + "report/create";
+                    String url = EsUrl + "report/create";
                     FormBody formBody = new FormBody.Builder()
                             .add("reportName", report.getReportName())
                             .add("fnameList", JSON.toJSONString(urlList))

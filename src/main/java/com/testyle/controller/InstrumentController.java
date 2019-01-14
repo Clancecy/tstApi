@@ -11,6 +11,7 @@ import com.testyle.service.IFileService;
 import com.testyle.service.IInstrumentFileService;
 import com.testyle.service.IInstrumentService;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,8 +37,10 @@ public class InstrumentController {
     @Resource
     IFileService fileservice;
     String charact = "UTF-8";
-    String imageRoot = "E:/image/";
-
+    @Value("${imgUrl}")
+    String imageUrl;
+    @Value("${imgPath}")
+    String imageRoot;
     @RequestMapping("/add")
     public void addIns(Instrument instrument, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -64,7 +67,7 @@ public class InstrumentController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long insID = Long.parseLong(request.getParameter("insID"));
             Instrument instrument = instrumentService.selectByID(insID);
             instrument.setInsUrl(url);
@@ -98,7 +101,7 @@ public class InstrumentController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long insID = Long.parseLong(request.getParameter("insID"));
             Instrument instrument = instrumentService.selectByID(insID);
             instrument.setPlateUrl(url);
@@ -198,7 +201,7 @@ public class InstrumentController {
                         imageRoot,
                         file.getOriginalFilename()));
             }
-            String url = imageRoot + file.getOriginalFilename();
+            String url = imageUrl + file.getOriginalFilename();
             long insID = Long.parseLong(request.getParameter("insID"));
             String temp = file.getOriginalFilename();
            // String fileName = temp.split("\\.")[0];

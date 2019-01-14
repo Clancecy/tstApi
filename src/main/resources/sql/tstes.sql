@@ -11,7 +11,7 @@
  Target Server Version : 100137
  File Encoding         : 65001
 
- Date: 10/01/2019 20:42:55
+ Date: 12/01/2019 15:29:47
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `devtype`  (
   `pTypeID` int(11) NULL DEFAULT NULL,
   `depth` int(11) NULL DEFAULT NULL,
   `order` int(11) NULL DEFAULT NULL,
-  `addTime` datetime(0) NULL DEFAULT NULL,
+  `addTime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`typeID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -52,7 +52,7 @@ CREATE TABLE `instype`  (
   `insTypeID` int(11) NOT NULL AUTO_INCREMENT,
   `insTypeName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `pTypeID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`insTypeID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -484,7 +484,7 @@ CREATE TABLE `pro`  (
   `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `devTypeID` int(11) NULL DEFAULT NULL,
   `proType` int(11) NULL DEFAULT 0 COMMENT '0,实测值，1，出厂值',
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`proID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
@@ -676,7 +676,7 @@ CREATE TABLE `typeattr`  (
   `attrID` int(11) NOT NULL AUTO_INCREMENT,
   `attrName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `typeID` int(11) NULL DEFAULT NULL,
-  `addtime` datetime(0) NULL DEFAULT NULL,
+  `addtime` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`attrID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 

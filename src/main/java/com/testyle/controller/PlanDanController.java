@@ -87,8 +87,12 @@ public class PlanDanController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
+            PlanDan newPlanDan=planDanService.select(planDan.getPlanDanID());
             Utils.claCyctime(planDan);
-            int count = planDanService.update(planDan);
+            newPlanDan.setCycType(planDan.getCycType());
+            newPlanDan.setStaID(planDan.getStaID());
+            newPlanDan.setLeaderID(planDan.getLeaderID());
+            int count = planDanService.update(newPlanDan);
             Utils.dealForUpdate(count, resContent);
             resContent.setData(planDan);
         }

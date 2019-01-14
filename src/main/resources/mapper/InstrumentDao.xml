@@ -39,19 +39,19 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="insID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into Instrument (insName,insNumber,factory,initNumber,usetime,inittime,
+        INSERT into instrument (insName,insNumber,factory,initNumber,usetime,inittime,
         valtime,status,insUrl,plateUrl,modNumber,remark,addtime)
          values(#{insName},#{insNumber},#{factory},#{initNumber},#{usetime},
           #{inittime},#{valtime},#{status},#{insUrl},#{plateUrl},#{modNumber},#{remark},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
-        from Instrument
+        from instrument
         where insID = #{insID}
     </delete>
 
     <update id="update" parameterType="Instrument">
-        update Instrument
+        update instrument
         set insName      = #{insName},
             insNumber    = #{insNumber},
             factory  = #{factory},

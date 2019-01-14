@@ -1,45 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>test</title>
-    <script src="jquery-3.3.1.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+    <!-- Bootstrap -->
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./metisMenu/metisMenu.min.css">
+    <link rel="stylesheet" href="./sb-admin-2/css/sb-admin-2.min.css">
+    <link href="./morrisjs/morris.css" rel="stylesheet">
+    <link rel="stylesheet" href="./font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/jquery/jquery.min.js"></script>
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script src="./metisMenu/metisMenu.min.js"></script>
+    <script src="./raphael/raphael.min.js"></script>
+    <script src="./morrisjs/morris.min.js"></script>
+    <script src="./sb-admin-2/js/sb-admin-2.min.js"></script>
+    <script src="./js/html5shiv/html5shiv.min.js"></script>
+    <script src="./js/respond/respond.min.js"></script>
+    <script src="./js/echarts.js"></script>
+    <script>
+        $(function () {
+            $(document.body).css({
+                "overflow-x":"hidden"
+            });
+            // $(".sidebar").css("height",$(window).height()-51+"px");
+            $("#page-wrapper").css("height",$(window).height()-51+"px");
+            $("#page-wrapper").html('<object type="text/html" data="admin-home/home.html" width="100%" height="100%"></object>');
+            $("#home").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-home/home.html" width="100%" height="100%"></object>')
+            });
+            $("#plan").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-plan-management/plansheet-list.html" width="100%" height="100%"></object>')
+            });
+            $("#test").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-test-management/test-list.html" width="100%" height="100%"></object>')
+            });
+            $("#task").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-task-management/task-list.html" width="100%" height="100%"></object>')
+            });
+            $("#station").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-address-management/address-management.html" width="100%" height="100%"></object>')
+            });
+            $("#device").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-device-management/device-list.html" width="100%" height="100%"></object>')
+            });
+            $("#instrument").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-instrument-management/instrument-list.html" width="100%" height="100%"></object>')
+            });
+            $("#member").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-mem-management/mem-list.html" width="100%" height="100%"></object>')
+            });
+            $("#vertical").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-data-management/vertical-data-analyse.html" width="100%" height="100%"></object>')
+            });
+            $("#horizen").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-data-management/horizental-data-analyse.html" width="100%" height="100%"></object>')
+            });
+            $("#planTemplate").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/plan-solution-list.html" width="100%" height="100%"></object>')
+            });
+            $("#testTemplate").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/test-solution-list.html" width="100%" height="100%"></object>')
+            });
+        });
+    </script>
+    <![endif]-->
 </head>
-<script>
-    function selectUser() {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                document.getElementById("test").innerHTML = xmlhttp.responseText;
-            }
-        }
-        xmlhttp.open("POST", "test/add", true);
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send("testID=8");
-    }
-
-    function login() {
-        $.ajax({
-            url:"user/login",
-            data:{
-                userName:$("#name").value,
-                userPassword:$("#pwd").value
-            },
-            success:function (result) {
-                res=eval("(" + result+ ")");
-                if(res.code==101){
-                    window.location.href="main.html";
-                }
-            }
-        })
-    }
-</script>
 <body>
-<p id="test">Hello World!</p>
-<button type="button" onclick="selectUser()">onclick test</button>
 
-<input type="text" name="用户名" id="name">
-<input type="text" name="密码" id="pwd">
-<button onclick="login()">登陆</button>
+<div id="wrapper">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-testyle navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" style="color: #FFFFFF;" href="index.html">全生命周期数字化云试验管理系统</a>
+        </div>
+        <!-- /.navbar-header -->
+
+        <ul class="nav navbar-top-links navbar-right">
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                    </li>
+                    <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li>
+                        <a href="#" id="home"><i class="fa fa-home fa-fw"></i> 主页</a>
+                    </li>
+                    <li>
+                        <a href="#" id="plan"><i class="fa fa-list-ul fa-fw"></i> 计划管理</a>
+                        <!-- /.nav-second-level -->
+                    </li>
+                    <li>
+                        <a href="#" id="report"><i class="fa fa-table fa-fw"></i> 报告管理</a>
+                    </li>
+                    <li>
+                        <a href="#" id="test"><i class="fa fa-table fa-fw"></i> 试验管理</a>
+                    </li>
+                    <li>
+                        <a href="#" id="task"><i class="fa fa-film fa-fw"></i> 任务管理</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 数据分析<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a id="vertical" href="#"> 纵向数据分析</a>
+                            </li>
+                            <li>
+                                <a id="horizen" href="#"> 横向数据分析</a>
+                            </li>
+                        </ul>
+                    </li>
+<li>---------------------------------</li>
+                    <li>
+                        <a href="#" id="station"><i class="fa fa-sitemap fa-fw"></i> 站点管理</a>
+                    </li>
+                    <li>
+                        <a href="#" id="device"><i class="fa fa-cube fa-fw"></i> 设备管理</a>
+                    </li>
+                    <li>
+                        <a href="#" id="instrument"><i class="fa fa-suitcase fa-fw"></i> 仪器管理</a>
+                    </li>
+                    <li>
+                        <a href="#" id="member"><i class="fa fa-group fa-fw"></i> 人员管理</a>
+                    </li>
+
+                    <li>
+                        <a href="#"><i class="fa fa-mortar-board fa-fw"></i> 模板管理<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a id="planTemplate" href="#"> 计划模板</a>
+                            </li>
+                            <li>
+                                <a id="testReport" href="#"> 报告模板</a>
+                            </li>
+                            <li>
+                                <a id="testTemplate" href="#"> 试验模板</a>
+                            </li>
+
+                            <li>
+                                <a id="testProject" href="#"> 任务模板</a>
+                            </li>
+                            <li>
+                                <a id="testyfenxi" href="#"> 数据分析模板</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+    </nav>
+
+    <div id="page-wrapper">
+    </div>
+    <!-- /#page-wrapper -->
+    <!--<nav class="navbar navbar-default navbar-testyle navbar-fixed-bottom" style="height: 50px;"></nav>-->
+
+</div>
+
+
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+
 </body>
 </html>
