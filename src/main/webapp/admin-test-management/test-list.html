@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../utils/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Select/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../utils/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="../utils/datatables/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/responsive.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Select/js/dataTables.select.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script>
+        $(function () {
+            var testInfos = getUrl();
+            var testList = getSheetList();
+            var soluList = getTestSoluList();
+            var devList = getDevList();
+            var taskList;
+            // var devTypeList = getDevTypeList();
+            var proList = getProList();
+            var memberList = getUserList();
+            for(i in testList){
+                testList[i].addDate = _getDate(testList[i].addtime);
+                if(testList[i].endtime){
+                    testList[i].endDate = _getDate(testList[i].endtime);
+                }else{
+                    testList[i].endDate = '';
+                }
+                if(testList[i].status === 0){
+                    testList[i].staName = '进行中';
+                }else if(testList[i].status === 1){
+                    testList[i].staName = '已终止';
+                }else if(testList[i].status === 2){
+                    testList[i].staName = '已完成';
+                }
+                var testNames = '';
+                for(index in testList[i].testUserList){
+                    testNames += testList[i].testUserList[index].userRealName;
+                    testNames += ',';
+                }
+                testNames = testNames.substr(0,testNames.length-1);
+                testList[i].testNames = testNames;
+            }
+            memberList = resetUser(memberList);
+            // console.log(testList);
+            // console.log(devTypeList);
+            console.log(devList);
+            console.log(proList);
+            // console.log(memberList);
+            // console.log(soluList);
+            // console.log(testInfos['planDanID']);
+            // console.log(testInfos['testID']);
+
+            var tableHeight,testInfo;
+            var members,manager,solution,device,project,taskMember,taskManager;
+
+            $(".container-fluid").css("height", $(window).height()+"px");
+            tableHeight = ($(".container-fluid").height-15)/2 + "px";
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+
+
+            members = new Vue({
+                el: '#members',
+                data: {
+                    value: null,
+                    options: memberList,
+                    normalizer(node) {
+                        return {
+                            id: node.tagID,
+                            label: node.tagName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            manager = new Vue({
+                el: '#manager',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.userID,
+                            label: node.userRealName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            members.$watch('value', function () {
+                if(!members.value){
+                    alert("请先选择成员");
+                }else{
+                    var optionmanager = {
+                        'userIDs': JSON.stringify(members.value)
+                    };
+                    var selmemList = getManagerOptions(optionmanager);
+                    manager.setOptions(selmemList);
+                    manager.setValue(null);
+                }
+            });
+
+
+
+            var testTable = $("#testtable").DataTable({
+                order: [[ 6, "desc" ]],
+                select: true,
+                scrollY: tableHeight,
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                columnDefs:[{"targets":0,"visible":false}],
+                data:testList,
+                columns:[
+                    {data:'testID', title: "试验ID", defaultContent:""},
+                    {data:'testNumber', title: "试验单号", defaultContent:""},
+                    {data:'soluName', title: "试验模板名称", defaultContent:""},
+                    {data:'testNames', title: "试验成员", defaultContent:""},
+                    {data:'leader', title: "负责人", defaultContent:""},
+                    {data:'builder', title: "创建人", defaultContent:""},
+                    {data:'addDate', title: "创建时间", defaultContent:""},
+                    {data:'staName', title: "状态", defaultContent:""},
+                    {data:'taskRate', title: "任务单进度", defaultContent:""},
+                    {data:'endDate', title: "完成时间", defaultContent:""},
+                ]
+            });
+            var taskTable = $("#tasktable").DataTable({
+                order: [[ 5, "desc" ]],
+                select: true,
+                scrollY: tableHeight,
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                columnDefs:[{"targets":0,"visible":false}],
+                columns:[
+                    {data:'taskID', title: "任务ID", defaultContent:""},
+                    {data: "taskNumber", title: "任务单号", defaultContent:""},
+                    {data: "devName", title: "设备名称", defaultContent:""},
+                    {data: "proName", title: "试验项目", defaultContent:""},
+                    {data: "builder", title: "创建人", defaultContent:""},
+                    {data: "addDate", title: "创建时间", defaultContent:""},
+                    {data: "taskNames", title: "任务组成员", defaultContent:""},
+                    {data: "leader", title: "负责人", defaultContent:""},
+                    {data: 'staName', title: "状态", defaultContent:""},
+                    {data: 'endDate', title: "完成时间", defaultContent:""},
+                ]
+            });
+            if(testInfos['testID']){
+                for(i in testList){
+                    if(parseInt(testInfos['testID'])=== testTable.row(i).data().testID){
+                        console.log(testTable.row(i).node());
+                        var row = testTable.row(i).node();
+                        $(row).addClass('selected');
+                    }
+                }
+                var options = {
+                    'testID': testInfos['testID']
+                };
+                testInfo = getTestInfo(options);
+                console.log(testInfo);
+                $("#testid").val(testInfo.testID);
+                $("#testNumber").val(testInfo.testID);
+                $("#testTime").val(testInfo.testID);
+                // devType.setValue(testInfo.devTypeID);
+                // item.setValue(testInfo.proID);
+                var mems = new Array();
+                if(!testInfo.testUserList){
+                    alert("没有试验成员")
+                }else {
+                    for(i in testInfo.testUserList){
+                        mems.push(testInfo.testUserList[i].userID);
+                    }
+                    console.log(mems);
+                    members.setOptions(memberList);
+                    members.setValue(mems);
+                    var optionmanager = {
+                        'userIDs': JSON.stringify(mems)
+                    };
+                    var leaders = getManagerOptions(optionmanager);
+                    console.log(leaders);
+                    manager.setOptions(leaders);
+                    manager.setValue(testInfo.leaderID);
+                }
+            }
+
+            $('#testtable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected').siblings().removeClass('selected');
+                var id = testTable.row(this).data().testID;
+                console.log(id);
+                var options = {
+                    'testID': parseInt(id)
+                };
+                testInfo = getTestInfo(options);
+                console.log(testInfo);
+                $("#testid").val(testInfo.testID);
+                $("#testNumber").val(testInfo.testID);
+                $("#testTime").val(testInfo.testID);
+                // devType.setValue(testInfo.devTypeID);
+                // item.setValue(testInfo.proID);
+                var mems = new Array();
+                if(!testInfo.testUserList){
+                    alert("没有试验成员")
+                }else {
+                    for(i in testInfo.testUserList){
+                        mems.push(testInfo.testUserList[i].userID);
+                    }
+                    console.log(mems);
+                    members.setOptions(memberList);
+                    members.setValue(mems);
+                    var optionmanager = {
+                        'userIDs': JSON.stringify(mems)
+                    };
+                    var leaders = getManagerOptions(optionmanager);
+                    console.log(leaders);
+                    manager.setOptions(leaders);
+                    manager.setValue(testInfo.leaderID);
+                }
+
+                var options = {
+                    'testID': $("#testid").val()
+                };
+                renewTaskTable(taskTable,options);
+            } );
+
+
+            $("#addTest").click(function () {
+                var options = {
+
+                };
+                var res = addTestSheet(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                    // $('#testtable').DataTable().data(testList).draw();
+                    // $("#testtable tbody tr:first").hasClass('selected');
+                    // $('#testtable').DataTable().rows('.selected').data();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#delTest").click(function () {
+                if(!$("#testid").val()){
+                    alert("请选择试验单");
+                }else{
+                    var options = {
+                        'testID': $("#testid").val()
+                    };
+                    var res = delTestSheet(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+
+
+            solution = new Vue({
+                el: '#seltest',
+                data: {
+                    value: null,
+                    options: soluList,
+                    normalizer(node) {
+                        return {
+                            id: node.soluID,
+                            label: node.soluName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+
+            $("#exportplan").click(function () {
+                $("#exportaddplan").css("display","block");
+                var left = $(window).width()/2 -  $("#exportaddplan").width()/2;
+                var top = $(window).height()/2 -  $("#exportaddplan").height()/2;
+                $("#exportaddplan").css("left",left + "px");
+                $("#exportaddplan").css("top",top + "px");
+
+            });
+            $("#save-export-btn").click(function () {
+                if(!$("#planname").val()){
+                    alert("模板名称不能为空！");
+                }else if(!$("#testid").val()) {
+                    alert("请先选试验单！");
+                }else{
+                    var options = {
+                        'testID': testInfo.testID,
+                        'soluName' : $("#testname").val()
+                    };
+                    var res = exportTestSolution(options);
+                    if(res.code === 101){
+                        $("#exportaddplan").css("display","none");
+                        alert(res.message);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+            $("#cancel-export-btn").click(function () {
+                $("#exportaddplan").css("display","none");
+            });
+
+            $("#importSolution").click(function () {
+                $("#importaddtest").css("display","block");
+                var left = $(window).width()/2 -  $("#importaddtest").width()/2;
+                var top = $(window).height()/2 -  $("#importaddtest").height()/2;
+                $("#importaddtest").css("left",left + "px");
+                $("#importaddtest").css("top",top + "px");
+            });
+            $("#save-btn").click(function () {
+                if(!solution.value){
+                    alert("试验模板不能为空！");
+                }else if(!$("#testid").val()) {
+                    alert("请先选试验单！");
+                }else{
+                    var options = {
+                        'testID': $("#testid").val(),
+                        'soluID': solution.value,
+                    };
+                    var res = importTestSolution(options);
+                    if(res.code === 101){
+                        $("#importaddtest").css("display","none");
+                        alert(res.message);
+                        var option = {
+                            'testID': $("#testid").val()
+                        };
+                        renewTaskTable(taskTable,option);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+            $("#cancel-btn").click(function () {
+                $("#importaddtest").css("display","none");
+            });
+
+            $("#saveTest").click(function () {
+                var options = {
+                    'testID': $("#testid").val(),
+                    'userIDs': JSON.stringify(members.value),
+                    'leaderID': manager.value
+                };
+                var res = updateTestSheet(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+
+            $('#tasktable tbody').on('click', 'tr',function() {
+                var id = taskTable.row(this).data().taskID;
+                $("#taskid").val(id);
+            });
+
+            $("#addTask").click(function () {
+                var options = {
+                    'testID': $("#testid").val()
+                };
+                var res = addTask(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    var option = {
+                        'testID': $("#testid").val()
+                    };
+                    renewTaskTable(taskTable,option);
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#updateTask").click(function () {
+                if($("#taskid").val()){
+                    $("#edittask").css("display","block");
+                    var left = $(window).width()/2 -  $("#edittask").width()/2;
+                    var top = $(window).height()/2 -  $("#edittask").height()/2;
+                    $("#edittask").css("left",left + "px");
+                    $("#edittask").css("top",top + "px");
+
+                    device = new Vue({
+                        el: '#seldev',
+                        data: {
+                            value: null,
+                            options: devList,
+                            normalizer(node) {
+                                return {
+                                    id: node.id,
+                                    label: node.name,
+                                    children: node.children,
+                                }
+                            }
+                        },
+                        methods: {
+                            async setOptions(newoptions){
+                                this.options = newoptions;
+                            },
+                            async setValue(newValue) {
+                                this.value = newValue;
+                            }
+                        }
+                    });
+                    project = new Vue({
+                        el: '#selpro',
+                        data: {
+                            // define default value
+                            value: null,
+                            // define options
+                            options: null,
+                            normalizer(node) {
+                                return {
+                                    id: node.proID,
+                                    label: node.proName,
+                                    children: node.children
+                                }
+                            }
+                        },
+                        methods: {
+                            async setOptions(newoptions){
+                                this.options = newoptions;
+                            },
+                            async setValue(newValue) {
+                                this.value = newValue;
+                            }
+                        }
+                    });
+                    device.$watch('value',function () {
+                        if(!device.value){
+                            alert("请先选择设备")
+                        }else{
+                            var optionDevice ={
+                                'devID': device.value
+                            };
+                            var pros = getDeviceProject(optionDevice);
+                            project.setOptions(pros);
+                            project.setValue(null);
+                        }
+                    });
+                    taskMember = new Vue({
+                        el: '#taskmembers',
+                        data: {
+                            value: null,
+                            options: testInfo.testUserList,
+                            normalizer(node) {
+                                return {
+                                    id: node.userID,
+                                    label: node.userRealName,
+                                    children: node.children,
+                                }
+                            }
+                        },
+                        methods: {
+                            async setOptions(newoptions){
+                                this.options = newoptions;
+                            },
+                            async setValue(newValue) {
+                                this.value = newValue;
+                            }
+                        }
+                    });
+                    taskManager = new Vue({
+                        el: '#taskmanager',
+                        data: {
+                            // define default value
+                            value: null,
+                            // define options
+                            options: null,
+                            normalizer(node) {
+                                return {
+                                    id: node.userID,
+                                    label: node.userRealName,
+                                    children: node.children
+                                }
+                            }
+                        },
+                        methods: {
+                            async setOptions(newoptions){
+                                this.options = newoptions;
+                            },
+                            async setValue(newValue) {
+                                this.value = newValue;
+                            }
+                        }
+                    });
+                    taskMember.$watch('value', function () {
+                        var optionmanager = {
+                            'userIDs': JSON.stringify(taskMember.value)
+                        };
+                        var leaders = getManagerOptions(optionmanager);
+                        taskManager.setOptions(leaders);
+                        taskManager.setValue(null);
+                    });
+
+                }
+
+            });
+            $("#save-edit-btn").click(function () {
+                if(!$("#taskid").val()){
+                    alert("请选择任务单");
+                }else{
+                    var options = {
+                        'taskID': $("#taskid").val(),
+                        'devID': device.value,
+                        'proID': project.value,
+                        'userIDs': JSON.stringify(taskMember.value),
+                        'leaderID': taskManager.value
+                    };
+                    var res = updateTask(options);
+                    if(res.code === 101){
+                        $("#edittask").css("display","none");
+                        alert(res.message);
+                        var option = {
+                            'testID': $("#testid").val()
+                        };
+                        renewTaskTable(taskTable,option);
+                        device.setValue(null);
+                        project.setValue(null);
+                        taskMember.setValue(null);
+                        taskManager.setValue(null);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#cancel-edit-btn").click(function () {
+                $("#edittask").css("display","none");
+                device.setValue(null);
+                project.setValue(null);
+                taskMember.setValue(null);
+                taskManager.setValue(null);
+            });
+            $("#delTask").click(function () {
+                if(!$("#taskid").val()){
+                    alert("请选择任务单");
+                }else{
+                    var options = {
+                        'taskID': $("#taskid").val()
+                    };
+                    var res = delTask(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        var option = {
+                            'testID': $("#testid").val()
+                        };
+                        renewTaskTable(taskTable,option);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">
+            试验单列表
+        </div>
+        <button class="btn btn-danger float-right" id="delTest">删除试验单</button>
+        <button class="btn btn-primary float-right btn-margin" id="addTest">新建试验单</button>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 table-background">
+            <table class="table table-responsive table-bordered table-hover" id="testtable">
+            </table>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">
+            试验单内容
+        </div>
+        <button class="btn btn-primary float-right "  id="exportSolution">另存为试验模板</button>
+        <button class="btn btn-primary float-right btn-margin"  id="importSolution">导入试验模板</button>
+        <button class="btn btn-danger float-right btn-margin" id="delTask">删除</button>
+        <button class="btn btn-info float-right btn-margin" id="updateTask">编辑</button>
+        <button class="btn btn-primary float-right btn-margin" id="addTask">新增</button>
+        <button class="btn btn-primary float-right btn-margin"  id="saveTest">保存</button>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3" style="padding-left: 0;">
+            <div class="col-xs-12 col-sm-12"  style="padding-top: 10px; background-color: #FFFFFF">
+                <input type="hidden" id="testid">
+                <input type="hidden" id="taskid">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addtestID">试验单号</span>
+                    <input id="testNumber" type="text" class="form-control" aria-describedby="addtestID" readonly>
+                </div>
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addtestTime">创建时间</span>
+                    <input id="testTime" type="text" class="form-control" aria-describedby="addtestTime" readonly>
+                </div>
+                <!--<div class="input-group input-class">-->
+                    <!--<span class="input-group-addon" id="adddevType">设备类型</span>-->
+                    <!--<treeselect-->
+                            <!--v-model="value"-->
+                            <!--:options="options"-->
+                            <!--:normalizer="normalizer"-->
+                            <!--:disable-branch-nodes="true"-->
+                            <!--:show-count="true"-->
+                            <!--placeholder="请选择"-->
+                            <!--id="devType"-->
+                            <!--aria-describedby="adddevType"-->
+                    <!--/>-->
+                    <!--<pre class="result">{{ value }}</pre>-->
+                <!--</div>-->
+                <!--<div class="input-group input-class">-->
+                    <!--<span class="input-group-addon" id="additem">试验项目</span>-->
+                    <!--<treeselect-->
+                            <!--v-model="value"-->
+                            <!--:multiple="true"-->
+                            <!--:options="options"-->
+                            <!--:normalizer="normalizer"-->
+                            <!--:disable-branch-nodes="true"-->
+                            <!--:show-count="true"-->
+                            <!--placeholder="请选择"-->
+                            <!--id="item"-->
+                            <!--aria-describedby="additem"-->
+                    <!--/>-->
+                    <!--<pre class="result">{{ value }}</pre>-->
+                <!--</div>-->
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addmembers">试验人员</span>
+                    <treeselect
+                            v-model="value"
+                            :multiple="true"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="members"
+                            aria-describedby="addmembers"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addmanager">负责人</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="manager"
+                            aria-describedby="addmanager"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-9 table-background">
+            <table class="table table-responsive table-bordered table-hover" id="tasktable">
+            </table>
+        </div>
+    </div>
+</div>
+<div class="panel panel-primary" id="importaddtest">
+    <div class="panel-heading">
+        <div class="panel-title">导入试验模板</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addseltest">试验模板</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="seltest"
+                    aria-describedby="addseltest"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+<div class="panel panel-primary" id="exportaddtest">
+    <div class="panel-heading">
+        <div class="panel-title">另存为模板</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addpsolutionName">模板名称</span>
+            <input id="testname" type="text" class="form-control" placeholder="模板名称" aria-describedby="addpsolutionName">
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-export-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-export-btn">取消</button>
+    </div>
+</div>
+<div class="panel panel-primary" id="edittask">
+    <div class="panel-heading">
+        <div class="panel-title">编辑任务单</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addseldev">被试设备</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="seldev"
+                    aria-describedby="addseldev"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addselpro">试验项目</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="selpro"
+                    aria-describedby="addselpro"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addtaskmembers">试验人员</span>
+            <treeselect
+                    v-model="value"
+                    :multiple="true"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="taskmembers"
+                    aria-describedby="addtaskmembers"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addtaskmanager">负责人</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="taskmanager"
+                    aria-describedby="addtaskmanager"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-edit-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-edit-btn">取消</button>
+    </div>
+</div>
+</body>
+</html>

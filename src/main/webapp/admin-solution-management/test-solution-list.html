@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../utils/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Select/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <link rel="stylesheet" href="../css/admin-solution/test-solution.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../utils/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="../utils/datatables/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/responsive.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Select/js/dataTables.select.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script>
+        $(function () {
+            var testSolutionList = getTestSoluList();
+            var proList = getProList();
+            var devTypeList = getDevTypeList();
+            console.log(testSolutionList);
+            console.log(proList);
+            console.log(devTypeList);
+
+            var devTypeInfo;
+            for (i in testSolutionList){
+                devTypeInfo = getDevType(testSolutionList[i].devTypeID);
+                testSolutionList[i].devTypeName = devTypeInfo.typeName;
+                testSolutionList[i].createDate = _getDate(testSolutionList[i].addtime);
+                var proNames = new Array();
+                for(j in testSolutionList[i].pros){
+                    proNames[j] = testSolutionList[i].pros[j].proName;
+                }
+                testSolutionList[i].pronames = proNames;
+            }
+            console.log(testSolutionList);
+
+            var testSolutionInfo;
+            var adseldevType,adselProject,edseldevType,edselProject;
+
+            $(".container-fluid").css("height", $(window).height()+"px");
+            tableHeight = $(window).height()-30+"px";
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+
+            adseldevType = new Vue({
+                el: '#seldevType1',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: devTypeList,
+                    normalizer(node) {
+                        return {
+                            id: node.typeID,
+                            label: node.typeName,
+                            children: node.children,
+                        }
+                    }
+                }
+            });
+            adselProject = new Vue({
+                el: '#selpro1',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: proList,
+                    normalizer(node) {
+                        return {
+                            id: node.proID,
+                            label: node.proName,
+                            children: node.children,
+                        }
+                    }
+                }
+            });
+            edseldevType = new Vue({
+                el: '#seldevType2',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: devTypeList,
+                    normalizer(node) {
+                        return {
+                            id: node.typeID,
+                            label: node.typeName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods:{
+                    setValue:function (newvalue) {
+                        this.value = newvalue;
+                    }
+                }
+            });
+            edselProject = new Vue({
+                el: '#selpro2',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: proList,
+                    normalizer(node) {
+                        return {
+                            id: node.proID,
+                            label: node.proName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods:{
+                    setValue:function (newvalue) {
+                        this.value = newvalue;
+                    }
+                }
+            });
+
+            $("#testtable").DataTable({
+                order: [[ 3, "desc" ]],
+                select: true,
+                scrollY: tableHeight,
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                data: testSolutionList,
+                columns:[
+                    {data: "soluID", title: "试验模板编号"},
+                    {data: "soluName", title: "试验模板名称"},
+                    {data: "userRealName", title: "创建人"},
+                    {data: "createDate", title: "创建时间"},
+                    {data: "devTypeName", title: "设备类型"},
+                    {data: "pronames", title: "试验项目"},
+                ]
+            });
+
+            $("#addtestsolution").click(function () {
+                $("#addtest").css("display","block");
+                var left = $(window).width()/2 -  $("#addtest").width()/2;
+                var top = $(window).height()/2 -  $("#addtest").height()/2;
+                $("#addtest").css("left",left + "px");
+                $("#addtest").css("top",top + "px");
+                //设定list列表
+                return false;
+            });
+            $("#save-btn").click(function () {
+                if(!$("#name1").val()){
+                    alert("名称不能为空！");
+                }else if(!adseldevType.value){
+                    alert("设备类型不能为空！");
+                }else if(!adselProject.value){
+                    alert("项目不能为空！");
+                }else {
+                    var proids = adselProject.value;
+                    var pros = new Array();
+                    for(index in proids){
+                        for(i in  proList){
+                            if (proids[index] === proList[i].proID){
+                                pros.push(proList[i]);
+                            }
+                        }
+                    }
+                    var options = {
+                        'soluName': $("#name1").val(),
+                        'devTypeID': adseldevType.value,
+                        'soluPros': JSON.stringify(pros)
+                    };
+                    var res = addTestSolution(options);
+                    if(res.code === 101){
+                        $("#addtest").css("display","none");
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#cancel-btn").click(function () {
+                $("#addtest").css("display","none");
+            });
+
+            $("#testtable").click(function (ev) {
+                var ev = ev || event;
+                var aTd = ev.target.parentNode.children;
+                console.log(aTd);
+
+                var options = {
+                    'soluID': parseInt(aTd[0].innerHTML)
+                };
+                testSolutionInfo = getTestSolutionInfo(options);
+                console.log(testSolutionInfo);
+
+                $("#id").val(testSolutionInfo.soluID);
+                $("#name2").val(testSolutionInfo.soluName);
+                edseldevType.setValue(testSolutionInfo.devTypeID);
+                var proids = new Array();
+                for(j in testSolutionInfo.pros){
+                    proids[j] = testSolutionInfo.pros[j].proID;
+                }
+                edselProject.setValue(proids);
+
+            });
+
+            $("#updateSolution").click(function () {
+                if(!$("#id").val()){
+                    alert("请先选择方案");
+                }else if(!$("#name2").val()){
+                    alert("名称不能为空！");
+                }else if(!edseldevType.value){
+                    alert("设备类型不能为空！");
+                }else if(!edselProject.value){
+                    alert("试验项目不能为空！");
+                }else {
+                    var proids = edselProject.value;
+                    var pros = new Array();
+                    for(index in proids){
+                        for(i in  proList){
+                            if (proids[index] === proList[i].proID){
+                                pros.push(proList[i]);
+                            }
+                        }
+                    }
+                    var options = {
+                        'soluID': $("#id").val(),
+                        'userRealName': testSolutionInfo.userRealName,
+                        'soluName': $("#name2").val(),
+                        'devTypeID': edseldevType.value,
+                        'soluPros': JSON.stringify(pros)
+                    };
+                    var res = updateTestSolution(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#delSolution").click(function () {
+                if(!$("#id").val()){
+                    alert("请先选择方案");
+                }else{
+                    var option = {
+                        'soluID': $("#id").val()
+                    };
+                    var res = delTestSolution(option);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">
+            试验模板列表
+        </div>
+        <button class="btn btn-primary" style="float: right;" id="addtestsolution">新建试验模板</button>
+    </div>
+    <div class="row simple-bacc">
+        <div class="col-xs-12 col-sm-12 table-background">
+            <table class="table table-responsive table-bordered table-hover" id="testtable">
+            </table>
+        </div>
+    </div>
+    <div class="row info-body simple-bacc">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-group input-class">
+                <span class="input-group-addon" id="editpsolutionID">模板编号</span>
+                <input id="id" type="text" class="form-control" placeholder="模板编号" aria-describedby="editpsolutionID" readonly>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-group input-class">
+                <span class="input-group-addon" id="editpsolutionName">模板名称</span>
+                <input id="name2" type="text" class="form-control" placeholder="模板名称" aria-describedby="editpsolutionName">
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-group input-class">
+                <span class="input-group-addon" id="editseldevType">设备类型</span>
+                <treeselect
+                        v-model="value"
+                        :options="options"
+                        :normalizer="normalizer"
+                        :disable-branch-nodes="true"
+                        :show-count="true"
+                        placeholder="请选择"
+                        id="seldevType2"
+                        aria-describedby="editseldevType"
+                />
+                <pre class="result">{{ value }}</pre>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-group input-class">
+                <span class="input-group-addon" id="editselpro">试验项目</span>
+                <treeselect
+                        v-model="value"
+                        :multiple="true"
+                        :options="options"
+                        :normalizer="normalizer"
+                        :disable-branch-nodes="true"
+                        :show-count="true"
+                        placeholder="请选择"
+                        id="selpro2"
+                        aria-describedby="editselpro"
+                />
+                <pre class="result">{{ value }}</pre>
+            </div>
+        </div>
+
+    </div>
+    <div class="row info-foot simple-bacc">
+        <div class="col-xs-12">
+            <div class="col-xs-6">
+                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="updateSolution">保存更改</button>
+            </div>
+            <div class="col-xs-6">
+                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="delSolution">删除模板</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--添加用户panel-->
+<div class="panel panel-primary" id="addtest">
+    <div class="panel-heading">
+        <div class="panel-title">新建试验模板</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addpsolutionName">模板名称</span>
+            <input id="name1" type="text" class="form-control" placeholder="模板名称" aria-describedby="addpsolutionName">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addseldevType">设备类型</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="seldevType1"
+                    aria-describedby="addseldevType"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addselpro">试验项目</span>
+            <treeselect
+                    v-model="value"
+                    :multiple="true"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="selpro1"
+                    aria-describedby="addselpro"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+</body>
+</html>

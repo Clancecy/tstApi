@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../utils/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Select/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../utils/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="../utils/datatables/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/responsive.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Select/js/dataTables.select.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script>
+        $(function () {
+            var taskList = getTaskList();
+            var deviceList = getDevList();
+            var proList = getProList();
+            var memberList = getUserList();
+            memberList = resetUser(memberList);
+            for(i in taskList){
+                taskList[i].addDate = _getDate(taskList[i].addtime);
+                if(taskList[i].endtime){
+                    taskList[i].endDate = _getDate(taskList[i].endtime);
+                }else{
+                    taskList[i].endDate = '';
+                }
+                if(taskList[i].status === 0){
+                    taskList[i].staName = '进行中';
+                }else if(taskList[i].status === 1){
+                    taskList[i].staName = '已终止';
+                }else if(taskList[i].status === 2){
+                    taskList[i].staName = '已完成';
+                }
+                var taskNames = '';
+                for(index in taskList[i].taskUserList){
+                    taskNames += taskList[i].taskUserList[index].userRealName;
+                    taskNames += ',';
+                }
+                taskNames = taskNames.substr(0,taskNames.length-1);
+                taskList[i].taskNames = taskNames;
+            }
+
+            console.log(taskList);
+            console.log(deviceList);
+            console.log(proList);
+            console.log(memberList);
+            var taskInfo;
+            var tableHeight;
+            var members,manager,device,project;
+
+
+            $(".container-fluid").css("height", $(window).height()+"px");
+            tableHeight = $(window).height()-30+"px";
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+
+            device = new Vue({
+                el: '#seldev',
+                data: {
+                    value: null,
+                    options: deviceList,
+                    normalizer(node) {
+                        return {
+                            id: node.id,
+                            label: node.name,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            project = new Vue({
+                el: '#selpro',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.proID,
+                            label: node.proName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            device.$watch('value',function () {
+                if(!device.value){
+                    alert("请先选择设备")
+                }else{
+                    var optionDevice ={
+                        'devID': device.value
+                    };
+                    var pros = getDeviceProject(optionDevice);
+                    project.setOptions(pros);
+                }
+            });
+            members = new Vue({
+                el: '#taskmembers',
+                data: {
+                    value: null,
+                    options: memberList,
+                    normalizer(node) {
+                        return {
+                            id: node.tagID,
+                            label: node.tagName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            manager = new Vue({
+                el: '#taskmanager',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.userID,
+                            label: node.userRealName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            members.$watch('value', function () {
+                if(!members.value){
+                    alert("请先选择成员");
+                }else{
+                    var optionmanager = {
+                        'userIDs': JSON.stringify(members.value)
+                    };
+                    var selmemList = getManagerOptions(optionmanager);
+                    manager.setOptions(selmemList);
+                }
+            });
+
+
+            var taskTable = $("#tasktable").DataTable({
+                order: [[ 5, "desc" ]],
+                select: true,
+                scrollY: tableHeight,
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                data: taskList,
+                columnDefs:[{"targets":0,"visible":false}],
+                columns:[
+                    {data:'taskID', title: "任务ID", defaultContent:""},
+                    {data: "taskNumber", title: "任务单号", defaultContent:""},
+                    {data: "devName", title: "设备名称", defaultContent:""},
+                    {data: "proName", title: "试验项目", defaultContent:""},
+                    {data: "builder", title: "创建人", defaultContent:""},
+                    {data: "addDate", title: "创建时间", defaultContent:""},
+                    {data: "taskNames", title: "任务组成员", defaultContent:""},
+                    {data: "leader", title: "负责人", defaultContent:""},
+                    {data: 'staName', title: "状态", defaultContent:""},
+                    {data: 'endDate', title: "完成时间", defaultContent:""},
+                ]
+            });
+            $('#tasktable tbody').on('click', 'tr',function() {
+                $(this).toggleClass('selected').siblings().removeClass('selected');
+                var id = taskTable.row(this).data().taskID;
+                console.log(id);
+                var options = {
+                    'taskID': parseInt(id)
+                };
+                taskInfo = getTaskInfo(options);
+                // console.log(taskInfo);
+                $("#taskid").val(id);
+                $("#taskNumber").val(taskInfo.taskNumber);
+                $("#addDate").val(_getDate(taskInfo.addtime));
+                if(taskInfo.devID != -1){
+                    device.setValue(taskInfo.devID);
+                    var optiondevice = {
+                        'devID': taskInfo.devID
+                    };
+                    var pros = getDeviceProject(optiondevice);
+                    console.log(pros);
+                    project.setOptions(pros);
+                    console.log(taskInfo.proID);
+                    project.setValue(taskInfo.proID);
+                }
+                if(taskInfo.leaderID != -1){
+                   var userIDs = getTaskUserIDs(taskInfo.taskUserList);
+                   members.setValue(userIDs);
+                   var optionmanager = {
+                       'userIDs': JSON.stringify(userIDs)
+                   };
+                   var leaders = getManagerOptions(optionmanager);
+                   manager.setOptions(leaders);
+                   manager.setValue(taskInfo.leaderID);
+               }
+            });
+            $("#addTask").click(function () {
+                var options = {
+                };
+                var res = addTask(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#delTask").click(function () {
+                if(!$("#taskid").val()){
+                    alert("请选择任务单");
+                }else{
+                    var options = {
+                        'taskID': $("#taskid").val()
+                    };
+                    var res = delTask(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#updateTask").click(function () {
+                if(!$("#taskid").val()){
+                    alert("请选择任务单");
+                }else{
+                    var options = {
+                        'taskID': $("#taskid").val(),
+                        'devID': device.value,
+                        'proID': project.value,
+                        'userIDs': JSON.stringify(members.value),
+                        'leaderID': manager.value
+                    };
+                    var res = updateTask(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#checkTask").click(function () {
+                if(!$("#taskid").val()){
+                    alert("请选择任务单");
+                }else{
+                    var link = "../admin-task-management/task-detail.html" + '?taskID=' + $("#taskid").val();
+                    window.location.href = link;
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="bacc"></div>
+            <div class="title col-xs-6 col-sm-6">
+                任务单列表
+            </div>
+            <button class="btn btn-danger float-right" id="delTask">删除任务单</button>
+            <button class="btn btn-info float-right btn-margin" id="updateTask">保存任务单</button>
+            <button class="btn btn-primary float-right btn-margin" id="addTask">新建任务单</button>
+            <button class="btn btn-success float-right btn-margin" id="checkTask">任务单详情</button>
+        </div>
+        <div class="row info-body simple-bacc">
+            <div class="col-xs-12 col-sm-6">
+                <input type="hidden" id="taskid">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="edittaskNumber">任务单编号</span>
+                    <input id="taskNumber" type="text" class="form-control" placeholder="任务单编号" aria-describedby="edittaskNumber" readonly>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="editbuildtime">创建时间</span>
+                    <input id="addDate" type="text" class="form-control" placeholder="创建时间" aria-describedby="editbuildtime" readonly>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="editseldev">被试设备</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="seldev"
+                            aria-describedby="editseldev"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="editselpro">试验项目</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="selpro"
+                            aria-describedby="editselpro"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="edittaskmembers">试验人员</span>
+                    <treeselect
+                            v-model="value"
+                            :multiple="true"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="taskmembers"
+                            aria-describedby="addtaskmembers"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="edittaskmanager">负责人</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="taskmanager"
+                            aria-describedby="edittaskmanager"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 table-background">
+                <table class="table table-responsive table-bordered table-hover" id="tasktable">
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

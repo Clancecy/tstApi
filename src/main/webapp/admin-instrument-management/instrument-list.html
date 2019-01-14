@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="../bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="../css/ztree/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../swiper/css/swiper.min.css">
+    <link rel="stylesheet" href="../lightbox2/css/lightbox.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <link rel="stylesheet" href="../css/admin-instrument/instrument-list.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="../js/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="../bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script src="../bootstrap-fileinput/js/locales/zh.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script src="../swiper/js/swiper.min.js"></script>
+    <script src="../js/img/jqthumb.min.js"></script>
+    <script src="../lightbox2/js/lightbox.min.js"></script>
+    <script>
+        $(function () {
+            var insList = getInsList();
+            console.log(insList);
+            var insInfo;
+
+            var html ='';
+            for(i in insList){
+                html +=
+                    '<li data-id="'+insList[i].insID+'">\n' +
+                    '                                <a href="#">\n' +
+                    '                                    <div class="row">\n' +
+                    '                                        <div class="col-xs-4 ins-img-title">\n' +
+                    '                                            <img src="../images/img-1.jpg" class="jqthumb3 ins-img" alt="image">\n' +
+                    '                                        </div>\n' +
+                    '                                        <div class="col-xs-8">\n' +
+                    '                                            <div class="row">\n' +
+                    '                                                <div class="col-xs-12">型号：'+insList[i].modNumber+'</div>\n' +
+                    '                                                <div class="col-xs-12">名称：'+insList[i].insName+'</div>\n' +
+                    '                                                <div class="col-xs-12">生产厂家：'+insList[i].factory+'</div>\n' +
+                    '                                            </div>\n' +
+                    '                                        </div>\n' +
+                    '                                    </div>\n' +
+                    '                                </a>\n' +
+                    '                            </li>'
+            }
+            $("#ins").html(html);
+
+            $(".ins-img").jqthumb({
+                classname      : 'jqthumb3',             // class name. DEFUALT IS jqthumb
+                width          : $(".ins-img-title").width()+"px",                // new image width after cropping. DEFAULT IS 100px.
+                height         : '60px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            $(".side-img").jqthumb({
+                classname      : 'jqthumb4',             // class name. DEFUALT IS jqthumb
+                width          : '34px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : '34px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            $(".insinfo").jqthumb({
+                classname      : 'jqthumb1',             // class name. DEFUALT IS jqthumb
+                width          : '174px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : '174px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            $(".info-img").jqthumb({
+                classname      : 'jqthumb2',             // class name. DEFUALT IS jqthumb
+                width          : $(".info-file").width()+'px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : $(".info-file").width()+'px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            $('.form_date').datetimepicker({
+                language:  'zh_CN',
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                forceParse: 0,
+            });
+
+            $("#addLabelimg").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择设备！");
+                }
+            });
+            $("#addDeviceimg").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择设备！");
+                }
+            });
+            $("#addfile").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择设备！");
+                }
+            });
+
+            $("#addinstru").click(function () {
+                var options = {
+                    'insName': '新仪器'
+                };
+                var res = addInstrument(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#editinstru").click(function () {
+                var options = {
+                    'insID': $("#id").val(),
+                    'insName': $("#name").val(),
+                    'modNumber': $("#instype").val(),
+                    'factory': $("#plant").val(),
+                    'insNumber': $("#number1").val(),
+                    'initNumber': $("#number2").val(),
+                    'usetime': $("#indate").val(),
+                    'inittime': $("#outdate").val(),
+                    'status': $("#state").val(),
+                    'valtime': $("#enddate").val(),
+                    'remark': $("#addition").val()
+                };
+                var res = updateInstrument(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    insInfo = getInsInfo($("#id").val());
+                    reNewInstrument(insInfo);
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#delinstru").click(function () {
+                var options = {
+                    'insID': $("#id").val()
+                };
+                var res = delInstrument(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+
+            $("#ins li").click(function () {
+                var insnumber = this.getAttribute('data-id');
+                $("#id").val(insnumber);
+                $(this).addClass("active").siblings().removeClass("active");
+                initUploadIns(insnumber);
+                var options = {
+                    'insID': insnumber
+                };
+                $("#uploadlabel").on("fileuploaded", function (event, data, previewId, index) {
+                    var res = data.response;
+                    if (res.code === 101){
+                        alert(res.message);
+                        insInfo = getInsInfo(options);
+                        reNewInstrument(insInfo);
+                    } else{
+                        alert(res.message);
+                    }
+                });
+                $("#uploaddevice").on("fileuploaded", function (event, data, previewId, index) {
+                    var res = data.response;
+                    if (res.code === 101){
+                        alert(res.message);
+                        insInfo = getInsInfo(options);
+                        reNewInstrument(insInfo);
+                    } else{
+                        alert(res.message);
+                    }
+                });
+                $("#uploadfile").on("fileuploaded", function (event, data, previewId, index) {
+                    var res = data.response;
+                    if (res.code === 101){
+                        alert(res.message);
+                        insInfo = getInsInfo(options);
+                        reNewInstrument(insInfo);
+                    } else{
+                        alert(res.message);
+                    }
+                });
+                insInfo = getInsInfo(options);
+                console.log(insInfo);
+                reNewInstrument(insInfo);
+
+            });
+            $("#file-body").click(function (ev) {
+                var ev = ev || event;
+                var aBlock = ev.target.parentNode.parentNode.children;
+                console.log(aBlock);
+                if(ev.target.innerText === '删除'){
+                    var options = {
+                        'insID': $("#id").val(),
+                        'fileID': aBlock[0].value
+                    };
+                    console.log(options);
+                    var res = delInsFile(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        insInfo = getInsInfo({'dinsID':$("#id").val()});
+                        reNewInstrument(insInfo);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">仪器列表</div>
+    </div>
+    <div class="row">
+        <div class="pan col-xs-12 col-sm-3 simple-bacc">
+            <div class="row simple-bacc">
+                <div class="row" id="add-title">
+                    <div class=" col-xs-12">
+                        <button class="btn btn-primary col-xs-6 col-xs-push-3" id="addinstru">新增仪器</button>
+                    </div>
+                </div>
+                <div class="row" id="dialogTree-title">仪器目录</div>
+                <div class="row">
+                    <div class=" col-xs-12 col-sm-12" style="padding: 0;">
+                        <ul id="ins">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pan-right col-xs-12 col-sm-9 ">
+            <div class="row simple-bacc">
+                <div class="row" id="info-title">
+                    <div class="title-2 col-xs-6 col-sm-6">仪器详情</div>
+                    <div class="col-xs-6 col-sm-6">
+                        <a href="../images/img-1.jpg" style="float: right;" data-lightbox="image" data-title="文字说明">
+                            <img src="../images/img-1.jpg" class="jqthumb4 side-img"  alt="image">
+                        </a>
+                    </div>
+                </div>
+                <div class="row" id="info-body">
+                    <input type="hidden" id="id">
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="insname">仪器名称</span>
+                            <input id="name" type="text" class="form-control"  aria-describedby="insname">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="insmodel">型号</span>
+                            <input id="instype" type="text" class="form-control" aria-describedby="insmodel">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="manufactory">生产厂家</span>
+                            <input id="plant" type="text" class="form-control" aria-describedby="manufactory">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="insnumber">仪器编号</span>
+                            <input id="number1" type="text" class="form-control"  aria-describedby="insnumber">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="plantnumber">出厂编号</span>
+                            <input id="number2" type="text" class="form-control" aria-describedby="plantnumber">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="indate2" data-link-format="yyyy-mm-dd">
+                            <span class="input-group-addon">入库日期</span>
+                            <input class="form-control" id="indate" size="16" type="text" value="" readonly>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                        <input type="hidden" id="indate2" value="" /><br>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="outdate2" data-link-format="yyyy-mm-dd">
+                            <span class="input-group-addon">出厂日期</span>
+                            <input class="form-control" id="outdate" size="16" type="text" value="" readonly>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                        <input type="hidden" id="outdate2" value="" /><br>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="enddate2" data-link-format="yyyy-mm-dd">
+                            <span class="input-group-addon">检验有效期</span>
+                            <input class="form-control" id="enddate" size="16" type="text" value="" readonly>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                        <input type="hidden" id="enddate2" value="" /><br>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="insstate">仪器状态</span>
+                            <input id="state" type="text" class="form-control" aria-describedby="insstate">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="additionInfo">备注</span>
+                            <input id="addition" type="text" class="form-control" aria-describedby="stationtag">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="labelimg">铭牌照片</span>
+                            <div class="form-control" aria-describedby="labelimg" id="label">
+
+                            </div>
+                            <div class="input-group-addon">
+                                <button type="button" class="btn btn-primary" id="addLabelimg" data-toggle="modal" data-target="#labelinput">上传</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="deviceimg">仪器照片</span>
+                            <div class="form-control" aria-describedby="deviceimg" id="device">
+
+                            </div>
+                            <div class="input-group-addon">
+                                <button type="button" class="btn btn-primary" id="addDeviceimg" data-toggle="modal" data-target="#insinput">上传</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" id="img-title">
+                    <div class="title-2 col-xs-6 col-sm-6">附件信息</div>
+                    <div class="col-xs-6 col-sm-6">
+                        <button type="button" class="btn btn-primary" id="addfile" data-toggle="modal" data-target="#fileinput">上传</button>
+                    </div>
+                </div>
+                <div class="row" id="img-body">
+                    <div class="col-xs-12 col-sm-12" id="file-body">
+
+                    </div>
+                </div>
+                <div class="row" id="foot-title">
+                    <div class="col-xs-12">
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editinstru">保存修改</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="delinstru">删除设备</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="labelinput" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel">铭牌图片</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploadlabel" name="plate" type="file" class="file-loading" >
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="insinput" tabindex="-1" role="dialog" aria-labelledby="Modaldevice" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Modaldevice">设备图片</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploaddevice" name="devPic"  type="file" class="file-loading">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="fileinput" tabindex="-1" role="dialog" aria-labelledby="Modalfile" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Modalfile">附件上传</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploadfile" name="file" type="file" class="file-loading">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin-login-register/login.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script>
+        $(function () {
+            var userurl = 'http://192.168.168.34:80';
+            var reaseachurl = 'http://192.168.168.34:8080';
+            $("#register").css("display","block");
+            var left = $(window).width()/2 -  $("#register").width()/2;
+            var top = $(window).height()/2 -  $("#register").height()/2;
+            $("#register").css("left",left + "px");
+            $("#register").css("top",top + "px");
+            $("#register-btn").click(function () {
+                if(!$("#username1").val()){
+                    alert("用户名不能为空！");
+                }else if(!$("#phonenumber1").val()){
+                    alert("手机号码不能为空！");
+                }else if(!$("#userpass1").val()){
+                    alert("密码不能为空！");
+                }else if(!$("#userpass2").val()){
+                    alert("确认密码不能为空！");
+                }else if($("#userpass1").val() != $("#userpass2").val()){
+                    alert("两次输入密码不一致！");
+                }else if(!$("#truename1").val()){
+                    alert("姓名不能为空！");
+                }else{
+                    $.ajax({
+                        type: 'POST',
+                        xhrFields: {
+                            withCredentials: true // 这里设置了withCredentials
+                        },
+                        crossDomain: true,
+                        url: userurl+'/user/register',
+                        data: {
+                            "userName": $("#username1").val(),
+                            "userPassword": $("#userpass1").val(),
+                            "userMobile": $("#phonenumber1").val(),
+                            "userMail": $("#email1").val(),
+                            "userRealName": $("#truename1").val()
+                        },
+                        success: function (data) {
+                            var result = JSON.parse(data);
+                            if(result.code === 101){
+                                alert(result.message);
+                                window.location.href = "./login.html";
+                            }else{
+                                alert(result.message);
+                            }
+                        },
+                        error: function(err) {
+                            console.error(err);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div class="panel panel-primary" id="register">
+    <div class="panel-heading">
+        <div class="panel-title">注册</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="userName">用户名</span>
+            <input id="username1" type="text" class="form-control" placeholder="用户名" aria-describedby="userName">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="phonenumber">手机号码</span>
+            <input id="phonenumber1" type="text" class="form-control" placeholder="手机号码" aria-describedby="phonenumber">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="email">邮箱(可以为空)</span>
+            <input id="email1" type="text" class="form-control" placeholder="邮箱(可以为空)" aria-describedby="email">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="password1">密码</span>
+            <input id="userpass1" type="text" class="form-control" placeholder="密码" aria-describedby="password1">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="password2">确认密码</span>
+            <input id="userpass2" type="text" class="form-control" placeholder="确认密码" aria-describedby="password2">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="truename">真实姓名</span>
+            <input id="truename1" type="text" class="form-control" placeholder="真实姓名" aria-describedby="truename">
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button type="button" class="btn btn-primary" id="register-btn">注册</button>
+    </div>
+</div>
+
+</body>
+</html>

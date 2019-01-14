@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/ztree/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../lightbox2/css/lightbox.min.css">
+    <link rel="stylesheet" href="../metisMenu/metisMenu.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <link rel="stylesheet" href="../css/admin-member/member.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../raphael/raphael.min.js"></script>
+    <script src="../morrisjs/morris.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../metisMenu/metisMenu.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script src="../js/img/jqthumb.min.js"></script>
+    <script src="../lightbox2/js/lightbox.min.js"></script>
+    <script src="../js/ztree/jquery.ztree.all.min.js"></script>
+    <script>
+        $(function () {
+            var userList = getUserList();
+            var groupList = getGroup();
+            console.log(userList);
+            console.log(groupList);
+            var userInfo;
+            var editDepart;
+
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+
+            var html = '';
+            var newhtml = searchUser(userList,html);
+            // console.log(newhtml);
+            $("#menu").html(newhtml);
+
+            $('#menu').metisMenu();
+
+            $("#menu a").click(function () {
+                if(this.getAttribute('tag-id')){
+                    var tagID = this.getAttribute('tag-id');
+                    $("#tagid").val(tagID);
+                    $("#tagName").val(this.innerText);
+                }else if(this.getAttribute('user-id')){
+                    var userID = this.getAttribute('user-id');
+                    $("#userid").val(userID);
+                    var options = {
+                        'userID': userID
+                    };
+                    if(parseInt(userID) === -1){
+                        console.log(userID);
+                    }else{
+                        userInfo = getUserInfo(options);
+                        console.log(userInfo);
+                        $("#name").html(userInfo.userRealName);
+                        $("#companyName").html(userInfo.companyName);
+                        $("#mobile").html(userInfo.userMobile);
+                        $("#mail").html(userInfo.userMail);
+                        $("#department").html(userInfo.deptName);
+                    }
+                }
+
+
+            });
+
+            $("#addgroup").click(function () {
+                if(!$("#tagid").val()){
+                    alert("新建根部门");
+                    $("#adddepart").css("display","block");
+                    var left = $(window).width()/2 -  $("#adddepart").width()/2;
+                    var top = $(window).height()/2 -  $("#adddepart").height()/2;
+                    $("#adddepart").css("left",left + "px");
+                    $("#adddepart").css("top",top + "px");
+
+                    return false;
+                }else{
+                    alert("新建子部门");
+                    $("#adddepart").css("display","block");
+                    var left = $(window).width()/2 -  $("#adddepart").width()/2;
+                    var top = $(window).height()/2 -  $("#adddepart").height()/2;
+                    $("#adddepart").css("left",left + "px");
+                    $("#adddepart").css("top",top + "px");
+                    return false;
+                }
+
+            });
+            $("#save-group-btn").click(function () {
+                if(!$("#tagid").val()){
+                    var options = {
+                        'pTagID': 0,
+                        'tagName': $("#groupName").val()
+                    };
+                    var res =addGroup(options);
+                    if(res.code === 101){
+                        $("#adddepart").css("display","none");
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }else{
+                    var options = {
+                        'pTagID': $("#tagid").val(),
+                        'tagName': $("#groupName").val()
+                    };
+                    var res =addGroup(options);
+                    if(res.code === 101){
+                        $("#adddepart").css("display","none");
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#cancel-group-btn").click(function () {
+                $("#adddepart").css("display","none");
+            });
+
+            $("#addmember").click(function () {
+                if(!$("#tagid").val()){
+                    alert("请选择一个部门！");
+                }else{
+                    $("#adduser").css("display","block");
+                    var left = $(window).width()/2 -  $("#adduser").width()/2;
+                    var top = $(window).height()/2 -  $("#adduser").height()/2;
+                    $("#adduser").css("left",left + "px");
+                    $("#adduser").css("top",top + "px");
+
+                    return false;
+                }
+            });
+            $("#save-btn").click(function () {
+                if(!$("#tagid").val()){
+                    alert("请选择一个员工！");
+                }else if(!$("#phonenumber1").val()){
+                    alert("手机号码不能为空！");
+                }else if(!$("#truename1").val()){
+                    alert("姓名不能为空！");
+                }else {
+                    var options = {
+                        'userRealName': $("#truename1").val(),
+                        'userMobile': $("#phonenumber1").val(),
+                        'userMail': $("#email1").val(),
+                        'deptID': $("#tagid").val()
+                    };
+                    var res = addUser(options);
+                    if(res.code === 101){
+                        $("#adduser").css("display","none");
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#cancel-btn").click(function () {
+                $("#adduser").css("display","none");
+            });
+
+            $("#editmember").click(function () {
+                if(!$("#userid").val()){
+                    alert("请选择一个员工！");
+                }else{
+                    $("#edituser").css("display","block");
+                    var left = $(window).width()/2 -  $("#edituser").width()/2;
+                    var top = $(window).height()/2 -  $("#edituser").height()/2;
+                    $("#edituser").css("left",left + "px");
+                    $("#edituser").css("top",top + "px");
+                    editDepart = new Vue({
+                        el: '#type',
+                        data: {
+                            // define default value
+                            value: userInfo.deptID,
+                            // define options
+                            options: groupList,
+                            normalizer(node) {
+                                return {
+                                    id: node.tagID,
+                                    label: node.tagName,
+                                    children: node.children
+                                }
+                            }
+                        },
+                        methods:{
+                            setValue:function (newvalue) {
+                                this.value = newvalue;
+                            }
+                        }
+                    });
+                    $("#truename2").val(userInfo.userRealName);
+                    $("#phonenumber2").val(userInfo.userMobile);
+                    $("#email2").val(userInfo.userMail);
+                    return false;
+                }
+                    //获取当前点击记录的数据
+            });
+            $("#edit-save-btn").click(function () {
+                if(!$("#userid").val()){
+                    alert("请选择一个人员！");
+                }else if(!$("#phonenumber2").val()){
+                    alert("手机号码不能为空！");
+                }else if(!$("#truename2").val()){
+                    alert("姓名不能为空！");
+                }else {
+                    var options = {
+                        'deptID': editDepart.value,
+                        'userType': userInfo.userType,
+                        'userPic' : userInfo.userPic,
+                        'userRealName': $("#truename2").val(),
+                        'userMobile': $("#phonenumber2").val(),
+                        'userMail': $("#email2").val(),
+                        'userID': $("#userid").val()
+                    };
+                    var res = updateUser(options);
+                    if(res.code === 101){
+                        $("#edituser").css("display","none");
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#edit-cancel-btn").click(function () {
+                $("#edituser").css("display","none");
+            });
+
+            $("#editdepart").click(function () {
+                if(!$("#tagid").val()){
+                    alert("请选择一个部门！");
+                }else{
+                    $("#editdepartment").css("display","block");
+                    var left = $(window).width()/2 -  $("#editdepartment").width()/2;
+                    var top = $(window).height()/2 -  $("#editdepartment").height()/2;
+                    $("#editdepartment").css("left",left + "px");
+                    $("#editdepartment").css("top",top + "px");
+
+                    $("#groupname2").val($("#tagName").val());
+                    return false;
+                }
+                //获取当前点击记录的数据
+            });
+            $("#edit-depart-save-btn").click(function () {
+                if(!$("#tagid").val()){
+                    alert("请选择一个部门！");
+                }else {
+                    var options = {
+                        'tagName': $("#groupname2").val(),
+                        'tagID': $("#tagid").val()
+                    };
+                    var res = updateGroup(options);
+                    if(res.code === 101){
+                        $("#editdepartment").css("display","none");
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#edit-depart-cancel-btn").click(function () {
+                $("#editdepartment").css("display","none");
+            });
+
+            $("#deldepart").click(function () {
+                if(!$("#tagid").val()){
+                    alert("请选择一个部门！");
+                }else{
+                    var options = {
+                        'tagID': $("#tagid").val()
+                    };
+                    var res = delGroup(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+            $("#delmember").click(function () {
+                if(!$("#userid").val()){
+                    alert("请选择一个员工！");
+                }else{
+                    var options = {
+                        'userID': $("#userid").val()
+                    };
+                    var res = delUser(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">人员列表</div>
+    </div>
+    <div class="row">
+        <div class="pan col-xs-12 col-sm-3 simple-bacc">
+            <div class="row simple-bacc">
+                <div class="row" id="add-title">
+                    <div class=" col-xs-6">
+                        <button class="btn btn-primary col-xs-8 col-xs-push-2" id="addgroup">新增组</button>
+                    </div>
+                    <div class=" col-xs-6">
+                        <button class="btn btn-primary col-xs-8 col-xs-push-2" id="addmember">新增人员</button>
+                    </div>
+                </div>
+                <div class="row" id="dialogTree-title">人员目录</div>
+                <div class="row" id="mem-list">
+                    <div class=" col-xs-12 col-sm-12">
+                        <nav class="sidebar-nav">
+                            <ul class="metismenu" id="menu">
+
+                            </ul>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pan-right col-xs-12 col-sm-9">
+            <div class="row simple-bacc">
+                <div class="row" id="info-title">
+                    <div class="title-4 col-xs-6 col-sm-6" id="name"></div>
+                </div>
+                <div class="row" id="info-body">
+                    <input type="hidden" id="userid">
+                    <input type="hidden" id="tagid">
+                    <input type="hidden" id="tagName">
+                    <div class="col-xs-12 border-bottom">
+                        <div class="col-xs-12 title-5">企业/组织</div>
+                        <div class="col-xs-12 title-6" id="companyName"></div>
+                    </div>
+                    <div class="col-xs-12 border-bottom">
+                        <div class="col-xs-12 title-5">电话</div>
+                        <div class="col-xs-12 title-6" id="mobile"></div>
+                    </div>
+                    <div class="col-xs-12 border-bottom">
+                        <div class="col-xs-12 title-5">邮箱</div>
+                        <div class="col-xs-12 title-6" id="mail"></div>
+                    </div>
+                    <div class="col-xs-12 border-bottom">
+                        <div class="col-xs-12 title-5">部门</div>
+                        <div class="col-xs-12 title-6 " id="department"></div>
+                    </div>
+                </div>
+                <div class="row" id="foot-title">
+                    <div class="col-xs-12">
+                        <div class="col-xs-6 col-sm-3">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editdepart">编辑部门</button>
+                        </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="deldepart">删除部门</button>
+                        </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editmember">编辑员工</button>
+                        </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="delmember">删除员工</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加用户panel-->
+<div class="panel panel-primary" id="adduser">
+    <div class="panel-heading">
+        <div class="panel-title">新增员工</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addtruename">真实姓名</span>
+            <input id="truename1" type="text" class="form-control" placeholder="真实姓名" aria-describedby="addtruename">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addphonenumber">手机号码</span>
+            <input id="phonenumber1" type="text" class="form-control" placeholder="手机号码" aria-describedby="addphonenumber">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addemail">邮箱</span>
+            <input id="email1" type="text" class="form-control" placeholder="邮箱(可以为空)" aria-describedby="addemail">
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+<!--编辑用户 panel-->
+<div class="panel panel-primary" id="edituser">
+    <div class="panel-heading">
+        <div class="panel-title">编辑员工</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="edittruename">真实姓名</span>
+            <input id="truename2" type="text" class="form-control" placeholder="真实姓名" aria-describedby="edittruename">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="editphonenumber">手机号码</span>
+            <input id="phonenumber2" type="text" class="form-control" placeholder="手机号码" aria-describedby="editphonenumber">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="editemail">邮箱</span>
+            <input id="email2" type="text" class="form-control" placeholder="邮箱(可以为空)" aria-describedby="editemail">
+        </div>
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="deviceType">部门</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="type"
+                    aria-describedby="deviceType"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="edit-save-btn">保存</button>
+        <button class="btn btn-primary" id="edit-cancel-btn">取消</button>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="adddepart">
+    <div class="panel-heading">
+        <div class="panel-title">新增组</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addgroupname">部门名称</span>
+            <input id="groupName" type="text" class="form-control" placeholder="部门名称" aria-describedby="addgroupname">
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-group-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-group-btn">取消</button>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="editdepartment">
+    <div class="panel-heading">
+        <div class="panel-title">编辑部门</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="editdepartname">部门名称</span>
+            <input id="groupname2" type="text" class="form-control" placeholder="部门名称" aria-describedby="editdepartname">
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="edit-depart-save-btn">保存</button>
+        <button class="btn btn-primary" id="edit-depart-cancel-btn">取消</button>
+    </div>
+</div>
+</body>
+</html>

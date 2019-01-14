@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../utils/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Select/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="../utils/datatables/extensions/Responsive/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../utils/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="../utils/datatables/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../utils/datatables/extensions/Responsive/js/responsive.bootstrap.min.js"></script>
+    <script src="../utils/datatables/extensions/Select/js/dataTables.select.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script>
+        $(function () {
+            var planList = getPlanSheetList();
+            var stationList = getAddressList();
+            var memberList = getUserList();
+            var planSoluList = getPlanSolution();
+            var testList;
+            memberList = resetUser(memberList);
+            // console.log(sheetList);
+            console.log(stationList);
+            console.log(memberList);
+            for(i in planList){
+                planList[i].addDate = _getDate(planList[i].addtime);
+                if(planList[i].endtime){
+                    planList[i].endDate = _getDate(planList[i].endtime);
+                }else {
+                    planList[i].endDate = '';
+                }
+
+                if(planList[i].cycType === 0){
+                    planList[i].cycName = '无周期';
+                }else if(planList[i].cycType === 1){
+                    planList[i].cycName = '一周';
+                }else if(planList[i].cycType === 2){
+                    planList[i].cycName = '一个月';
+                }else if(planList[i].cycType === 3){
+                    planList[i].cycName = '一季度';
+                }else if(planList[i].cycType === 4){
+                    planList[i].cycName = '一年';
+                }
+                if(planList[i].status === 0){
+                    planList[i].stateName = '进行中';
+                }else if(planList[i].status === 1){
+                    planList[i].stateName = '已终止';
+                }else if(planList[i].status === 2){
+                    planList[i].stateName = '已完成';
+                }
+            }
+            console.log(planList);
+            // console.log(sheetList);
+            var planSheetInfo;
+            var tableHeight;
+            var station,cycle,manager,plan;
+
+            $(".container-fluid").css("height", $(window).height()+"px");
+            tableHeight = ($(".container-fluid").height-15)/2 + "px";
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+
+            station = new Vue({
+                el: '#station',
+                data: {
+                    value: null,
+                    options: stationList,
+                    normalizer(node) {
+                        return {
+                            id: node.id,
+                            label: node.name,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    setValue:function (newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            cycle = new Vue({
+                el: '#cycle',
+                data: {
+                    value: null,
+                    options: [ {
+                        id: '0',
+                        label: '无周期',
+                    }, {
+                        id: '1',
+                        label: '一周',
+                    }, {
+                        id: '2',
+                        label: '一月',
+                    }, {
+                        id: '3',
+                        label: '一季度',
+                    }, {
+                        id: '4',
+                        label: '一年',
+                    } ],
+                    normalizer(node) {
+                        return {
+                            id: node.id,
+                            label: node.label,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    setValue:function (newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            manager = new Vue({
+                el: '#manager',
+                data: {
+                    value: null,
+                    options: memberList,
+                    normalizer(node) {
+                        return {
+                            id: node.tagID,
+                            label: node.tagName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    setValue:function (newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            plan = new Vue({
+                el: '#selplan',
+                data: {
+                    value: null,
+                    options: planSoluList,
+                    normalizer(node) {
+                        return {
+                            id: node.planID,
+                            label: node.planName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    setValue:function (newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+
+            var planTable = $("#plantable").DataTable({
+                order: [[ 4, "desc" ]],
+                select: true,
+                scrollY: tableHeight,
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                data: planList,
+                columnDefs:[{"targets":0,"visible":false}],
+                columns:[
+                    {data: "planDanID", title: "计划ID", defaultContent:""},
+                    {data: "planDanNumber", title: "计划单号", defaultContent:""},
+                    {data: "planName", title: "计划模板名称", defaultContent:""},
+                    {data: "staName", title: "站点名称", defaultContent:""},
+                    {data: "addDate", title: "创建时间", defaultContent:""},
+                    {data: "cycName", title: "计划周期", defaultContent:""},
+                    {data: "builder", title: "创建人", defaultContent:""},
+                    {data: "leader", title: "负责人", defaultContent:""},
+                    {data: "stateName", title: "状态", defaultContent:""},
+                    {data: 'testRate', title: "试验单进度", defaultContent:""},
+                    {data: 'taskRate', title: "任务单进度", defaultContent:""},
+                    {data: 'endDate', title: "完成时间", defaultContent:""},
+                ]
+            });
+            var testTable = $("#testtable").DataTable({
+                order: [[ 6, "desc" ]],
+                select: true,
+                scrollY: tableHeight,
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                columnDefs:[{"targets":0,"visible":false}],
+                columns:[
+                    {data:'testID', title: "试验ID", defaultContent:""},
+                    {data:'testNumber', title: "试验单号", defaultContent:""},
+                    {data:'soluName', title: "试验模板名称", defaultContent:""},
+                    {data:'testNames', title: "试验成员", defaultContent:""},
+                    {data:'leader', title: "负责人", defaultContent:""},
+                    {data:'builder', title: "创建人", defaultContent:""},
+                    {data:'addDate', title: "创建时间", defaultContent:""},
+                    {data:'staName', title: "状态", defaultContent:""},
+                    {data:'taskRate', title: "任务单进度", defaultContent:""},
+                    {data:'endDate', title: "完成时间", defaultContent:""},
+                ]
+            });
+            $('#plantable tbody').on('click', 'tr',function() {
+                var id = planTable.row(this).data().planDanID;
+                console.log(id);
+                var options = {
+                    'planDanID': parseInt(id)
+                };
+                planSheetInfo = getPlanSheetInfo(options);
+                console.log(planSheetInfo);
+                $("#id").val(planSheetInfo.planDanID);
+                $("#planNumber").val(planSheetInfo.planDanNumber);
+                $("#planTime").val(_getDate(planSheetInfo.addtime));
+                station.setValue(planSheetInfo.staID);
+                cycle.setValue(planSheetInfo.cycType);
+                manager.setValue(planSheetInfo.leaderID);
+                var option = {
+                    'planDanID': $("#id").val()
+                };
+                testList = getPlanTestList(option);
+                for(i in testList){
+                    testList[i].addDate = _getDate(testList[i].addtime);
+                    if(testList[i].endtime){
+                        testList[i].endDate = _getDate(testList[i].endtime);
+                    }else{
+                        testList[i].endDate = '';
+                    }
+                    if(testList[i].status === 0){
+                        testList[i].staName = '进行中';
+                    }else if(testList[i].status === 1){
+                        testList[i].staName = '已终止';
+                    }else if(testList[i].status === 2){
+                        testList[i].staName = '已完成';
+                    }
+                    var testNames = '';
+                    for(index in testList[i].testUserList){
+                        testNames += testList[i].testUserList[index].userName;
+                        testNames += ',';
+                    }
+                    testNames = testNames.substr(0,testNames.length-1);
+                    testList[i].testNames = testNames;
+                }
+                console.log(testList);
+
+                testTable.clear().draw();
+                for(i in testList){
+                    testTable.row.add(testList[i]).draw();
+                }
+            });
+
+            $("#addplansheet").click(function () {
+                //发送addplan请求
+                var options = {
+
+                };
+                var res = addPlanSheet(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#delplansheet").click(function () {
+                if(!planSheetInfo){
+                    alert("请先选择计划单！");
+                }else {
+                    //发送delplan请求
+                    var options = {
+                        'planDanID': planSheetInfo.planDanID
+                    };
+                    var res = delPlanSheet(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+            $("#saveplansheet").click(function () {
+                if(!planSheetInfo){
+                    alert("请先选择计划单！");
+                }else {
+                    //发送delplan请求
+                    console.log(testTable.data());
+                    var testIDs = new Array();
+                    var counter = 0;
+                    testTable.data().each(function () {
+                        testIDs.push(testTable.data()[counter].testID);
+                        counter++;
+                    });
+                    console.log(testIDs);
+                    var options = {
+                        'planDanID': planSheetInfo.planDanID,
+                        'staID': station.value,
+                        'cycType': cycle.value,
+                        'leaderID': manager.value,
+                    };
+                    var res = updatePlanSheet(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+
+            $("#exportplan").click(function () {
+                $("#exportaddplan").css("display","block");
+                var left = $(window).width()/2 -  $("#exportaddplan").width()/2;
+                var top = $(window).height()/2 -  $("#exportaddplan").height()/2;
+                $("#exportaddplan").css("left",left + "px");
+                $("#exportaddplan").css("top",top + "px");
+
+            });
+            $("#save-export-btn").click(function () {
+                if(!$("#planname").val()){
+                    alert("模板名称不能为空！");
+                }else if(!$("#id").val()) {
+                    alert("请先选计划单！");
+                }else{
+                    var options = {
+                        'planDanID': planSheetInfo.planDanID,
+                        'planName' : $("#planname").val()
+                    };
+                    var res = exportPlanSolution(options);
+                    if(res.code === 101){
+                        $("#exportaddplan").css("display","none");
+                        alert(res.message);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+            $("#cancel-export-btn").click(function () {
+                $("#exportaddplan").css("display","none");
+            });
+
+            $("#importPlan").click(function () {
+                $("#importaddplan").css("display","block");
+                var left = $(window).width()/2 -  $("#importaddplan").width()/2;
+                var top = $(window).height()/2 -  $("#importaddplan").height()/2;
+                $("#importaddplan").css("left",left + "px");
+                $("#importaddplan").css("top",top + "px");
+            });
+            $("#save-btn").click(function () {
+                if(!plan.value){
+                    alert("计划模板不能为空！");
+                }else if(!$("#id").val()) {
+                    alert("请先选计划单！");
+                }else{
+                    var options = {
+                        'planDanID': planSheetInfo.planDanID,
+                        'planID': plan.value,
+                    };
+                    var res = importPlanSolution(options);
+                    if(res.code === 101){
+                        $("#importaddplan").css("display","none");
+                        alert(res.message);
+                        var option = {
+                            'planDanID': $("#id").val()
+                        };
+                        renewTestTable(testTable,option);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+            $("#cancel-btn").click(function () {
+                $("#importaddplan").css("display","none");
+            });
+
+            $('#testtable tbody').on('click', 'tr',function() {
+                var id = testTable.row(this).data().testID;
+                $("#testID").val(id);
+            });
+            $("#addTest").click(function () {
+                var options = {
+                    'planDanID': $("#id").val()
+                };
+                var res = addTestSheet(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    var option = {
+                        'planDanID': $("#id").val()
+                    };
+                    renewTestTable(testTable,option);
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#updateTest").click(function () {
+                if(!$("#testID").val()){
+                    alert("请选择试验单");
+                }else{
+                    var link = "../admin-test-management/test-list.html" + '?testID=' + $("#testID").val() + '&planDanID=' + $("#id").val();
+                    window.location.href = link;
+                }
+            });
+            $("#delTest").click(function () {
+                if(!$("#testID").val()){
+                    alert("请选择试验单");
+                }else{
+                    var options = {
+                        'testID': $("#testID").val()
+                    };
+                    var res = delTestSheet(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        var option = {
+                            'planDanID': $("#id").val()
+                        };
+                        renewTestTable(testTable,option);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bacc"></div>
+        <div class="title-7 col-xs-6 col-sm-6">
+            计划单列表
+        </div>
+        <button class="btn btn-danger float-right" id="delplansheet">删除计划单</button>
+        <button class="btn btn-primary float-right btn-margin" id="addplansheet">新建计划单</button>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 simple-bacc table-padding">
+            <table class="table table-responsive table-bordered table-hover" id="plantable">
+
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="bacc"></div>
+        <div class="title-7 col-xs-6">
+            计划单内容
+        </div>
+        <button class="btn btn-primary float-right"  id="exportplan">导出模板</button>
+        <button class="btn btn-primary float-right btn-margin"  id="importPlan">导入模板</button>
+        <button class="btn btn-danger float-right  btn-margin" id="delTest">删除</button>
+        <button class="btn btn-info float-right btn-margin" id="updateTest">编辑</button>
+        <button class="btn btn-primary float-right btn-margin" id="addTest">新增</button>
+        <button class="btn btn-primary float-right btn-margin"  id="saveplansheet">保存</button>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3" style="padding-left: 0;">
+            <div class="col-xs-12 col-sm-12 simple-bacc table-padding">
+                <input type="hidden" id="id">
+                <input type="hidden" id="testID">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addplanID">计划单号</span>
+                    <input id="planNumber" type="text" class="form-control" aria-describedby="addplanID" readonly>
+                </div>
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addplanTime">创建时间</span>
+                    <input id="planTime" type="text" class="form-control" aria-describedby="addplanTime" readonly>
+                </div>
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addStation">站点名称</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="station"
+                            aria-describedby="addStation"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addCycle">计划周期</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="cycle"
+                            aria-describedby="addCycle"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="addmanager">负责人</span>
+                    <treeselect
+                            v-model="value"
+                            :options="options"
+                            :normalizer="normalizer"
+                            :disable-branch-nodes="true"
+                            :show-count="true"
+                            placeholder="请选择"
+                            id="manager"
+                            aria-describedby="addmanager"
+                    />
+                    <pre class="result">{{ value }}</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-9 table-padding simple-bacc">
+            <table class="table table-responsive table-bordered table-hover" id="testtable">
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="importaddplan">
+    <div class="panel-heading">
+        <div class="panel-title">导入计划模板</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addselplan">计划模板</span>
+            <treeselect
+                    v-model="value"
+                    :options="options"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="true"
+                    :show-count="true"
+                    placeholder="请选择"
+                    id="selplan"
+                    aria-describedby="addselplan"
+            />
+            <pre class="result">{{ value }}</pre>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+<div class="panel panel-primary" id="exportaddplan">
+    <div class="panel-heading">
+        <div class="panel-title">另存为模板</div>
+    </div>
+    <div class="panel-body">
+        <div class="input-group input-class">
+            <span class="input-group-addon" id="addpsolutionName">模板名称</span>
+            <input id="planname" type="text" class="form-control" placeholder="模板名称" aria-describedby="addpsolutionName">
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-export-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-export-btn">取消</button>
+    </div>
+</div>
+</body>
+</html>
