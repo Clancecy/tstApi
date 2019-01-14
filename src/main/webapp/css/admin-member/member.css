@@ -1,0 +1,143 @@
+.sidebar{
+    position: relative;
+    width: 100%;
+    margin: 0;
+}
+#adduser, #edituser, #adddepart, #editdepartment{
+    width: 400px;
+    min-height: 172px;
+    position: absolute;
+    background-color: white;
+    display: none;
+}
+#mem-list>.col-xs-12, #mem-list>.col-sm-12{
+    padding: 0;
+}
+#add-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+}
+#dialogTree-title{
+    margin: 0;
+    text-align: center;
+    border-bottom: 1px solid #EAEAEA;
+}
+#tagTree-title{
+    text-align: center;
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #EAEAEA;;
+}
+#info-title{
+    background-color: #1479b0;
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+}
+.title-4{
+    color: #FFFFFF;
+}
+#info-body{
+    margin: 0;
+    padding: 10px 0 10px 0;
+}
+#img-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #EAEAEA;
+}
+#img-body{
+    margin: 0;
+    padding: 10px 0 10px 0;
+}
+#foot-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-top: 1px solid #EAEAEA;
+}
+.pan{
+    padding: 0;
+}
+.pan-right{
+    padding-right: 0;
+}
+li{
+    list-style: none;
+    text-decoration: none;
+}
+
+
+
+
+.sidebar-nav {
+    background: #FFFFFF;
+}
+.sidebar-nav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: #FFFFFF;
+}
+
+.sidebar-nav .metismenu {
+    background: #FFFFFF;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.sidebar-nav .metismenu li + li {
+    margin-top: 5px;
+}
+
+.sidebar-nav .metismenu li:first-child {
+    margin-top: 5px;
+}
+.sidebar-nav .metismenu li:last-child {
+    margin-bottom: 5px;
+}
+
+
+.sidebar-nav .metismenu > li {
+    /*-webkit-box-flex: 1;
+    -ms-flex: 1 1 0%;
+    flex: 1 1 0%;*/
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    position: relative;
+}
+.sidebar-nav .metismenu a {
+    position: relative;
+    display: block;
+    padding: 13px 15px;
+    color: #000000;
+    outline-width: 0;
+    transition: all .3s ease-out;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.sidebar-nav .metismenu ul a {
+    padding: 10px 15px 10px 30px;
+}
+
+.sidebar-nav .metismenu ul ul a {
+    padding: 10px 15px 10px 45px;
+}
+
+.sidebar-nav .metismenu a:hover,
+.sidebar-nav .metismenu a:focus,
+.sidebar-nav .metismenu a:active {
+    color: #000000;
+    text-decoration: none;
+    background: #EAEAEA;
+}

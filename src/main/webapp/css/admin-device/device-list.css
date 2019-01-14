@@ -1,0 +1,78 @@
+#adddevice, #editdevice, #deldevice{
+    margin: 0 auto;
+}
+#add-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+}
+#dialogTree-title{
+    text-align: center;
+    border-bottom: 1px solid #EAEAEA;
+}
+#tagTree-title{
+    text-align: center;
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #EAEAEA;;
+}
+#info-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+}
+#info-body{
+    margin: 0;
+    padding: 10px 0 10px 0;
+}
+.normal-input{
+    height: 46px;
+}
+#img-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #EAEAEA;
+}
+#img-body{
+    margin: 0;
+    padding: 10px 0 10px 0;
+}
+#foot-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-top: 1px solid #EAEAEA;
+}
+.pan{
+    padding: 0;
+}
+.pan-right{
+    padding-right: 0;
+}
+#label, #device{
+    height: 200px;
+    padding: 12px 12px 12px 12px;
+}
+
+.btn-file{
+    float: right;
+}
+.modal-footer{
+    margin-top: 10px;
+}
+.info-file{
+    padding: 0;
+}
+.info-title{
+    padding: 0;
+    text-align: center;
+}
+.info-btn{
+    padding: 0;
+}
+
+#addfile{
+    float: right;
+}
+.file-block{
+    margin-bottom: 10px;
+}

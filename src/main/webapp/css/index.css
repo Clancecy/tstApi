@@ -1,0 +1,40 @@
+#page-wrapper{
+    padding: 0;
+}
+#wrapper{
+    background-color: #274071;
+}
+.navbar-default{
+    border-bottom: 1px solid #274071;
+}
+.navbar-testyle{
+    background-color: #294884;
+    color: #FFFFFF;
+}
+
+.sidebar{
+    background-color: #274071;
+}
+.sidebar ul li{
+    border-bottom: 1px solid #274071;
+}
+.nav>li>a{
+    color: #D0D0D0;
+    border-left: 5px solid transparent;
+}
+.sidebar ul li a.active{
+    background-color: transparent;
+}
+.nav>li>a:focus, .nav>li>a:hover{
+    background-color: transparent;
+    border-left: 5px solid #6EB4F9;
+    color: #6EB4F9;
+}
+.navbar-right>li>a{
+    border: none;
+}
+.navbar-right>li>a:focus, .navbar-right>li>a:hover{
+    background-color: transparent;
+    border: none;
+    color: #6EB4F9;
+}

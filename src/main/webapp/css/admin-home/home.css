@@ -1,0 +1,165 @@
+h1{
+    margin-top: 5px;
+    font-weight: bold;
+}
+.warning-font{
+    color: #E9B429;
+}
+.disable-font{
+    color: #B2B4B2;
+}
+.alert-font{
+    color: #B93F43;
+}
+.success-font{
+    color: #459F3F;
+}
+.font-strong{
+    font-weight: bold;
+}
+
+.container-fluid{
+    background-color: #EAEAEA;
+}
+.container-fluid>.row{
+    background-color: #EAEAEA;
+}
+.container-fluid>.row>.col-xs-12, .container-fluid>.row>.col-xs-6{
+    padding: 0 10px 0 10px;
+    background-color: #EAEAEA;
+}
+.col-sm-6, .col-sm-3{
+    background-color: #FFFFFF;
+}
+.panel{
+    margin: 10px 0 0 0;
+    -webkit-box-shadow:0px 3px 3px #c8c8c8 ;
+    -moz-box-shadow:0px 3px 3px #c8c8c8 ;
+    box-shadow:0px 3px 3px #c8c8c8 ;
+}
+#statistics .col-xs-12{
+    padding-left: 10px;
+    text-align: center;
+    background-color: #F5F5F5;
+    padding-bottom: 5px;
+}
+#wait>.panel-body>.row>.col-xs-12>.col-xs-6{
+    background-color: #F5F5F5;
+    margin-bottom: 10px;
+}
+#report>.panel-body>.col-xs-12{
+    border: 1px solid #EDEDED;
+}
+#report>.panel-body>.col-xs-12>.row>.col-xs-12{
+    text-align: center;
+    background-color: #294884;
+    color: #FFFFFF;
+}
+#plan>.panel-body>.col-xs-6>.col-xs-12, #task>.panel-body>.col-xs-6>.col-xs-12{
+    border: 1px solid #EDEDED;
+}
+#plan>.panel-body>.col-xs-6>.col-xs-12>.row>.col-xs-12, #task>.panel-body>.col-xs-6>.col-xs-12>.row>.col-xs-12{
+    text-align: center;
+    background-color: #294884;
+    color: #FFFFFF;
+}
+#instrument>.panel-body>.col-xs-12, .col-xs-4, #instest .col-xs-12{
+    padding: 0;
+}
+#instest .col-xs-12{
+    text-align: center;
+}
+#instrument>.panel-body>.col-xs-12>.col-xs-6>.col-xs-12{
+    border: 1px solid #EDEDED;
+}
+#instrument>.panel-body>.col-xs-12>.col-xs-6>.col-xs-12>.row>.col-xs-12{
+    text-align: center;
+    background-color: #294884;
+    color: #FFFFFF;
+}
+#testrate>h1{
+    color: #B93F43;
+}
+#testrate, #planrate, #plancycrate, #taskrate, #taskcycrate, #inswellrate{
+    border-right: 1px solid #EDEDED;
+    text-align: center;
+}
+#testrate>h1,  #planrate>h1, #plancycrate>h1, #taskrate>h1, #taskcycrate>h1, #inswellrate>h1{
+    margin-bottom: 5px;
+}
+#testform .col-xs-12, #planform .col-xs-12, #plancycform .col-xs-12, #taskform .col-xs-12, #taskcycform .col-xs-12{
+    margin: 5px 0 0 0;
+}
+
+@media screen and (min-width: 990px) {
+    .panel-body{
+        padding: 5px 5px 5px 5px;
+    }
+    #inswellrate{
+        padding: 0 5px 0 5px;
+    }
+    span{
+        font-size: 10px;
+    }
+    .panel-title>span{
+        font-size: 14px;
+    }
+}
+@media screen and (min-width: 1190px) {
+    .panel-body{
+        padding: 15px 15px 15px 15px;
+    }
+    #inswellrate{
+        padding: 0 15px 0 15px;
+    }
+    span{
+        font-size: 14px;
+    }
+    .panel-title>span{
+        font-size: 14px;
+    }
+}
+@media screen and (max-width: 989px){
+    .panel-body{
+        padding: 5px 5px 5px 5px;
+    }
+    .panel-title>span{
+        font-size: 14px;
+    }
+}
+@media screen and (max-width: 425px){
+    .container-fluid{
+        padding: 0 5px 0 5px;
+    }
+    .row{
+        margin: 0;
+    }
+    .panel-body{
+        padding: 5px 5px 5px 5px;
+    }
+    .panel-body>.col-xs-12{
+        padding: 0;
+    }
+    .panel-body>.col-xs-12>.col-xs-6{
+        width: 100%;
+    }
+    .panel-body>.col-xs-6>.col-xs-12, .panel-body>.col-xs-12>.col-xs-6{
+        padding: 0;
+    }
+    .col-xs-12,.col-xs-1,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-10,.col-xs-11,.col-xs-12{
+        padding: 0 5px 0 5px;
+    }
+    #testform{
+        padding: 0;
+    }
+    h1{
+        font-size: 26px;
+    }
+    span{
+        text-align: center;
+        font-size: 10px;
+    }
+    .panel-title>span{
+        font-size: 14px;
+    }
+}

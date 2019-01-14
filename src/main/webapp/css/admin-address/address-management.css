@@ -1,0 +1,119 @@
+#showmap{
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    background-color: white;
+    display: none;
+    z-index: 999;
+}
+#map{
+    width: 368px;
+    height: 270px;
+    overflow: auto;
+    margin: 0;
+}
+#addstation, #editstation, #delstation{
+    margin: 0 auto;
+}
+#add-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+}
+#dialogTree-title{
+    text-align: center;
+    border-bottom: 1px solid #EAEAEA;
+}
+#tagTree-title{
+    text-align: center;
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #EAEAEA;;
+}
+#info-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+}
+#info-body{
+    margin: 0;
+    padding: 10px 0 10px 0;
+}
+#img-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #EAEAEA;
+    border-top: 1px solid #EAEAEA;
+}
+#img-body{
+    margin: 0;
+    padding: 10px 0 10px 0;
+}
+#foot-title{
+    margin: 0;
+    padding: 10px 0 10px 0;
+    border-top: 1px solid #EAEAEA;
+}
+.pan{
+    padding: 0;
+}
+.pan-right{
+    padding-right: 0;
+}
+.swiper-container{
+    height: 200px;
+}
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+
+    /* Center slide text vertically */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+.btn-file{
+    float: right;
+}
+#delImgPanel{
+    width: 400px;
+    min-height: 172px;
+    position: absolute;
+    background-color: white;
+    display: none;
+    z-index: 999;
+}
+#gallery{
+    padding: 0;
+}
+#gallery>li{
+    list-style: none;
+    text-decoration: none;
+    text-align: center;
+    vertical-align: center;
+    height: 50px;
+    padding: 3px 0 3px 0;
+}
+#gallery>li>.row{
+    border-bottom: 1px solid #EAEAEA;
+}
+#gallery>li>.row>.col-xs-3{
+    margin-bottom: 5px;
+    height: 44px;
+}
+#gallery>li>.row>.col-xs-3>button{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+#img-body>.col-xs-12, #img-body>.col-sm-12{
+    padding: 0;
+}

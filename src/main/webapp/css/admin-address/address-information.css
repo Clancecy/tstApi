@@ -1,0 +1,24 @@
+label, input{
+    padding-left: 0px;
+}
+.col-sm-2, .col-sm-4{
+    padding-left: 0px;
+}
+.col-xs-4, .col-xs-8{
+    margin: 5px 0px;
+}
+img{
+    width: 100%;
+    height: auto;
+    display: block;
+}
+@media (max-width: 767px) {
+    #viewDiv2{
+        height: 100%;
+    }
+}
+@media (min-width: 768px) {
+    #viewDiv2{
+        height: 40%;
+    }
+}

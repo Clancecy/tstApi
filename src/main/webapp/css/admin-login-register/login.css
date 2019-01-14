@@ -1,0 +1,23 @@
+#login, #register{
+    width: 400px;
+    min-height: 172px;
+    position: absolute;
+    background-color: white;
+    display: block;
+}
+body{
+    background-color: grey;
+}
+.col-sm-4, .col-sm-8, .col-sm-6{
+    padding: 0;
+}
+.col-xs-12{
+    padding: 0;
+}
+.container-fluid, .row{
+    margin: 0;
+    padding: 0;
+}
+.input-class{
+    margin-bottom: 10px;
+}

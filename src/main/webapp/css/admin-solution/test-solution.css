@@ -1,0 +1,8 @@
+#addtest{
+    width: 400px;
+    min-height: 172px;
+    position: absolute;
+    background-color: white;
+    display: none;
+    z-index: 999;
+}

@@ -1,0 +1,18 @@
+.col-sm-4, .col-sm-8, .col-sm-6{
+    padding: 0;
+}
+.col-xs-12, .col-sm-12{
+    padding: 0;
+}
+.container-fluid, .row{
+    margin: 0;
+    padding: 0;
+}
+a{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+a:hover{
+    color: #FFFFFF;
+    text-decoration: none;
+}

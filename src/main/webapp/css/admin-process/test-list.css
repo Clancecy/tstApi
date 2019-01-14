@@ -1,0 +1,32 @@
+.bacc{
+    position: relative;
+    float: left;
+    width: 4px;
+    height: 34px;
+    background-color: #0078D7;
+}
+.title{
+    line-height: 34px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.container-fluid{
+    padding: 10px 10px 10px 10px;
+    background-color: #EAEAEA;
+}
+.row{
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+.table-background{
+    padding-top: 10px;
+    padding-left: 0;
+    padding-right: 0;
+    background-color: #FFFFFF;
+}
+.input-class{
+    margin-bottom: 10px;
+}
+.testinfo{
+    background-color: #FFFFFF;
+}
