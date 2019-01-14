@@ -1,8 +1,10 @@
+@import "../font-awesome/css/font-awesome.min.css";
+
 #page-wrapper{
     padding: 0;
 }
 #wrapper{
-    background-color: #274071;
+    background-color: #EAEAEA;
 }
 .navbar-default{
     border-bottom: 1px solid #274071;
@@ -37,4 +39,8 @@
     background-color: transparent;
     border: none;
     color: #6EB4F9;
+}
+#page-wrapper{
+    position: relative;
+    margin-left: 44px;
 }

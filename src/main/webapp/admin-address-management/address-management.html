@@ -36,6 +36,7 @@
             console.log(addressTagList);
             var addressInfo;
             var lng,lat;
+            var tagtree,ztree;
 
             $(".container-fluid").css("height",$(window).height()+"px");
             $(".pan-right").css('height',$(".pan").height() +"px");
@@ -49,7 +50,7 @@
                 method         : 'auto',
             });
 
-            var ztree;
+
             var setting = {
                 view:{
                     selectedMulti:false
@@ -67,6 +68,8 @@
                         return false;
                     },//用户禁止拖动节点
                     onClick:function clickNode(e,treeId,treeNode){
+                        ztree.expandAll(true);
+                        tagtree.expandAll(false);
                         initUpload(treeNode.id);
                         $("#uploadimg").on("fileuploaded", function (event, data, previewId, index) {
                             var res = data.response;
@@ -87,9 +90,9 @@
             };
             var zNodes = addressList;
             ztree = $.fn.zTree.init($("#stationTree"), setting, zNodes);
-            ztree.expandAll(true);
 
-            var tagtree;
+
+
             var tagsetting = {
                 view:{
                     selectedMulti:false
@@ -107,6 +110,8 @@
                         return false;
                     },//用户禁止拖动节点
                     onClick:function clickNode(e,treeId,treeNode){
+                        ztree.expandAll(false);
+                        tagtree.expandAll(true);
                         initUpload(treeNode.id);
                         $("#uploadimg").on("fileuploaded", function (event, data, previewId, index) {
                             var res = data.response;
@@ -127,7 +132,7 @@
             };
             var tagNodes = addressTagList;
             tagtree = $.fn.zTree.init($("#tagTree"), tagsetting, tagNodes);
-            tagtree.expandAll(false);
+
 
             $("#addstation").click(function () {
                 if(!$("#id").val()){

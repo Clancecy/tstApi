@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./sb-admin-2/css/sb-admin-2.min.css">
     <link href="./morrisjs/morris.css" rel="stylesheet">
     <link rel="stylesheet" href="./font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/form-style.css">
     <link rel="stylesheet" href="./css/index.css">
     <script src="./js/jquery/jquery.min.js"></script>
     <script src="./bootstrap/js/bootstrap.min.js"></script>
@@ -24,47 +25,86 @@
     <script src="./js/echarts.js"></script>
     <script>
         $(function () {
+            window.onresize = function(){
+                $(document.body).css({
+                    "overflow-x":"hidden"
+                });
+                $(".sidebar").css("min-height",$(window).height()-51+"px");
+                $("#page-wrapper").css("height",$(window).height()-51+"px");
+            };
             $(document.body).css({
                 "overflow-x":"hidden"
             });
-            // $(".sidebar").css("height",$(window).height()-51+"px");
+            $(".sidebar").css("min-height",$(window).height()-51+"px");
             $("#page-wrapper").css("height",$(window).height()-51+"px");
+
+            $(".sidebar").addClass('toggle');
+            $("#side-menu").addClass('none-display');
+
             $("#page-wrapper").html('<object type="text/html" data="admin-home/home.html" width="100%" height="100%"></object>');
             $("#home").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-home/home.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-home/home.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#plan").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-plan-management/plansheet-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-plan-management/plansheet-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#test").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-test-management/test-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-test-management/test-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#task").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-task-management/task-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-task-management/task-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#station").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-address-management/address-management.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-address-management/address-management.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#device").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-device-management/device-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-device-management/device-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#instrument").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-instrument-management/instrument-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-instrument-management/instrument-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#member").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-mem-management/mem-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-mem-management/mem-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#vertical").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-data-management/vertical-data-analyse.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-data-management/vertical-data-analyse.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#horizen").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-data-management/horizental-data-analyse.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-data-management/horizental-data-analyse.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#planTemplate").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/plan-solution-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/plan-solution-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
             });
             $("#testTemplate").click(function () {
-                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/test-solution-list.html" width="100%" height="100%"></object>')
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/test-solution-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
+            });
+            $("#slide").click(function () {
+               $(".sidebar").toggleClass('toggle');
+               $("#side-menu").toggleClass('none-display');
             });
         });
     </script>
@@ -109,6 +149,11 @@
         <!-- /.navbar-top-links -->
 
         <div class="navbar-default sidebar" role="navigation">
+            <div class="row no-margin">
+                <div class="col-xs-12 margin-top margin-bottom ">
+                    <a href="#" id="slide"><i class="fa fa-bars fa-lg float-right" style="color: #FFFFFF;"></i></a>
+                </div>
+            </div>
             <div class="sidebar-nav navbar-collapse">
                 <ul class="nav" id="side-menu">
                     <li>
@@ -179,10 +224,12 @@
             <!-- /.sidebar-collapse -->
         </div>
         <!-- /.navbar-static-side -->
+
     </nav>
 
     <div id="page-wrapper">
     </div>
+
     <!-- /#page-wrapper -->
     <!--<nav class="navbar navbar-default navbar-testyle navbar-fixed-bottom" style="height: 50px;"></nav>-->
 

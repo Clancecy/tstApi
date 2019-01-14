@@ -136,17 +136,17 @@ body{
 .normal-input{
     height: 44px;
 }
-.selected{
+.selected-items{
     height: 100px;
     overflow: scroll;
-}
-.selected-items{
     text-align: center;
     list-style: none;
     text-decoration: none;
     padding: 0;
 }
 .selected-devices{
+    height: 100px;
+    overflow: scroll;
     text-align: center;
     list-style: none;
     text-decoration: none;
@@ -166,4 +166,16 @@ body{
 }
 .margin-bottom{
     margin-bottom: 10px;
+}
+.margin-top{
+    margin-top: 10px;
+}
+.toggle{
+    left: -206px;
+}
+.none-content{
+    content: none;
+}
+.none-display{
+    display: none;
 }

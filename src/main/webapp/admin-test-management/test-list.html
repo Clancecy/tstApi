@@ -272,8 +272,8 @@
                 testInfo = getTestInfo(options);
                 console.log(testInfo);
                 $("#testid").val(testInfo.testID);
-                $("#testNumber").val(testInfo.testID);
-                $("#testTime").val(testInfo.testID);
+                $("#testNumber").val(testInfo.testNumber);
+                $("#testTime").val(_getDate(testInfo.addtime));
                 // devType.setValue(testInfo.devTypeID);
                 // item.setValue(testInfo.proID);
                 var mems = new Array();
@@ -440,6 +440,7 @@
 
             $("#saveTest").click(function () {
                 var options = {
+                    'testNumber': $("#testNumber").val(),
                     'testID': $("#testid").val(),
                     'userIDs': JSON.stringify(members.value),
                     'leaderID': manager.value
@@ -687,8 +688,8 @@
         <div class="title col-xs-6 col-sm-6">
             试验单内容
         </div>
-        <button class="btn btn-primary float-right "  id="exportSolution">另存为试验模板</button>
-        <button class="btn btn-primary float-right btn-margin"  id="importSolution">导入试验模板</button>
+        <button class="btn btn-primary float-right "  id="exportSolution">导入模板</button>
+        <button class="btn btn-primary float-right btn-margin"  id="importSolution">导出模板</button>
         <button class="btn btn-danger float-right btn-margin" id="delTask">删除</button>
         <button class="btn btn-info float-right btn-margin" id="updateTask">编辑</button>
         <button class="btn btn-primary float-right btn-margin" id="addTask">新增</button>
@@ -708,35 +709,6 @@
                     <span class="input-group-addon" id="addtestTime">创建时间</span>
                     <input id="testTime" type="text" class="form-control" aria-describedby="addtestTime" readonly>
                 </div>
-                <!--<div class="input-group input-class">-->
-                    <!--<span class="input-group-addon" id="adddevType">设备类型</span>-->
-                    <!--<treeselect-->
-                            <!--v-model="value"-->
-                            <!--:options="options"-->
-                            <!--:normalizer="normalizer"-->
-                            <!--:disable-branch-nodes="true"-->
-                            <!--:show-count="true"-->
-                            <!--placeholder="请选择"-->
-                            <!--id="devType"-->
-                            <!--aria-describedby="adddevType"-->
-                    <!--/>-->
-                    <!--<pre class="result">{{ value }}</pre>-->
-                <!--</div>-->
-                <!--<div class="input-group input-class">-->
-                    <!--<span class="input-group-addon" id="additem">试验项目</span>-->
-                    <!--<treeselect-->
-                            <!--v-model="value"-->
-                            <!--:multiple="true"-->
-                            <!--:options="options"-->
-                            <!--:normalizer="normalizer"-->
-                            <!--:disable-branch-nodes="true"-->
-                            <!--:show-count="true"-->
-                            <!--placeholder="请选择"-->
-                            <!--id="item"-->
-                            <!--aria-describedby="additem"-->
-                    <!--/>-->
-                    <!--<pre class="result">{{ value }}</pre>-->
-                <!--</div>-->
                 <div class="input-group input-class">
                     <span class="input-group-addon" id="addmembers">试验人员</span>
                     <treeselect
