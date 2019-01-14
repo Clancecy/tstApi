@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/ztree/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../swiper/css/swiper.min.css">
+    <link rel="stylesheet" href="../lightbox2/css/lightbox.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="../bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <link rel="stylesheet" href="../css/admin-device/device-list.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="../js/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="../bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script src="../bootstrap-fileinput/js/locales/zh.js"></script>
+    <script src="../js/img/jqthumb.min.js"></script>
+    <script src="../lightbox2/js/lightbox.min.js"></script>
+    <script src="../js/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script>
+        $(function () {
+            var devList = getDevList();
+            var devTagList = getDevTagList();
+            var devTypeList = getDevTypeList();
+            console.log(devList);
+            console.log(devTagList);
+            console.log(devTypeList);
+            var devInfo, adselDevType;
+
+            $(".devinfo").jqthumb({
+                classname      : 'jqthumb1',             // class name. DEFUALT IS jqthumb
+                width          : '174px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : '174px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            $(".info-img").jqthumb({
+                classname      : 'jqthumb2',             // class name. DEFUALT IS jqthumb
+                width          : $(".info-file").width()+'px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : $(".info-file").width()+'px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+
+            $('.form_date').datetimepicker({
+                language:  'zh_CN',
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                forceParse: 0,
+            });
+            adselDevType = new Vue({
+                el: '#type',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: devTypeList,
+                    normalizer(node) {
+                        return {
+                            id: node.typeID,
+                            label: node.typeName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods:{
+                    setValue:function (newvalue) {
+                        this.value = newvalue;
+                    }
+                }
+            });
+
+            $("#addLabelimg").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择设备！");
+                }
+            });
+            $("#addDeviceimg").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择设备！");
+                }
+            });
+            $("#addfile").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择设备！");
+                }
+            });
+            $("#adddevice").click(function () {
+                if (!$("#id").val()){
+                    alert("请先选择站点！");
+                }
+            });
+
+            var ztree;
+            var setting = {
+                view:{
+                    selectedMulti:false
+                },
+                edit: {
+                    enable: false,
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                },
+                callback:{
+                    beforeDrag:function beforeDrag(treeId,treeNodes){
+                        return false;
+                    },//用户禁止拖动节点
+                    onClick:function clickNode(e,treeId,treeNode){
+                        $("#id").val(treeNode.id);
+                        if(treeNode.isParent){
+                            alert("这是个站点，可以添加设备。");
+                            $("#adddevice").click(function () {
+                                    var options = {
+                                        'staID': treeNode.id,
+                                        'devName': '新设备'
+                                    };
+                                    var res = addDevice(options);
+                                    if(res.code === 101){
+                                        alert(res.message);
+                                        window.location.reload();
+                                    }else if(res.code === 5004){
+                                        alert(res.message);
+                                        window.location.href = '../admin-login-register/login.html'
+                                    }else{
+                                        alert(res.message);
+                                    }
+
+                            });
+                        }else {
+                            var options = {
+                                'devID': treeNode.id
+                            };
+                            initUploadDev(treeNode.id);
+                            $("#uploadlabel").on("fileuploaded", function (event, data, previewId, index) {
+                                var res = data.response;
+                                if (res.code === 101){
+                                    alert(res.message);
+                                    devInfo = getDevInfo(options);
+                                    reNewDevice(devInfo,adselDevType);
+                                } else{
+                                    alert(res.message);
+                                }
+                            });
+                            $("#uploaddevice").on("fileuploaded", function (event, data, previewId, index) {
+                                var res = data.response;
+                                if (res.code === 101){
+                                    alert(res.message);
+                                    devInfo = getDevInfo(options);
+                                    reNewDevice(devInfo,adselDevType);
+                                } else{
+                                    alert(res.message);
+                                }
+                            });
+                            $("#uploadfile").on("fileuploaded", function (event, data, previewId, index) {
+                                var res = data.response;
+                                if (res.code === 101){
+                                    alert(res.message);
+                                    devInfo = getDevInfo(options);
+                                    reNewDevice(devInfo,adselDevType);
+                                } else{
+                                    alert(res.message);
+                                }
+                            });
+                            devInfo = getDevInfo(options);
+                            console.log(devInfo);
+                            reNewDevice(devInfo,adselDevType);
+                        }
+
+                    }//点击节点触发的事件
+                }
+            };
+            var zNodes = devList;
+            ztree = $.fn.zTree.init($("#deviceTree"), setting, zNodes);
+            ztree.expandAll(true);
+
+            var tagtree;
+            var tagsetting = {
+                view:{
+                    selectedMulti:false
+                },
+                edit: {
+                    enable: false,
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                },
+                callback:{
+                    beforeDrag:function beforeDrag(treeId,treeNodes){
+                        return false;
+                    },//用户禁止拖动节点
+                    onClick:function clickNode(e,treeId,treeNode){
+                        $("#id").val(treeNode.id);
+                        if(treeNode.isParent){
+                            alert("这是个站点，可以添加设备。");
+                            $("#adddevice").click(function () {
+                                var options = {
+                                    'staID': treeNode.id,
+                                    'devName': '新设备'
+                                };
+                                var res = addDevice(options);
+                                if(res.code === 101){
+                                    alert(res.message);
+                                    window.location.reload();
+                                }else if(res.code === 5004){
+                                    alert(res.message);
+                                    window.location.href = '../admin-login-register/login.html'
+                                }else{
+                                    alert(res.message);
+                                }
+
+                            });
+                        }else {
+                            var options = {
+                                'devID': treeNode.id
+                            };
+                            initUploadDev(treeNode.id);
+                            $("#uploadlabel").on("fileuploaded", function (event, data, previewId, index) {
+                                var res = data.response;
+                                if (res.code === 101){
+                                    alert(res.message);
+                                    devInfo = getDevInfo(options);
+                                    reNewDevice(devInfo,adselDevType);
+                                } else{
+                                    alert(res.message);
+                                }
+                            });
+                            $("#uploaddevice").on("fileuploaded", function (event, data, previewId, index) {
+                                var res = data.response;
+                                if (res.code === 101){
+                                    alert(res.message);
+                                    devInfo = getDevInfo(options);
+                                    reNewDevice(devInfo,adselDevType);
+                                } else{
+                                    alert(res.message);
+                                }
+                            });
+                            $("#uploadfile").on("fileuploaded", function (event, data, previewId, index) {
+                                var res = data.response;
+                                if (res.code === 101){
+                                    alert(res.message);
+                                    devInfo = getDevInfo(options);
+                                    reNewDevice(devInfo,adselDevType);
+                                } else{
+                                    alert(res.message);
+                                }
+                            });
+                            devInfo = getDevInfo(options);
+                            console.log(devInfo);
+                            reNewDevice(devInfo,adselDevType);
+                        }
+
+                    }//点击节点触发的事件
+                }
+            };
+            var tagNodes = devTagList;
+            tagtree = $.fn.zTree.init($("#tagTree"), tagsetting, tagNodes);
+            tagtree.expandAll(false);
+
+
+            $("#file-body").click(function (ev) {
+                var ev = ev || event;
+                var aBlock = ev.target.parentNode.parentNode.children;
+                console.log(aBlock);
+                if(ev.target.innerText === '删除'){
+                    var options = {
+                        'devID': $("#id").val(),
+                        'fileID': aBlock[0].value
+                    };
+                    console.log(options);
+                    var res = delDevFile(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        devInfo = getDevInfo({'devID':$("#id").val()});
+                        reNewDevice(devInfo,adselDevType);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+
+            $("#editdevice").click(function () {
+                var options = {
+                    'devID': $("#id").val(),
+                    'devTypeID': adselDevType.value,
+                    'lineNumber': $("#linenumber").val(),
+                    'devName': $("#name").val(),
+                    'volStep': $("#volt").val(),
+                    'runNumber': $("#runnumber").val(),
+                    'initNumber': $("#outnumber").val(),
+                    'modNumber': $("#manunumber").val(),
+                    'usetime': $("#indate").val(),
+                    'buildtime': $("#manudate").val(),
+                    'factory': $("#plant").val(),
+                    'status': $("#state").val(),
+                    'tagString': $("#tag").val()
+                };
+                var res = updateDevice(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    devInfo = getDevInfo($("#id").val());
+                    reNewDevice(devInfo,adselDevType);
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+
+            $("#deldevice").click(function () {
+                var options = {
+                    'devID': $("#id").val()
+                };
+                var res = delDevice(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+
+
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">设备列表</div>
+    </div>
+    <div class="row">
+        <div class="pan col-xs-12 col-sm-3 simple-bacc">
+            <div class="row simple-bacc">
+                <div class="row" id="add-title">
+                    <div class=" col-xs-12">
+                        <button class="btn btn-primary col-xs-6 col-xs-push-3" id="adddevice">新增设备</button>
+                    </div>
+                </div>
+                <div class="row" id="dialogTree-title">设备目录</div>
+                <div class="row">
+                    <div class=" col-xs-12 col-sm-12">
+                        <ul id="deviceTree" class="ztree"></ul>
+                    </div>
+                </div>
+                <div class="row" id="tagTree-title">标签目录</div>
+                <div class="row">
+                    <div class=" col-xs-12 col-sm-12">
+                        <ul id="tagTree" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pan-right col-xs-12 col-sm-9 ">
+            <div class="row simple-bacc">
+                <div class="row" id="info-title">
+                    <div class="title-2 col-xs-6 col-sm-6">设备详情</div>
+                    <div class="col-xs-6 col-sm-6">
+                        <button class="btn btn-primary" style="float: right;" id="addoutput">添加出厂值</button>
+                    </div>
+                </div>
+                <div class="row" id="info-body">
+                    <input id="id" type="hidden">
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="deviceType">被试品类型</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :disable-branch-nodes="true"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="type"
+                                    aria-describedby="deviceType"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="textlinenumber">线路单元号</span>
+                            <input id="linenumber" type="text" class="form-control" aria-describedby="textlinenumber">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="devName">设备名称</span>
+                            <input id="name" type="text" class="form-control"  aria-describedby="devName">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="voltz">电压等级</span>
+                            <input id="volt" type="text" class="form-control"  aria-describedby="voltz">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="number">运行编号</span>
+                            <input id="runnumber" type="text" class="form-control" aria-describedby="number">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="outputnumber">出厂编号</span>
+                            <input id="outnumber" type="text" class="form-control" aria-describedby="outputnumber">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="manutype">型号</span>
+                            <input id="manunumber" type="text" class="form-control" aria-describedby="manutype">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="manufactory">生产厂家</span>
+                            <input id="plant" type="text" class="form-control" aria-describedby="manufactory">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="devicestate">运行状态</span>
+                            <input id="state" type="text" class="form-control" aria-describedby="devicestate">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="devicetag">标签</span>
+                            <input id="tag" type="text" class="form-control" aria-describedby="devicetag">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="indate2" data-link-format="yyyy-mm-dd">
+                            <span class="input-group-addon">投运日期</span>
+                            <input class="form-control" id="indate" size="16" type="text" value="" readonly>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                        <input type="hidden" id="indate2" value="" /><br>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 normal-input">
+                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="manudate2" data-link-format="yyyy-mm-dd">
+                            <span class="input-group-addon">制造日期</span>
+                            <input class="form-control" id="manudate" size="16" type="text" value="" readonly>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                        <input type="hidden" id="manudate2" value=""/><br>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="labelimg">铭牌</span>
+                            <div class="form-control" aria-describedby="labelimg" id="label">
+
+                            </div>
+                            <div class="input-group-addon">
+                                <button type="button" class="btn btn-primary" id="addLabelimg" data-toggle="modal" data-target="#labelinput">上传</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="deviceimg">设备</span>
+                            <div class="form-control" aria-describedby="deviceimg" id="device">
+
+                            </div>
+                            <div class="input-group-addon">
+                                <button type="button" class="btn btn-primary" id="addDeviceimg" data-toggle="modal" data-target="#deviceinput">上传</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="additionInfo">备注</span>
+                            <input id="addition" type="text" class="form-control" aria-describedby="stationtag">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="img-title">
+                    <div class="title-2 col-xs-6 col-sm-6">附件信息</div>
+                    <div class="col-xs-6 col-sm-6">
+                        <button type="button" class="btn btn-primary" id="addfile" data-toggle="modal" data-target="#fileinput">上传</button>
+                    </div>
+                </div>
+                <div class="row" id="img-body">
+                    <div class="col-xs-12 col-sm-12" id="file-body">
+
+                    </div>
+                </div>
+                <div class="row" id="foot-title">
+                    <div class="col-xs-12">
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editdevice">保存修改</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="deldevice">删除设备</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="labelinput" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel">铭牌图片</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploadlabel" name="plate" type="file" class="file-loading" >
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deviceinput" tabindex="-1" role="dialog" aria-labelledby="Modaldevice" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Modaldevice">设备图片</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploaddevice" name="devPic"  type="file" class="file-loading">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="fileinput" tabindex="-1" role="dialog" aria-labelledby="Modalfile" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Modalfile">附件上传</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploadfile" name="file" type="file" class="file-loading">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

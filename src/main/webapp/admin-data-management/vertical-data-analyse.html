@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>title</title>
+    <!-- Bootstrap -->
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="../js/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="../js/echarts.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script>
+        $(function () {
+            var addressList,devTypeList,deviceList,projectList,recordList,itemList;
+            var seladdress,seldevtype,seldevice,selproject,selrecord,selitem;
+            addressList = getAddressList();
+            devTypeList = getDevTypeList();
+            console.log(addressList);
+            console.log(devTypeList);
+            var echartNumber = 0;
+
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+            seladdress = new Vue({
+                el: '#seladdress',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: addressList,
+                    normalizer(node) {
+                        return {
+                            id: node.id,
+                            label: node.name,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            seldevtype = new Vue({
+                el: '#seldevType',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: devTypeList,
+                    normalizer(node) {
+                        return {
+                            id: node.typeID,
+                            label: node.typeName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            seldevice = new Vue({
+                el: '#seldevice',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.devID,
+                            label: node.devName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            selproject = new Vue({
+                el: '#selproject',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.proID,
+                            label: node.proName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            selrecord = new Vue({
+                el: '#selrecord',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.recordID,
+                            label: node.recordName,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            selitem = new Vue({
+                el: '#selitem',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.itemID,
+                            label: node.itemName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            seldevtype.$watch('value', function () {
+                if(!seldevtype.value) {
+                    alert('请选择设备类型');
+                }else if(!seladdress.value) {
+                    var options = {
+                        'devTypeID': seldevtype.value
+                    };
+                    deviceList = getDeviceStation(options);
+                    console.log(deviceList);
+                    seldevice.setOptions(deviceList);
+                }else{
+                    var options = {
+                        'staID': seladdress.value,
+                        'devTypeID': seldevtype.value
+                    };
+                    deviceList = getDeviceStation(options);
+                    console.log(deviceList);
+                    seldevice.setOptions(deviceList);
+                }
+
+            });
+            seladdress.$watch('value', function () {
+                if(!seladdress.value){
+                    alert('请选择站点');
+                }else if(!seldevtype.value) {
+                    var options = {
+                        'staID': seladdress.value,
+                    };
+                    deviceList = getDeviceStation(options);
+                    console.log(deviceList);
+                    seldevice.setOptions(deviceList);
+                }else{
+                    var options = {
+                        'staID': seladdress.value,
+                        'devTypeID': seldevtype.value
+                    };
+                    deviceList = getDeviceStation(options);
+                    console.log(deviceList);
+                    seldevice.setOptions(deviceList);
+                }
+            });
+            seldevice.$watch('value', function () {
+                if(!seldevice.value){
+                    alert('请先选择设备');
+                }else{
+                    var options = {
+                        'devID': seldevice.value
+                    };
+                    projectList = getDeviceProject(options);
+                    selproject.setOptions(projectList);
+                }
+            });
+            selproject.$watch('value', function () {
+                if(!selproject.value){
+                    alert('请先选择项目');
+                }else{
+                    var options = {
+                        'proID': selproject.value
+                    };
+                    recordList = getProjectRecord(options);
+                    console.log(recordList);
+                    selrecord.setOptions(recordList);
+                }
+            });
+            selrecord.$watch('value', function () {
+                if(!selrecord.value){
+                    alert('请先选择记录');
+                }else{
+                    var options = {
+                        'recordID': selrecord.value
+                    };
+                    itemList = getRecordItem(options);
+                    selitem.setOptions(itemList);
+                }
+            });
+
+            $(".container-fluid").css("height", $(window).height()+"px");
+            $('.input-daterange input').each(function() {
+                $(this).datetimepicker({
+                    language:  'zh_CN',
+                    weekStart: 1,
+                    todayBtn:  1,
+                    autoclose: 1,
+                    todayHighlight: 1,
+                    startView: 2,
+                    minView: 2,
+                    forceParse: 0,
+                });
+            });
+            $(".pan-right").css('height',$(".pan").height()+'px');
+
+
+
+            $("#addItem").click(function () {
+                console.log($("#startDate").val());
+                console.log($("#endDate").val());
+                if(!seldevice.value){
+                    alert('请选择设备');
+                }else  if(!selproject.value){
+                    alert('请选择项目');
+                }else if(!selrecord.value){
+                    alert('请选择记录');
+                }else if (!selitem.value){
+                    alert('请选择条目');
+                }else{
+                    var itemName;
+                    for(i in itemList){
+                        if(selitem.value === itemList[i].itemID){
+                            itemName = itemList[i].itemName;
+                        }
+                    }
+                    var html = '<li id="'+selitem.value+'">'+itemName+'</li>';
+                    $(".selected-items").append(html);
+                }
+            });
+            $(".selected-items").on('click','li',function(){
+                $(this).addClass('selected-back').siblings().removeClass('selected-back');
+            });
+            $("#deleteItem").click(function () {
+                $(".selected-items .selected-back").remove();
+            });
+            $("#show").click(function () {
+                if(!$("#startDate").val()){
+                    alert('请选择开始时间');
+                }else if(!$("#endDate").val()){
+                    alert('请选择截止时间');
+                }else if(!seldevice.value){
+                    alert('请选择设备');
+                }else  if(!selproject.value){
+                    alert('请选择项目');
+                }else if(!selrecord.value){
+                    alert('请选择记录');
+                }else if(!$(".selected-items").children()){
+                    alert('请添加条目');
+                }else {
+                    var record = document.getElementsByClassName("selected-items");
+                    var items = record[0].getElementsByTagName('li');
+                    console.log(items);
+                    console.log(items.length);
+                    var itemIDs = new Array();
+                    for(i in items){
+                        itemIDs.push(items[i].id);
+                    }
+                    itemIDs = itemIDs.slice(0,items.length);
+                    console.log(itemIDs);
+                    var options = {
+                        'devID': seldevice.value,
+                        'recordID':selrecord.value,
+                        'itemIDs': JSON.stringify(itemIDs),
+                        'atime': $("#startDate").val(),
+                        'btime': $("#endDate").val(),
+                    };
+                    var ograph = $('<div class="col-xs-12 col-sm-6" style="height: 400px;" id="'+echartNumber+'"></div>');
+                    $("#imgView").append(ograph);
+                    check(options,echartNumber);
+                    echartNumber++;
+
+                }
+            });
+            var timer = null;
+            function check(options, number) {
+                let dom = document.getElementById(String(number));
+                if(dom) {
+                    //  执行dom加载完成后的操作，例如echart的初始化操作
+                    var myChart = echarts.init(document.getElementById(String(number)));
+                    var imgOptions = getImgOptions(options);
+                    myChart.setOption(imgOptions);
+                    //  清除定时器
+                    if(!timer) {
+                        clearTimeout(timer);
+                    }
+                } else {
+                    //  自我调用
+                    timer = setTimeout(check(options, number), 0);
+                }
+            }
+
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 little-padding">
+            <div class="bacc"></div>
+            <div class="title col-xs-6 col-sm-6">纵向数据分析</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="pan col-xs-12 col-sm-3 little-padding">
+            <div class="col-xs-12 simple-bacc">
+                <div class="row border-bottom border-top title-9">选择设备</div>
+                <div class="row no-margin">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="addseladdress">站点</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :disable-branch-nodes="true"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="seladdress"
+                                    aria-describedby="addseladdress"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="addseldevType">设备类型</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :disable-branch-nodes="true"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="seldevType"
+                                    aria-describedby="addseldevType"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="addseldevice">设备</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :disable-branch-nodes="true"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="seldevice"
+                                    aria-describedby="addseldevice"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="row border-bottom border-top title-9">时间范围</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group input-daterange">
+                            <input type="text" class="form-control" value="" readonly data-date-format="yyyy-mm-dd" id="startDate">
+                            <div class="input-group-addon">到</div>
+                            <input type="text" class="form-control" value="" readonly data-date-format="yyyy-mm-dd" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="row border-bottom border-top title-9">选择条目</div>
+                <div class="row no-margin">
+                    <div class="col-xs-12">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="addselproject">选择项目</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="selproject"
+                                    aria-describedby="addselproject"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="addselrecord">选择记录</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="selrecord"
+                                    aria-describedby="addselrecord"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="addselitem">选择条目</span>
+                            <treeselect
+                                    v-model="value"
+                                    :options="options"
+                                    :normalizer="normalizer"
+                                    :show-count="true"
+                                    placeholder="请选择"
+                                    id="selitem"
+                                    aria-describedby="addselitem"
+                            />
+                            <pre class="result">{{ value }}</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button class="btn btn-primary btn-block" id="addItem">添加条目</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button class="btn btn-danger btn-block" id="deleteItem">删除条目</button>
+                    </div>
+                </div>
+                <div class="row border-bottom border-top title-9">已选条目</div>
+                <div class="row">
+                    <div class="col-xs-12 selected" >
+                        <ul class="selected-items">
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button class="btn btn-primary btn-block" id="show">显示图像</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pan-right col-xs-12 col-sm-9 little-padding">
+            <div class="pan-right col-xs-12 simple-bacc" id="imgView">
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

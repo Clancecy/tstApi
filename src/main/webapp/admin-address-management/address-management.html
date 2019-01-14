@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="../css/ztree/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../swiper/css/swiper.min.css">
+    <link rel="stylesheet" href="../lightbox2/css/lightbox.min.css">
+    <link rel="stylesheet" href="../css/form-style.css">
+    <link rel="stylesheet" href="../css/admin-address/address-management.css">
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../js/html5shiv/html5shiv.min.js"></script>
+    <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/vue/vue.min.js"></script>
+    <script src="../bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script src="../bootstrap-fileinput/js/locales/zh.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
+    <script src="../swiper/js/swiper.min.js"></script>
+    <script src="../js/img/jqthumb.min.js"></script>
+    <script src="../lightbox2/js/lightbox.min.js"></script>
+    <script src="../js/ztree/jquery.ztree.all.min.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.11&key=533e1abc97aedb6ca3f04dc11ae820a9"></script>
+    <script type="text/javascript">
+        $(function () {
+            var addressList = getAddressList();
+            var addressTagList = getAddressTag();
+            console.log(addressList);
+            console.log(addressTagList);
+            var addressInfo;
+            var lng,lat;
+
+            $(".container-fluid").css("height",$(window).height()+"px");
+            $(".pan-right").css('height',$(".pan").height() +"px");
+
+            $("img").jqthumb({
+                classname      : 'jqthumb',             // class name. DEFUALT IS jqthumb
+                width          : '207px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : '44px',                // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+
+            var ztree;
+            var setting = {
+                view:{
+                    selectedMulti:false
+                },
+                edit: {
+                    enable: false,
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                },
+                callback:{
+                    beforeDrag:function beforeDrag(treeId,treeNodes){
+                        return false;
+                    },//用户禁止拖动节点
+                    onClick:function clickNode(e,treeId,treeNode){
+                        initUpload(treeNode.id);
+                        $("#uploadimg").on("fileuploaded", function (event, data, previewId, index) {
+                            var res = data.response;
+                            if (res.code === 101){
+                                // alert(res.message);
+                                addressInfo = getAddressInfo(treeNode.id);
+                                reNewStation(addressInfo);
+                            } else{
+                                alert(res.message);
+                            }
+                        });
+                        addressInfo = getAddressInfo(treeNode.id);
+                        console.log(addressInfo);
+                        reNewStation(addressInfo);
+
+                    }//点击节点触发的事件
+                }
+            };
+            var zNodes = addressList;
+            ztree = $.fn.zTree.init($("#stationTree"), setting, zNodes);
+            ztree.expandAll(true);
+
+            var tagtree;
+            var tagsetting = {
+                view:{
+                    selectedMulti:false
+                },
+                edit: {
+                    enable: false,
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                },
+                callback:{
+                    beforeDrag:function beforeDrag(treeId,treeNodes){
+                        return false;
+                    },//用户禁止拖动节点
+                    onClick:function clickNode(e,treeId,treeNode){
+                        initUpload(treeNode.id);
+                        $("#uploadimg").on("fileuploaded", function (event, data, previewId, index) {
+                            var res = data.response;
+                            if (res.code === 101){
+                                alert(res.message);
+                                addressInfo = getAddressInfo(treeNode.id);
+                                reNewStation(addressInfo);
+                            } else{
+                                alert(res.message);
+                            }
+                        });
+                        addressInfo = getAddressInfo(treeNode.id);
+                        console.log(addressInfo);
+                        reNewStation(addressInfo);
+
+                    }//点击节点触发的事件
+                }
+            };
+            var tagNodes = addressTagList;
+            tagtree = $.fn.zTree.init($("#tagTree"), tagsetting, tagNodes);
+            tagtree.expandAll(false);
+
+            $("#addstation").click(function () {
+                if(!$("#id").val()){
+                    alert("请先选择上级站点！");
+                }else{
+                    var res = addStation($("#id").val());
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+
+            });
+
+            $("#gallery").click(function (ev) {
+                var ev = ev || event;
+                var aLi = ev.target.parentNode.parentNode.children;
+                console.log(aLi);
+                if (ev.target.innerText === "删除"){
+                    // console.log(parseInt(aLi[0].innerHTML));
+                    var options = {
+                        'fileID': parseInt(aLi[0].innerHTML),
+                        'staID': $("#id").val()
+                    };
+                    var res = delStaPic(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        addressInfo = getAddressInfo($("#id").val());
+                        reNewStation(addressInfo);
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+
+            $("#addmap").click(function () {
+                $("#showmap").css("display","block");
+                var left = $(window).width()/2 -  $("#showmap").width()/2;
+                var top = $(window).height()/2 -  $("#showmap").height()/2;
+                $("#showmap").css("left",left + "px");
+                $("#showmap").css("top",top + "px");
+                //设定list列表
+                var map = new AMap.Map('map', {
+                    zoom: 13,//级别
+                    center:[$("#lng").val(), $("#lat").val()],//中心点坐标
+                    resizeEnable: true
+                });
+                var originMarker = new AMap.Marker({
+                    position: new AMap.LngLat($("#lng").val(),  $("#lat").val()),
+                    title: $("#name").val()
+                });
+                map.add(originMarker);
+                map.on('click', function(ev) {
+                    // 触发事件的对象
+                    var target = ev.target;
+
+                    // 触发事件的地理坐标，AMap.LngLat 类型
+                    var lnglat = ev.lnglat;
+                    lng = ev.lnglat.getLng();
+                    lat = ev.lnglat.getLat();
+
+                    map.remove(originMarker);
+                    originMarker = new AMap.Marker({
+                        position: lnglat,
+                        title: '新地址'
+                    });
+                    map.add(originMarker);
+
+
+                    // 触发事件的像素坐标，AMap.Pixel 类型
+                    var pixel = ev.pixel;
+
+                    // 触发事件类型
+                    var type = ev.type;
+                });
+                return false;
+            });
+            $("#save-btn").click(function () {
+                $("#lng").val(lng);
+                $("#lat").val(lat);
+                $("#showmap").css("display","none");
+            });
+            $("#cancel-btn").click(function () {
+                $("#showmap").css("display","none");
+            });
+
+            $("#editstation").click(function () {
+                var options = {
+                    'staID': $("#id").val(),
+                    'staName': $("#name").val(),
+                    'address': $("#address").val(),
+                    'latitude': $("#lat").val(),
+                    'longitude': $("#lng").val(),
+                    'pStaID': $("#pid").val(),
+                    'tagString': $("#tag").val()
+                };
+                var res = updateStation(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    addressInfo = getAddressInfo($("#id").val());
+                    reNewStation(addressInfo);
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+            $("#delstation").click(function () {
+                var options = {
+                    'staID': $("#id").val()
+                };
+                var res = delStation(options);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bacc"></div>
+        <div class="title col-xs-6 col-sm-6">站点列表</div>
+    </div>
+    <div class="row">
+        <div class="pan col-xs-12 col-sm-3 simple-bacc">
+            <div class="row">
+                <div class="row" id="add-title">
+                    <div class=" col-xs-12">
+                        <button class="btn btn-primary col-xs-6 col-xs-push-3" id="addstation">新增站点</button>
+                    </div>
+                </div>
+                <div class="row" id="dialogTree-title">站点目录</div>
+                <div class="row">
+                    <div class=" col-xs-12 col-sm-12">
+                        <ul id="stationTree" class="ztree"></ul>
+                    </div>
+                </div>
+                <div class="row" id="tagTree-title">标签目录</div>
+                <div class="row">
+                    <div class=" col-xs-12 col-sm-12">
+                        <ul id="tagTree" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pan-right col-xs-12 col-sm-9 ">
+            <div class="row simple-bacc">
+                <div class="row" id="info-title">
+                    <div class="title-2 col-xs-6 col-sm-6">站点详情</div>
+                    <div class="col-xs-6 col-sm-6">
+                        <button class="btn btn-primary" style="float: right;" id="addmap">显示地图</button>
+                    </div>
+                </div>
+                <div class="row" id="info-body">
+                    <input id="id" type="hidden" />
+                    <input id="pid" type="hidden" />
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="stationName">站点名称</span>
+                            <input id="name" type="text" class="form-control"  aria-describedby="stationName">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="stationaddress">站点地址</span>
+                            <input id="address" type="text" class="form-control" aria-describedby="stationaddress">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="pstationName">上级站点</span>
+                            <input id="pname" type="text" class="form-control"  aria-describedby="pstationName" readonly>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="stationDevice">设备数量</span>
+                            <input id="device" type="text" class="form-control"  aria-describedby="stationDevice" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="stationlng">经度</span>
+                            <input id="lng" type="text" class="form-control" aria-describedby="stationlng" readonly>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="stationlat">纬度</span>
+                            <input id="lat" type="text" class="form-control" aria-describedby="stationlat" readonly>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="input-group input-class">
+                            <span class="input-group-addon" id="stationtag">标签</span>
+                            <input id="tag" type="text" class="form-control" aria-describedby="stationtag">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="img-title">
+                    <div class="title-2 col-xs-6 col-sm-6">站点图片</div>
+                    <div class="col-xs-6 col-sm-6">
+                        <button type="button" class="btn btn-primary float-right" id="addfile" data-toggle="modal" data-target="#fileinput">上传</button>
+
+                    </div>
+                </div>
+                <div class="row" id="img-body">
+                    <div class="col-xs-12 col-sm-12" id="gallery">
+                    </div>
+                </div>
+                <div class="row" id="foot-title">
+                    <div class="col-xs-12">
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editstation">保存修改</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="delstation">删除站点</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加用户panel-->
+<div class="panel panel-primary" id="showmap">
+    <div class="panel-heading">
+        <div class="panel-title">站点地图</div>
+    </div>
+    <div class="panel-body">
+        <div id="map"></div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+<!--添加用户panel-->
+<div class="modal fade" id="fileinput" tabindex="-1" role="dialog" aria-labelledby="Modalfile" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Modalfile">附件上传</h5>
+            </div>
+            <div class="modal-body">
+                <input id="uploadimg" name="file" type="file" class="file-loading">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" title="Your custom upload logic">保存</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
