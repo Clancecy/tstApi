@@ -40,7 +40,7 @@
             console.log(devTagList);
             console.log(devTypeList);
             var devInfo, adselDevType;
-
+            var ztree, tagtree;
             $(".devinfo").jqthumb({
                 classname      : 'jqthumb1',             // class name. DEFUALT IS jqthumb
                 width          : '174px',                // new image width after cropping. DEFAULT IS 100px.
@@ -112,7 +112,7 @@
                 }
             });
 
-            var ztree;
+
             var setting = {
                 view:{
                     selectedMulti:false
@@ -130,6 +130,8 @@
                         return false;
                     },//用户禁止拖动节点
                     onClick:function clickNode(e,treeId,treeNode){
+                        ztree.expandAll(true);
+                        tagtree.expandAll(false);
                         $("#id").val(treeNode.id);
                         if(treeNode.isParent){
                             alert("这是个站点，可以添加设备。");
@@ -197,7 +199,7 @@
             ztree = $.fn.zTree.init($("#deviceTree"), setting, zNodes);
             ztree.expandAll(true);
 
-            var tagtree;
+
             var tagsetting = {
                 view:{
                     selectedMulti:false
@@ -215,6 +217,8 @@
                         return false;
                     },//用户禁止拖动节点
                     onClick:function clickNode(e,treeId,treeNode){
+                        ztree.expandAll(false);
+                        tagtree.expandAll(true);
                         $("#id").val(treeNode.id);
                         if(treeNode.isParent){
                             alert("这是个站点，可以添加设备。");

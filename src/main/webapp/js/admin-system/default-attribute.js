@@ -1,5 +1,5 @@
-var userurl = 'http://47.98.136.246:80';
-var researchurl = 'http://47.98.136.246/ES';
+var userurl = 'http://192.168.137.140:8080';
+var researchurl = 'http://192.168.137.140/ES';
 
 
 function defaultmems(aTd,task) {
@@ -290,7 +290,7 @@ function renewTestTable(testTable,option) {
         if(testList[i].status === 0){
             testList[i].staName = '进行中';
         }else if(testList[i].status === 1){
-            testList[i].staName = '已终止';
+            testList[i].staName = '已完成';
         }else if(testList[i].status === 2){
             testList[i].staName = '已完成';
         }
@@ -309,7 +309,6 @@ function renewTestTable(testTable,option) {
         testTable.row.add(testList[i]).draw();
     }
 }
-
 
 function renewTaskTable(taskTable,option) {
     var taskList = getTestTaskList(option);
@@ -383,5 +382,54 @@ function getTaskUserIDs(taskUserList) {
     return userIDs;
 }
 
+
+
+function reNewPlanTableByStatus(planTable,planList) {
+    planTable.clear().draw();
+    for (i in planList) {
+        if(planList[i].status === 0){
+            planTable.row.add(planList[i]).draw();
+        }
+    }
+}
+
+function reCoverPlanTableByStatus(planTable,planList) {
+    planTable.clear().draw();
+    for (i in planList) {
+        planTable.row.add(planList[i]).draw();
+    }
+}
+
+function reNewTestTableByStatus(testTable,testList) {
+    testTable.clear().draw();
+    for (i in testList) {
+        if(testList[i].status === 0){
+            testTable.row.add(testList[i]).draw();
+        }
+    }
+}
+
+function reCoverTestTableByStatus(testTable,testList) {
+    testTable.clear().draw();
+    for (i in testList) {
+        testTable.row.add(testList[i]).draw();
+    }
+}
+
+function reNewTaskTableByStatus(taskTable,taskList) {
+    taskTable.clear().draw();
+    for (i in taskList) {
+        if(taskList[i].status === 0){
+            taskTable.row.add(taskList[i]).draw();
+        }
+    }
+}
+
+function reCoverTaskTableByStatus(taskTable,taskList) {
+    taskTable.clear().draw();
+    for (i in taskList) {
+        taskTable.row.add(taskList[i]).draw();
+    }
+}
 
 

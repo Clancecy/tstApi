@@ -46,20 +46,14 @@
                 }
 
                 if(planList[i].cycType === 0){
-                    planList[i].cycName = '无周期';
+                    planList[i].cycName = '临时性计划';
                 }else if(planList[i].cycType === 1){
-                    planList[i].cycName = '一周';
-                }else if(planList[i].cycType === 2){
-                    planList[i].cycName = '一个月';
-                }else if(planList[i].cycType === 3){
-                    planList[i].cycName = '一季度';
-                }else if(planList[i].cycType === 4){
-                    planList[i].cycName = '一年';
+                    planList[i].cycName = '周期性计划';
                 }
                 if(planList[i].status === 0){
                     planList[i].stateName = '进行中';
                 }else if(planList[i].status === 1){
-                    planList[i].stateName = '已终止';
+                    planList[i].stateName = '已完成';
                 }else if(planList[i].status === 2){
                     planList[i].stateName = '已完成';
                 }
@@ -99,19 +93,10 @@
                     value: null,
                     options: [ {
                         id: '0',
-                        label: '无周期',
+                        label: '临时性计划',
                     }, {
                         id: '1',
-                        label: '一周',
-                    }, {
-                        id: '2',
-                        label: '一月',
-                    }, {
-                        id: '3',
-                        label: '一季度',
-                    }, {
-                        id: '4',
-                        label: '一年',
+                        label: '周期性计划',
                     } ],
                     normalizer(node) {
                         return {
@@ -169,7 +154,7 @@
             var planTable = $("#plantable").DataTable({
                 order: [[ 4, "desc" ]],
                 select: true,
-                scrollY: tableHeight,
+                scrollY: '200px',
                 scrollCollapse: "true",
                 language: {
                     "sProcessing": "处理中...",
@@ -203,7 +188,7 @@
                     {data: "planName", title: "模板名称", defaultContent:""},
                     {data: "staName", title: "站点名称", defaultContent:""},
                     {data: "addDate", title: "创建时间", defaultContent:""},
-                    {data: "cycName", title: "计划周期", defaultContent:""},
+                    {data: "cycName", title: "计划类型", defaultContent:""},
                     {data: "builder", title: "创建人", defaultContent:""},
                     {data: "leader", title: "负责人", defaultContent:""},
                     {data: "stateName", title: "状态", defaultContent:""},
@@ -215,7 +200,7 @@
             var testTable = $("#testtable").DataTable({
                 order: [[ 6, "desc" ]],
                 select: true,
-                scrollY: tableHeight,
+                scrollY: '200px',
                 scrollCollapse: "true",
                 language: {
                     "sProcessing": "处理中...",
@@ -272,35 +257,7 @@
                 var option = {
                     'planDanID': $("#id").val()
                 };
-                testList = getPlanTestList(option);
-                for(i in testList){
-                    testList[i].addDate = _getDate(testList[i].addtime);
-                    if(testList[i].endtime){
-                        testList[i].endDate = _getDate(testList[i].endtime);
-                    }else{
-                        testList[i].endDate = '';
-                    }
-                    if(testList[i].status === 0){
-                        testList[i].staName = '进行中';
-                    }else if(testList[i].status === 1){
-                        testList[i].staName = '已终止';
-                    }else if(testList[i].status === 2){
-                        testList[i].staName = '已完成';
-                    }
-                    var testNames = '';
-                    for(index in testList[i].testUserList){
-                        testNames += testList[i].testUserList[index].userName;
-                        testNames += ',';
-                    }
-                    testNames = testNames.substr(0,testNames.length-1);
-                    testList[i].testNames = testNames;
-                }
-                console.log(testList);
-
-                testTable.clear().draw();
-                for(i in testList){
-                    testTable.row.add(testList[i]).draw();
-                }
+                renewTestTable(testTable,option);
             });
 
             $("#addplansheet").click(function () {
@@ -499,6 +456,14 @@
                 }
 
             });
+            $('#filter').click(function () {
+                if ($(this).is(':checked')) {
+                    reNewPlanTableByStatus(planTable,planList);
+                }else {
+                    reCoverPlanTableByStatus(planTable,planList);
+                }
+            });
+
         });
     </script>
 </head>
@@ -511,10 +476,14 @@
         </div>
         <button class="btn btn-danger float-right" id="delplansheet">删除计划单</button>
         <button class="btn btn-primary float-right btn-margin" id="addplansheet">新建计划单</button>
+        <div class="float-right btn-margin title-8">
+            <input type="checkbox" id="filter">只显示未完成</label>
+        </div>
 
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 simple-bacc table-padding">
+
             <table class="table table-responsive table-bordered table-hover" id="plantable">
 
             </table>
@@ -561,7 +530,7 @@
                     <pre class="result">{{ value }}</pre>
                 </div>
                 <div class="input-group input-class">
-                    <span class="input-group-addon" id="addCycle">计划周期</span>
+                    <span class="input-group-addon" id="addCycle">计划类型</span>
                     <treeselect
                             v-model="value"
                             :options="options"

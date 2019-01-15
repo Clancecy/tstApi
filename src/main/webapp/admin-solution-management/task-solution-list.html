@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Title</title>
+    <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../utils/datatables/media/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="../utils/datatables/extensions/Select/css/select.dataTables.min.css">
@@ -23,19 +24,23 @@
     <script src="../utils/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
     <script src="../utils/datatables/extensions/Responsive/js/responsive.bootstrap.min.js"></script>
     <script src="../utils/datatables/extensions/Select/js/dataTables.select.min.js"></script>
-    <script src="pdfJS/build/pdf.js"></script>
     <script src="../js/admin-system/get-list.js"></script>
     <script src="../js/admin-system/change-list.js"></script>
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
-            var filename = 'ss.pdf';
-            var reportList = getReportList();
-            console.log(reportList);
-            var reportInfo;
+            var tSolutionList = getTaskSolution();
+            for(i in tSolutionList){
+                tSolutionList[i].addDate = _getDate(tSolutionList[i].addtime);
+            }
+            console.log(tSolutionList);
+            var proInfo;
+
+
 
             $(".container-fluid").css("height", $(window).height()+"px");
-            var reportTable = $("#reporttable").DataTable({
+
+            var table = $("#table").DataTable({
                 order: [[ 3, "desc" ]],
                 select: true,
                 scrollY: '300px',
@@ -64,83 +69,100 @@
                         "sSortDescending": ": 以降序排列此列"
                     }
                 },
-                data: reportList,
+                data: tSolutionList,
                 columnDefs:[{"targets":0,"visible":false}],
                 columns:[
-                    {data: "reportID", title: "报告编号"},
-                    {data: "testID", title: "试验单号"},
-                    {data: "reportName", title: "负责人"},
-                    {data: "status", title: "状态"},
-                    {data: "addtime", title: "完成时间"},
-                    {data: "reportName", title: "报告模板"},
+                    {data: "proID", title: "任务模板编号", defaultContent:""},
+                    {data: "proName", title: "模板名称", defaultContent:""},
+                    {data: "devTypeName", title: "设备类型", defaultContent:""},
+                    {data: "addDate", title: "创建时间", defaultContent:""},
                 ]
             });
-            $("#table").click(function () {
+
+            $('#table tbody').on('click', 'tr',function() {
                 $(this).toggleClass('selected').siblings().removeClass('selected');
-                var id = reportTable.row(this).data().reportID;
-                $("#reportid").val(id);
+                var id = table.row(this).data().proID;
+                console.log(id);
                 var options = {
-                    'testID': id
+                    'proID': parseInt(id)
                 };
-                reportInfo = getReportInfo(options);
-                $("#number").val(reportInfo.testID);
-                $("#addDate").val(_getDate(reportInfo.addtime));
+                proInfo = getProInfo(options);
+                console.log(proInfo);
+                $("#id").val(id);
+                $("#url").val(proInfo[0].url);
+                $("#name").val(proInfo[0].proName);
             });
-            $("#checkReport").click(function () {
-                if(!$("#reportid").val()){
-                    alert("请选择报告");
-                }else {
+            
+            $("#prerSolution").click(function () {
+
+                if(!$("#id").val()){
+                    alert("请先选择模板");
+                }else{
                     var options = {
-                        'reportID': $("#reportid").val()
+                        'path': $("#url").val(),
+                        'fname': $("#name").val()
                     };
-                    var res = reViewReport(options);
+                    var res = projectReview(options);
                     if(res.code === 101){
                         alert(res.message);
-                        var link = "./pdfJS/web/viewer.html?file=../../../pdfFile/"+filename;
-                        window.location.href = link;
+
+                        $("#preview").css("display","block");
+                        var left = $(window).width()/2 -  $("#preview").width()/2;
+                        var top = $(window).height()/2 -  $("#preview").height()/2;
+                        $("#preview").css("left",left + "px");
+                        $("#preview").css("top",top + "px");
+
+
+                        var result = res.data;
+
+                        var furl = encodeURIComponent('http://192.168.137.140/ES'+result);
+                        console.log(furl);
+                        $(".panel-body").html('<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file='+furl+'" width="100%" height="365px"></iframe>');
                     }else if(res.code === 5004){
                         alert(res.message);
                         window.location.href = '../admin-login-register/login.html'
                     }else{
                         alert(res.message);
                     }
+
                 }
             });
 
-        })
+            $("#cancel-btn").click(function () {
+                $("#preview").css("display","none");
+            });
+        });
     </script>
 </head>
 <body>
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" style="margin-bottom: 10px;">
         <div class="bacc"></div>
         <div class="title col-xs-6 col-sm-6">
-            报告列表
+            任务模板列表
         </div>
-        <button class="btn btn-danger float-right" id="delTask">删除报告</button>
-        <button class="btn btn-primary float-right btn-margin" id="checkReport">报告预览</button>
+        <button class="btn btn-primary float-right" id="prerSolution">预览任务模板</button>
+        <input type="hidden" id="id">
+        <input type="hidden" id="url">
+        <input type="hidden" id="name">
     </div>
-    <div class="row task-body simple-bacc">
-        <div class="col-xs-12 col-sm-6">
-            <input type="hidden" id="reportid">
-            <div class="input-group input-class">
-                <span class="input-group-addon" id="edittaskNumber">报告编号</span>
-                <input id="number" type="text" class="form-control" placeholder="报告编号" aria-describedby="edittaskNumber" readonly>
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-6">
-            <div class="input-group input-class">
-                <span class="input-group-addon" id="editbuildtime">创建时间</span>
-                <input id="addDate" type="text" class="form-control" placeholder="创建时间" aria-describedby="editbuildtime" readonly>
-            </div>
-        </div>
-
-    </div>
-    <div class="row">
+    <div class="row simple-bacc">
         <div class="col-xs-12 col-sm-12 table-background">
-            <table class="table table-responsive table-bordered table-hover" id="reporttable">
+            <table class="table table-responsive table-bordered table-hover" id="table">
             </table>
         </div>
+    </div>
+</div>
+<!--新建panel-->
+<div class="panel panel-primary" id="preview">
+    <div class="panel-heading">
+        <div class="panel-title">预览模板</div>
+    </div>
+    <div class="panel-body">
+
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary float-right" id="cancel-btn">退出</button>
     </div>
 </div>
 </body>

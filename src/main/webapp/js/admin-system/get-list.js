@@ -1,5 +1,5 @@
-var userurl = 'http://47.98.136.246:80';
-var researchurl = 'http://47.98.136.246/ES';
+var userurl = 'http://192.168.137.140:8080';
+var researchurl = 'http://192.168.137.140/ES';
 
 function getUrl() {
     var url = location.search; //获取url中"?"符后的字串
@@ -46,6 +46,36 @@ function getProList() {
         }
     });
     return list;
+}
+
+function getProInfo(options) {
+    var sheetList;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: researchurl+'/project/list',
+        data: options,
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                sheetList = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return sheetList;
 }
 
 function getDevTypeList() {
@@ -462,20 +492,6 @@ function getTestSolutionInfo(options) {
     return tSInfo;
 }
 
-function getDevTypeNames(devTypeID,devTypeList) {
-    console.log(devTypeID+"     "+devTypeList);
-    var devTypeName = '';
-    for (i in devTypeList){
-        if(devTypeList[i].children && devTypeList[i].typeID != devTypeID){
-            devTypeName = getDevTypeNames(devTypeID,devTypeList.children);
-        }else if (devTypeList[i].typeID === devTypeID) {
-            devTypeName = devTypeList[i].typeName;
-            break;
-        }
-    }
-    return devTypeName;
-}
-
 function getAddressList() {
     var staList;
     $.ajax({
@@ -566,36 +582,6 @@ function getAddressInfo(staID) {
         }
     });
     return staList;
-}
-
-function getPlanList() {
-    var planList;
-    $.ajax({
-        type: 'GET',
-        xhrFields: {
-            withCredentials: true // 这里设置了withCredentials
-        },
-        crossDomain: true,
-        url: userurl+'/plan/list',
-        data: {},
-        async:false,
-        success: function (data) {
-            var result = JSON.parse(data);
-            // console.log(result.data);
-            if(result.code === 101){
-                planList = result.data;
-            }else if(result.code === 5004){
-                alert(result.message);
-                window.location.href = '../admin-login-register/login.html'
-            }else{
-                alert(result.message);
-            }
-        },
-        error: function(err) {
-            console.error(err);
-        }
-    });
-    return planList;
 }
 
 function getSheetList() {
@@ -1046,4 +1032,154 @@ function getImgOptions(options) {
         }
     });
     return pSInfo;
+}
+
+function getReportList() {
+    var sheetList;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: userurl+'/report/list',
+        data: {},
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                sheetList = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return sheetList;
+}
+
+function getReportInfo(options) {
+    var pSInfo;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: userurl+'/test/show',
+        data: options,
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                pSInfo = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return pSInfo;
+}
+
+function getReportSolution() {
+    var sheetList;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: userurl+'/solution/list',
+        data: {},
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                sheetList = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return sheetList;
+}
+
+function getReportSolutionCover() {
+    var sheetList;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: userurl+'/solution/cover',
+        data: {},
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                sheetList = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return sheetList;
+}
+
+function getTaskSolution() {
+    var sheetList;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: researchurl+'/project/list',
+        data: {},
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                sheetList = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return sheetList;
 }

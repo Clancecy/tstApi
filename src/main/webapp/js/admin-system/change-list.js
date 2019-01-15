@@ -1,5 +1,5 @@
-var userurl = 'http://47.98.136.246';
-var researchurl = 'http://47.98.136.246/ES';
+var userurl = 'http://192.168.137.140:8080';
+var researchurl = 'http://192.168.137.140/ES';
 
 
 
@@ -726,3 +726,56 @@ function delVertical(options) {
     return res;
 }
 
+function addCover(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: userurl+'/solution/addCover',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+function reViewReport(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: userurl+'/report/show',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+function projectReview(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: researchurl+'/project/report',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}

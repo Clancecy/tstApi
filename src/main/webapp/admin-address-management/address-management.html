@@ -90,7 +90,7 @@
             };
             var zNodes = addressList;
             ztree = $.fn.zTree.init($("#stationTree"), setting, zNodes);
-
+            ztree.expandAll(true);
 
 
             var tagsetting = {
@@ -132,7 +132,7 @@
             };
             var tagNodes = addressTagList;
             tagtree = $.fn.zTree.init($("#tagTree"), tagsetting, tagNodes);
-
+            tagtree.expandAll(false);
 
             $("#addstation").click(function () {
                 if(!$("#id").val()){

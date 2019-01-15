@@ -41,28 +41,12 @@
                 }
             }
             for(i in pSolutionList){
-                if(pSolutionList[i].cycType === 0){
-                    pSolutionList[i].cycName = '无周期';
-                }else if(pSolutionList[i].cycType === 1){
-                    pSolutionList[i].cycName = '一天';
-                }else if(pSolutionList[i].cycType === 2){
-                    pSolutionList[i].cycName = '一周';
-                }else if(pSolutionList[i].cycType === 3){
-                    pSolutionList[i].cycName = '一月';
-                }else if(pSolutionList[i].cycType === 4){
-                    pSolutionList[i].cycName = '一季度';
-                }else if(pSolutionList[i].cycType === 5){
-                    pSolutionList[i].cycName = '一年';
-                }
-            }
-            for(i in pSolutionList){
                 pSolutionList[i].createTime = _getDate(pSolutionList[i].addtime);
             }
             var planSolutionInfo;
             var adselCycle,adselTestSolution,edselCycle,edselTestSolution;
 
             $(".container-fluid").css("height", $(window).height()+"px");
-            tableHeight = $(window).height()-30+"px";
             Vue.component('treeselect', VueTreeselect.Treeselect);
 
             edselCycle = new Vue({
@@ -73,22 +57,10 @@
                     // define options
                     options:[ {
                         id: '0',
-                        label: '无周期',
+                        label: '临时性计划',
                     }, {
                         id: '1',
-                        label: '一天',
-                    }, {
-                        id: '2',
-                        label: '一周',
-                    }, {
-                        id: '3',
-                        label: '一月',
-                    }, {
-                        id: '4',
-                        label: '一季度',
-                    }, {
-                        id: '5',
-                        label: '一年',
+                        label: '周期性计划',
                     } ],
                     normalizer(node) {
                         return {
@@ -127,9 +99,9 @@
             });
 
             $("#plantable").DataTable({
-                order: [[ 5, "desc" ]],
+                order: [[ 4, "desc" ]],
                 select: true,
-                scrollY: tableHeight,
+                scrollY: '300px',
                 scrollCollapse: "true",
                 language: {
                     "sProcessing": "处理中...",
@@ -160,7 +132,6 @@
                     {data: "planID", title: "计划模板编号", defaultContent:""},
                     {data: "planName", title: "计划模板名称", defaultContent:""},
                     {data: "cycTypeName", title: "计划类型", defaultContent:""},
-                    {data: "cycName", title: "周期", defaultContent:""},
                     {data: "userRealName", title: "创建人", defaultContent:""},
                     {data: "createTime", title: "创建时间", defaultContent:""},
                 ]
@@ -181,22 +152,10 @@
                         // define options
                         options:[ {
                             id: '0',
-                            label: '无周期',
+                            label: '临时性计划',
                         }, {
                             id: '1',
-                            label: '一天',
-                        }, {
-                            id: '2',
-                            label: '一周',
-                        }, {
-                            id: '3',
-                            label: '一月',
-                        }, {
-                            id: '4',
-                            label: '一季度',
-                        }, {
-                            id: '5',
-                            label: '一年',
+                            label: '周期性计划',
                         } ],
                         normalizer(node) {
                             return {

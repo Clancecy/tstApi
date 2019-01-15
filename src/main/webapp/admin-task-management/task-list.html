@@ -61,12 +61,10 @@
             console.log(proList);
             console.log(memberList);
             var taskInfo;
-            var tableHeight;
             var members,manager,device,project;
 
 
             $(".container-fluid").css("height", $(window).height()+"px");
-            tableHeight = $(window).height()-30+"px";
             Vue.component('treeselect', VueTreeselect.Treeselect);
 
             device = new Vue({
@@ -188,7 +186,7 @@
             var taskTable = $("#tasktable").DataTable({
                 order: [[ 5, "desc" ]],
                 select: true,
-                scrollY: tableHeight,
+                scrollY: '300px',
                 scrollCollapse: "true",
                 language: {
                     "sProcessing": "处理中...",
@@ -327,6 +325,13 @@
                     window.location.href = link;
                 }
             });
+            $('#filterTask').click(function () {
+                if ($(this).is(':checked')) {
+                    reNewTaskTableByStatus(taskTable,taskList);
+                }else {
+                    reCoverTaskTableByStatus(taskTable,taskList);
+                }
+            });
         });
     </script>
 </head>
@@ -341,8 +346,11 @@
             <button class="btn btn-info float-right btn-margin" id="updateTask">保存任务单</button>
             <button class="btn btn-primary float-right btn-margin" id="addTask">新建任务单</button>
             <button class="btn btn-success float-right btn-margin" id="checkTask">任务单详情</button>
+            <div class="float-right btn-margin title-8">
+                <input type="checkbox" id="filterTask">只显示未完成</label>
+            </div>
         </div>
-        <div class="row info-body simple-bacc">
+        <div class="row task-body simple-bacc">
             <div class="col-xs-12 col-sm-6">
                 <input type="hidden" id="taskid">
                 <div class="input-group input-class">

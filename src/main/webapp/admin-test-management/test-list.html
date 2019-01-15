@@ -71,11 +71,8 @@
             var tableHeight,testInfo;
             var members,manager,solution,device,project,taskMember,taskManager;
 
-            $(".container-fluid").css("height", $(window).height()+"px");
-            tableHeight = ($(".container-fluid").height-15)/2 + "px";
+
             Vue.component('treeselect', VueTreeselect.Treeselect);
-
-
             members = new Vue({
                 el: '#members',
                 data: {
@@ -134,9 +131,32 @@
                     manager.setValue(null);
                 }
             });
+            solution = new Vue({
+                el: '#seltest',
+                data: {
+                    value: null,
+                    options: soluList,
+                    normalizer(node) {
+                        return {
+                            id: node.soluID,
+                            label: node.soluName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newoptions){
+                        this.options = newoptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
 
 
-
+            $(".container-fluid").css("height", $(window).height()+"px");
+            tableHeight = ($(".container-fluid").height-15)/2 + "px";
             var testTable = $("#testtable").DataTable({
                 order: [[ 6, "desc" ]],
                 select: true,
@@ -341,29 +361,6 @@
 
             });
 
-
-            solution = new Vue({
-                el: '#seltest',
-                data: {
-                    value: null,
-                    options: soluList,
-                    normalizer(node) {
-                        return {
-                            id: node.soluID,
-                            label: node.soluName,
-                            children: node.children,
-                        }
-                    }
-                },
-                methods: {
-                    async setOptions(newoptions){
-                        this.options = newoptions;
-                    },
-                    async setValue(newValue) {
-                        this.value = newValue;
-                    }
-                }
-            });
 
             $("#exportplan").click(function () {
                 $("#exportaddplan").css("display","block");
@@ -664,6 +661,13 @@
                     }
                 }
             });
+            $('#filterTest').click(function () {
+                if ($(this).is(':checked')) {
+                    reNewTestTableByStatus(testTable,testList);
+                }else {
+                    reCoverTestTableByStatus(testTable,testList);
+                }
+            });
         });
     </script>
 </head>
@@ -676,6 +680,9 @@
         </div>
         <button class="btn btn-danger float-right" id="delTest">删除试验单</button>
         <button class="btn btn-primary float-right btn-margin" id="addTest">新建试验单</button>
+        <div class="float-right btn-margin title-8">
+            <input type="checkbox" id="filterTest">只显示未完成</label>
+        </div>
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 table-background">
