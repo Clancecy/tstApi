@@ -102,6 +102,16 @@
                 $(".sidebar").addClass('toggle');
                 $("#side-menu").addClass('none-display');
             });
+            $("#testProject").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/task-solution-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
+            });
+            $("#testReport").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/report-solution-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
+            });
             $("#slide").click(function () {
                $(".sidebar").toggleClass('toggle');
                $("#side-menu").toggleClass('none-display');
