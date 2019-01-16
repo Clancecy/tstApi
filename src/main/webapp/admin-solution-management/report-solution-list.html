@@ -29,7 +29,7 @@
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
-            var rSolutionList = getReportSolution();
+            var rSolutionList = getReportSolutionList();
             var devTypeList = getDevTypeList();
             var coverList = getReportSolutionCover();
             console.log(rSolutionList);
@@ -43,27 +43,27 @@
             var testSolutionInfo;
 
             Vue.component('treeselect', VueTreeselect.Treeselect);
-            var selDevType = new Vue({
-                el: '#type',
-                data: {
-                    // define default value
-                    value: null,
-                    // define options
-                    options: devTypeList,
-                    normalizer(node) {
-                        return {
-                            id: node.typeID,
-                            label: node.typeName,
-                            children: node.children
-                        }
-                    }
-                },
-                methods:{
-                    setValue:function (newvalue) {
-                        this.value = newvalue;
-                    }
-                }
-            });
+            // var selDevType = new Vue({
+            //     el: '#type',
+            //     data: {
+            //         // define default value
+            //         value: null,
+            //         // define options
+            //         options: devTypeList,
+            //         normalizer(node) {
+            //             return {
+            //                 id: node.typeID,
+            //                 label: node.typeName,
+            //                 children: node.children
+            //             }
+            //         }
+            //     },
+            //     methods:{
+            //         setValue:function (newvalue) {
+            //             this.value = newvalue;
+            //         }
+            //     }
+            // });
             var selCover = new Vue({
                 el: '#cover',
                 data: {
@@ -89,7 +89,7 @@
             $(".container-fluid").css("height", $(window).height()+"px");
 
             $("#table").DataTable({
-                order: [[ 4, "desc" ]],
+                order: [[ 5, "desc" ]],
                 select: true,
                 scrollY: '300px',
                 scrollCollapse: "true",
@@ -140,8 +140,11 @@
                 console.log(testSolutionInfo);
 
                 $("#id").val(testSolutionInfo.soluID);
-                $("#name2").val(testSolutionInfo.soluName);
-                selDevType.setValue(testSolutionInfo.devTypeID);
+                $("#name").val(testSolutionInfo.soluName);
+                var typeName = getDataDevType(testSolutionInfo.devTypeID,devTypeList);
+                console.log(typeName);
+                $("#devType").val(typeName);
+                // selDevType.setValue(testSolutionInfo.devTypeID);
                 if(testSolutionInfo.coverID != -1 ){
                     selCover.setValue(testSolutionInfo.coverID);
                 }
@@ -199,14 +202,65 @@
             });
 
             $("#previewCover").click(function () {
-               // if(!)
+               if(!selCover.value){
+                   alert("请先选择封面");
+               }else {
+                   $("#preview").css("display","block");
+                   var left = $(window).width()/2 -  $("#preview").width()/2;
+                   var top = $(window).height()/2 -  $("#preview").height()/2;
+                   $("#preview").css("left",left + "px");
+                   $("#preview").css("top",top + "px");
+
+                   var html = '';
+                   html += '<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=';
+                   html += encodeURIComponent(getResearchUrl()+'/project/getPdf?proID='+selCover.value);
+                   html += '" width="100%" height="365px" security="restricted" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>';
+                   console.log(html);
+                   $(".preview-cover").html(html);
+               }
+            });
+            $("#cancel-btn").click(function () {
+                $("#preview").css("display","none");
+            });
+
+            $("#prerSolution").click(function () {
+                if(!$("#id").val()){
+                    alert("请先选择报告");
+                }else {
+                    var options = {
+                        'soluID': $("#id").val()
+                    };
+                    var pros = getReportPreView(options);
+                    console.log(pros);
+
+                    var optionurl = {
+                        'proIDs': JSON.stringify(pros),
+                        'fname': $("#name").val()+'模板预览'
+                    };
+
+                    $("#previewReport").css("display","block");
+                    var left = $(window).width()/2 -  $("#previewReport").width()/2;
+                    var top = $(window).height()/2 -  $("#previewReport").height()/2;
+                    $("#previewReport").css("left",left + "px");
+                    $("#previewReport").css("top",top + "px");
+
+                    var html = '';
+                    html += '<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=';
+                    html += encodeURIComponent(getResearchUrl()+'/project/listPdf?proIDs='+JSON.stringify(pros)+'&fname='+$("#name").val()+'模板预览');
+                    html += '" width="100%" height="365px" security="restricted" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>';
+                    console.log(html);
+                    $(".preview-report").html(html);
+                }
+            });
+            $("#cancel").click(function () {
+                $("#previewReport").css("display","none");
             });
         });
     </script>
 </head>
 <body>
 <div class="container-fluid">
-    <div class="row" style="margin-bottom: 10px;">
+    <div class="row">
         <div class="bacc"></div>
         <div class="title col-xs-6 col-sm-6">
             报告模板列表
@@ -230,23 +284,25 @@
         <div class="col-xs-12 col-sm-6">
             <div class="input-group input-class">
                 <span class="input-group-addon" id="editpsolutionName">模板名称</span>
-                <input id="name2" type="text" class="form-control" placeholder="模板名称" aria-describedby="editpsolutionName" readonly>
+                <input id="name" type="text" class="form-control" placeholder="模板名称" aria-describedby="editpsolutionName" readonly>
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
             <div class="input-group input-class">
                 <span class="input-group-addon" id="selDevtype">设备类型</span>
-                <treeselect
-                        v-model="value"
-                        :options="options"
-                        :normalizer="normalizer"
-                        :disable-branch-nodes="true"
-                        :show-count="true"
-                        placeholder="请选择"
-                        id="type"
-                        aria-describedby="selDevtype"
-                />
-                <pre class="result">{{ value }}</pre>
+                <input id="devType" type="text" class="form-control" placeholder="模板名称" aria-describedby="selDevtype" readonly>
+                <!--<treeselect-->
+                        <!--v-model="value"-->
+                        <!--:options="options"-->
+                        <!--:normalizer="normalizer"-->
+                        <!--:disable-branch-nodes="true"-->
+                        <!--:show-count="true"-->
+                        <!--placeholder="请选择"-->
+                        <!--id="type"-->
+                        <!--aria-describedby="selDevtype"-->
+                        <!--aria-readonly="true"-->
+                <!--/>-->
+                <!--<pre class="result">{{ value }}</pre>-->
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
@@ -285,11 +341,23 @@
     <div class="panel-heading">
         <div class="panel-title">预览模板</div>
     </div>
-    <div class="panel-body">
+    <div class="panel-body preview-cover">
 
     </div>
     <div class="panel-footer">
         <button class="btn btn-primary float-right" id="cancel-btn">退出</button>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="previewReport">
+    <div class="panel-heading">
+        <div class="panel-title">预览模板</div>
+    </div>
+    <div class="panel-body preview-report">
+
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary float-right" id="cancel">退出</button>
     </div>
 </div>
 </body>

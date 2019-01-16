@@ -1,5 +1,5 @@
-var userurl = 'http://192.168.137.140:8080';
-var researchurl = 'http://192.168.137.140/ES';
+var userurl = 'http://47.98.136.246:80';
+var researchurl = 'http://47.98.136.246/ES';
 
 
 
@@ -744,23 +744,6 @@ function addCover(options) {
     return res;
 }
 
-function reViewReport(options) {
-    var res = '';
-    $.ajax({
-        type: 'POST',
-        xhrFields: {
-            withCredentials: true // 这里设置了withCredentials
-        },
-        async:false,
-        crossDomain: true,
-        url: userurl+'/report/show',
-        data: options,
-        success: function (data) {
-            res = JSON.parse(data);
-        }
-    });
-    return res;
-}
 
 function projectReview(options) {
     var res = '';
@@ -772,6 +755,79 @@ function projectReview(options) {
         async:false,
         crossDomain: true,
         url: researchurl+'/project/report',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+function reportSolutionReview(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: researchurl+'/project/report',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+
+function addDataSolution(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: userurl+'/analysis/add',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+function updateDataSolution(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: userurl+'/analysis/update',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+function delDataSolution(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: userurl+'/analysis/delete',
         data: options,
         success: function (data) {
             res = JSON.parse(data);

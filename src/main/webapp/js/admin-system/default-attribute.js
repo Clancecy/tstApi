@@ -1,5 +1,5 @@
-var userurl = 'http://192.168.137.140:8080';
-var researchurl = 'http://192.168.137.140/ES';
+var userurl = 'http://47.98.136.246:80';
+var researchurl = 'http://47.98.136.246/ES';
 
 
 function defaultmems(aTd,task) {
@@ -292,7 +292,7 @@ function renewTestTable(testTable,option) {
         }else if(testList[i].status === 1){
             testList[i].staName = '已完成';
         }else if(testList[i].status === 2){
-            testList[i].staName = '已完成';
+            testList[i].staName = '审核中';
         }
         var testNames = '';
         for(index in testList[i].testUserList){
@@ -322,14 +322,18 @@ function renewTaskTable(taskTable,option) {
         if(taskList[i].status === 0){
             taskList[i].staName = '进行中';
         }else if(taskList[i].status === 1){
-            taskList[i].staName = '已终止';
-        }else if(taskList[i].status === 2){
             taskList[i].staName = '已完成';
+        }else if(taskList[i].status === 2){
+            taskList[i].staName = '审核中';
         }
         var taskNames = '';
-        for(index in taskList[i].taskUserList){
-            taskNames += taskList[i].taskUserList[index].userRealName;
-            taskNames += ',';
+        if(taskList[i].taskUserList === null){
+            taskNames = '';
+        }else{
+            for(index in taskList[i].taskUserList){
+                taskNames += taskList[i].taskUserList[index].userRealName;
+                taskNames += ',';
+            }
         }
         taskNames = taskNames.substr(0,taskNames.length-1);
         taskList[i].taskNames = taskNames;
@@ -354,9 +358,9 @@ function renewTaskList(taskTable) {
         if(taskList[i].status === 0){
             taskList[i].staName = '进行中';
         }else if(taskList[i].status === 1){
-            taskList[i].staName = '已终止';
-        }else if(taskList[i].status === 2){
             taskList[i].staName = '已完成';
+        }else if(taskList[i].status === 2){
+            taskList[i].staName = '审核中';
         }
         var taskNames = '';
         for(index in taskList[i].taskUserList){
@@ -381,8 +385,6 @@ function getTaskUserIDs(taskUserList) {
     }
     return userIDs;
 }
-
-
 
 function reNewPlanTableByStatus(planTable,planList) {
     planTable.clear().draw();
@@ -432,4 +434,37 @@ function reCoverTaskTableByStatus(taskTable,taskList) {
     }
 }
 
+function getDataItems(itemID,itemList){
+    var item;
+    for(i in itemList){
+        if(itemList[i].children != null){
+            var trueItem = getDataItems(itemID,itemList[i].children);
+            if(trueItem){
+                item = trueItem;
+            }
+        }else{
+            if(parseInt(itemID) === parseInt(itemList[i].itemID)){
+                item = itemList[i];
+            }
+        }
+    }
+    return item;
+}
+
+function getDataDevType(typeID,devTypeList) {
+    var name;
+    for(i in devTypeList){
+        if(devTypeList[i].children != null){
+               var trueName = getDataDevType(typeID,devTypeList[i].children);
+               if(trueName){
+                   name = trueName;
+               }
+        }else{
+            if(parseInt(typeID) === parseInt(devTypeList[i].typeID)){
+                name = devTypeList[i].typeName;
+            }
+        }
+    }
+    return name;
+}
 

@@ -9,6 +9,7 @@
     <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="../css/ztree/metroStyle/metroStyle.css">
     <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
     <link rel="stylesheet" href="../css/form-style.css">
     <script src="../js/jquery/jquery.min.js"></script>
@@ -17,6 +18,7 @@
     <script src="../js/respond/respond.min.js"></script>
     <script src="../js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
     <script src="../js/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="../js/ztree/jquery.ztree.all.min.js"></script>
     <script src="../js/echarts.js"></script>
     <script src="../js/vue/vue.min.js"></script>
     <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
@@ -25,65 +27,16 @@
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
-            var addressList,devTypeList,deviceList,projectList,recordList,itemList;
-            var seladdress,seldevtype,seldevice,selproject,selrecord,selitem;
-            addressList = getAddressList();
-            devTypeList = getDevTypeList();
-            console.log(addressList);
-            console.log(devTypeList);
+            var deviceList,dataSolutionList;
+            var seldataSolution;
+            deviceList = getDevList();
+            console.log(deviceList);
             var echartNumber = 0;
+            var ztree;
 
             Vue.component('treeselect', VueTreeselect.Treeselect);
-            seladdress = new Vue({
-                el: '#seladdress',
-                data: {
-                    // define default value
-                    value: null,
-                    // define options
-                    options: addressList,
-                    normalizer(node) {
-                        return {
-                            id: node.id,
-                            label: node.name,
-                            children: node.children
-                        }
-                    }
-                },
-                methods: {
-                    async setOptions(newOptions){
-                        this.options = newOptions;
-                    },
-                    async setValue(newValue) {
-                        this.value = newValue;
-                    }
-                }
-            });
-            seldevtype = new Vue({
-                el: '#seldevType',
-                data: {
-                    // define default value
-                    value: null,
-                    // define options
-                    options: devTypeList,
-                    normalizer(node) {
-                        return {
-                            id: node.typeID,
-                            label: node.typeName,
-                            children: node.children
-                        }
-                    }
-                },
-                methods: {
-                    async setOptions(newOptions){
-                        this.options = newOptions;
-                    },
-                    async setValue(newValue) {
-                        this.value = newValue;
-                    }
-                }
-            });
-            seldevice = new Vue({
-                el: '#seldevice',
+            seldataSolution = new Vue({
+                el: '#seldataSolution',
                 data: {
                     // define default value
                     value: null,
@@ -91,8 +44,8 @@
                     options: null,
                     normalizer(node) {
                         return {
-                            id: node.devID,
-                            label: node.devName,
+                            id: node.analyID,
+                            label: node.analyName,
                             children: node.children
                         }
                     }
@@ -106,152 +59,39 @@
                     }
                 }
             });
-            selproject = new Vue({
-                el: '#selproject',
-                data: {
-                    // define default value
-                    value: null,
-                    // define options
-                    options: null,
-                    normalizer(node) {
-                        return {
-                            id: node.proID,
-                            label: node.proName,
-                            children: node.children
-                        }
-                    }
-                },
-                methods: {
-                    async setOptions(newOptions){
-                        this.options = newOptions;
-                    },
-                    async setValue(newValue) {
-                        this.value = newValue;
-                    }
-                }
-            });
-            selrecord = new Vue({
-                el: '#selrecord',
-                data: {
-                    // define default value
-                    value: null,
-                    // define options
-                    options: null,
-                    normalizer(node) {
-                        return {
-                            id: node.recordID,
-                            label: node.recordName,
-                        }
-                    }
-                },
-                methods: {
-                    async setOptions(newOptions){
-                        this.options = newOptions;
-                    },
-                    async setValue(newValue) {
-                        this.value = newValue;
-                    }
-                }
-            });
-            selitem = new Vue({
-                el: '#selitem',
-                data: {
-                    // define default value
-                    value: null,
-                    // define options
-                    options: null,
-                    normalizer(node) {
-                        return {
-                            id: node.itemID,
-                            label: node.itemName,
-                            children: node.children
-                        }
-                    }
-                },
-                methods: {
-                    async setOptions(newOptions){
-                        this.options = newOptions;
-                    },
-                    async setValue(newValue) {
-                        this.value = newValue;
-                    }
-                }
-            });
-            seldevtype.$watch('value', function () {
-                if(!seldevtype.value) {
-                    alert('请选择设备类型');
-                }else if(!seladdress.value) {
-                    var options = {
-                        'devTypeID': seldevtype.value
-                    };
-                    deviceList = getDeviceStation(options);
-                    console.log(deviceList);
-                    seldevice.setOptions(deviceList);
-                }else{
-                    var options = {
-                        'staID': seladdress.value,
-                        'devTypeID': seldevtype.value
-                    };
-                    deviceList = getDeviceStation(options);
-                    console.log(deviceList);
-                    seldevice.setOptions(deviceList);
-                }
 
-            });
-            seladdress.$watch('value', function () {
-                if(!seladdress.value){
-                    alert('请选择站点');
-                }else if(!seldevtype.value) {
-                    var options = {
-                        'staID': seladdress.value,
-                    };
-                    deviceList = getDeviceStation(options);
-                    console.log(deviceList);
-                    seldevice.setOptions(deviceList);
-                }else{
-                    var options = {
-                        'staID': seladdress.value,
-                        'devTypeID': seldevtype.value
-                    };
-                    deviceList = getDeviceStation(options);
-                    console.log(deviceList);
-                    seldevice.setOptions(deviceList);
+            var setting = {
+                view:{
+                    selectedMulti:false
+                },
+                edit: {
+                    enable: false,
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                },
+                callback:{
+                    beforeDrag:function beforeDrag(treeId,treeNodes){
+                        return false;
+                    },//用户禁止拖动节点
+                    onClick:function clickNode(e,treeId,treeNode){
+                        ztree.expandAll(true);
+                        $("#deviceid").val(treeNode.id);
+                        var optiondev = {
+                            'devID': $("#deviceid").val()
+                        };
+                        dataSolutionList = getDataSolutionListBydev(optiondev);
+                        seldataSolution.setOptions(dataSolutionList);
+                        seldataSolution.setValue(null);
+                    }//点击节点触发的事件
                 }
-            });
-            seldevice.$watch('value', function () {
-                if(!seldevice.value){
-                    alert('请先选择设备');
-                }else{
-                    var options = {
-                        'devID': seldevice.value
-                    };
-                    projectList = getDeviceProject(options);
-                    selproject.setOptions(projectList);
-                }
-            });
-            selproject.$watch('value', function () {
-                if(!selproject.value){
-                    alert('请先选择项目');
-                }else{
-                    var options = {
-                        'proID': selproject.value
-                    };
-                    recordList = getProjectRecord(options);
-                    console.log(recordList);
-                    selrecord.setOptions(recordList);
-                }
-            });
-            selrecord.$watch('value', function () {
-                if(!selrecord.value){
-                    alert('请先选择记录');
-                }else{
-                    var options = {
-                        'recordID': selrecord.value
-                    };
-                    itemList = getRecordItem(options);
-                    selitem.setOptions(itemList);
-                }
-            });
+            };
+            var zNodes = deviceList;
+            ztree = $.fn.zTree.init($("#deviceTree"), setting, zNodes);
+            ztree.expandAll(true);
+
 
             $(".container-fluid").css("height", $(window).height()+"px");
             $('.input-daterange input').each(function() {
@@ -266,74 +106,34 @@
                     forceParse: 0,
                 });
             });
-            $(".pan-right").css('height',$(".pan").height()+'px');
+            $(".pan-left").css('height',$(window).height()-60+'px');
+            $(".pan-right").css('height',$(window).height()-60+'px');
+            $("#imgView").css('height',$(".pan-right").height()-53+'px');
 
-
-
-            $("#addItem").click(function () {
-                console.log($("#startDate").val());
-                console.log($("#endDate").val());
-                if(!seldevice.value){
-                    alert('请选择设备');
-                }else  if(!selproject.value){
-                    alert('请选择项目');
-                }else if(!selrecord.value){
-                    alert('请选择记录');
-                }else if (!selitem.value){
-                    alert('请选择条目');
-                }else{
-                    var itemName;
-                    for(i in itemList){
-                        if(selitem.value === itemList[i].itemID){
-                            itemName = itemList[i].itemName;
-                        }
-                    }
-                    var html = '<li id="'+selitem.value+'">'+itemName+'</li>';
-                    $(".selected-items").append(html);
-                }
-            });
-            $(".selected-items").on('click','li',function(){
-                $(this).addClass('selected-back').siblings().removeClass('selected-back');
-            });
-            $("#deleteItem").click(function () {
-                $(".selected-items .selected-back").remove();
-            });
             $("#show").click(function () {
-                if(!$("#startDate").val()){
-                    alert('请选择开始时间');
-                }else if(!$("#endDate").val()){
-                    alert('请选择截止时间');
-                }else if(!seldevice.value){
-                    alert('请选择设备');
-                }else  if(!selproject.value){
-                    alert('请选择项目');
-                }else if(!selrecord.value){
-                    alert('请选择记录');
-                }else if(!$(".selected-items").children()){
-                    alert('请添加条目');
+                if(!seldataSolution.value){
+                    alert('请选择分析模板');
                 }else {
-                    var record = document.getElementsByClassName("selected-items");
-                    var items = record[0].getElementsByTagName('li');
-                    console.log(items);
-                    console.log(items.length);
-                    var itemIDs = new Array();
-                    for(i in items){
-                        itemIDs.push(items[i].id);
+                    var options;
+                    if(parseInt($("#date").val()) === 3){
+                        options = {
+                            'analyID': seldataSolution.value,
+                            'devID': $("#deviceid").val(),
+                            'timeType': $("#date").val(),
+                            'atime': $("#startDate").val(),
+                            'btime': $("#endDate").val(),
+                        };
+                    }else{
+                        options = {
+                            'analyID': seldataSolution.value,
+                            'devID': $("#deviceid").val(),
+                            'timeType': $("#date").val(),
+                        };
                     }
-                    itemIDs = itemIDs.slice(0,items.length);
-                    console.log(itemIDs);
-                    var options = {
-                        'devID': seldevice.value,
-                        'recordID':selrecord.value,
-                        'itemIDs': JSON.stringify(itemIDs),
-                        'atime': $("#startDate").val(),
-                        'btime': $("#endDate").val(),
-                    };
-                    var ograph = $('<div class="col-xs-12 col-sm-6" style="height: 400px;" id="'+echartNumber+'"></div>');
+                    var ograph = $('<div class="col-xs-12 col-sm-12" style="height: 400px;" id="'+echartNumber+'"></div>');
                     $("#imgView").append(ograph);
                     check(options,echartNumber);
                     echartNumber++;
-
                 }
             });
             var timer = null;
@@ -354,6 +154,30 @@
                 }
             }
 
+            $('#latest').click(function () {
+                if ($(this).is(':checked')) {
+                    console.log($(this).val());
+                    $("#date").val($(this).val());
+                }
+            });
+            $('#lastyear').click(function () {
+                if ($(this).is(':checked')) {
+                    console.log($(this).val());
+                    $("#date").val($(this).val());
+                }
+            });
+            $('#all').click(function () {
+                if ($(this).is(':checked')) {
+                    console.log($(this).val());
+                    $("#date").val($(this).val());
+                }
+            });
+            $('#normal').click(function () {
+                if ($(this).is(':checked')) {
+                    console.log($(this).val());
+                    $("#date").val($(this).val());
+                }
+            });
         });
     </script>
 </head>
@@ -367,123 +191,31 @@
     </div>
     <div class="row">
         <div class="pan col-xs-12 col-sm-3 little-padding">
-            <div class="col-xs-12 simple-bacc">
+            <div class="pan-left col-xs-12 simple-bacc scroll-me">
                 <div class="row border-bottom border-top title-9">选择设备</div>
                 <div class="row no-margin">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="addseladdress">站点</span>
-                            <treeselect
-                                    v-model="value"
-                                    :options="options"
-                                    :normalizer="normalizer"
-                                    :disable-branch-nodes="true"
-                                    :show-count="true"
-                                    placeholder="请选择"
-                                    id="seladdress"
-                                    aria-describedby="addseladdress"
-                            />
-                            <pre class="result">{{ value }}</pre>
-                        </div>
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="addseldevType">设备类型</span>
-                            <treeselect
-                                    v-model="value"
-                                    :options="options"
-                                    :normalizer="normalizer"
-                                    :disable-branch-nodes="true"
-                                    :show-count="true"
-                                    placeholder="请选择"
-                                    id="seldevType"
-                                    aria-describedby="addseldevType"
-                            />
-                            <pre class="result">{{ value }}</pre>
-                        </div>
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="addseldevice">设备</span>
-                            <treeselect
-                                    v-model="value"
-                                    :options="options"
-                                    :normalizer="normalizer"
-                                    :disable-branch-nodes="true"
-                                    :show-count="true"
-                                    placeholder="请选择"
-                                    id="seldevice"
-                                    aria-describedby="addseldevice"
-                            />
-                            <pre class="result">{{ value }}</pre>
-                        </div>
+                        <ul id="deviceTree" class="ztree"></ul>
                     </div>
                 </div>
-                <div class="row border-bottom border-top title-9">时间范围</div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="input-group input-daterange">
-                            <input type="text" class="form-control" value="" readonly data-date-format="yyyy-mm-dd" id="startDate">
-                            <div class="input-group-addon">到</div>
-                            <input type="text" class="form-control" value="" readonly data-date-format="yyyy-mm-dd" id="endDate">
-                        </div>
-                    </div>
-                </div>
-                <div class="row border-bottom border-top title-9">选择条目</div>
+                <div class="row border-bottom border-top title-9">选择模板</div>
                 <div class="row no-margin">
                     <div class="col-xs-12">
+                        <input type="hidden" id="deviceid">
+                        <input type="hidden" id="date" value="2">
                         <div class="input-group input-class">
-                            <span class="input-group-addon" id="addselproject">选择项目</span>
+                            <span class="input-group-addon" id="addselsolution">分析模板</span>
                             <treeselect
                                     v-model="value"
                                     :options="options"
                                     :normalizer="normalizer"
                                     :show-count="true"
                                     placeholder="请选择"
-                                    id="selproject"
-                                    aria-describedby="addselproject"
+                                    id="seldataSolution"
+                                    aria-describedby="addselsolution"
                             />
                             <pre class="result">{{ value }}</pre>
                         </div>
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="addselrecord">选择记录</span>
-                            <treeselect
-                                    v-model="value"
-                                    :options="options"
-                                    :normalizer="normalizer"
-                                    :show-count="true"
-                                    placeholder="请选择"
-                                    id="selrecord"
-                                    aria-describedby="addselrecord"
-                            />
-                            <pre class="result">{{ value }}</pre>
-                        </div>
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="addselitem">选择条目</span>
-                            <treeselect
-                                    v-model="value"
-                                    :options="options"
-                                    :normalizer="normalizer"
-                                    :show-count="true"
-                                    placeholder="请选择"
-                                    id="selitem"
-                                    aria-describedby="addselitem"
-                            />
-                            <pre class="result">{{ value }}</pre>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <button class="btn btn-primary btn-block" id="addItem">添加条目</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <button class="btn btn-danger btn-block" id="deleteItem">删除条目</button>
-                    </div>
-                </div>
-                <div class="row border-bottom border-top title-9">已选条目</div>
-                <div class="row">
-                    <div class="col-xs-12 selected" >
-                        <ul class="selected-items">
-                        </ul>
                     </div>
                 </div>
                 <div class="row">
@@ -493,9 +225,44 @@
                 </div>
             </div>
         </div>
-        <div class="pan-right col-xs-12 col-sm-9 little-padding">
-            <div class="pan-right col-xs-12 simple-bacc" id="imgView">
+        <div class="col-xs-12 col-sm-9 little-padding">
+            <div class="pan-right col-xs-12 simple-bacc">
+                <div class="col-xs-12 padding-bottom border-bottom">
+                    <div class="col-xs-9 no-padding">
+                        <div class="col-xs-3 checkboxme">
+                            <label class="radio-inline">
+                                <input type="radio" name="optionsRadiosinline" id="latest" value="0">最近
+                            </label>
 
+                        </div>
+                        <div class="col-xs-3 checkboxme">
+                            <label class="radio-inline">
+                                <input type="radio" name="optionsRadiosinline" id="lastyear"  value="1"> 近一年
+                            </label>
+                        </div>
+                        <div class="col-xs-3 checkboxme">
+                            <label class="radio-inline">
+                                <input type="radio" name="optionsRadiosinline" id="all"  value="2" checked> 全部
+                            </label>
+                        </div>
+                        <div class="col-xs-3 checkboxme">
+                            <label class="radio-inline">
+                                <input type="radio" name="optionsRadiosinline" id="normal"  value="3"> 选择范围
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-3" style="margin-top: 3px;">
+                        <div class="input-group input-daterange">
+                            <input type="text" class="form-control" value="" readonly data-date-format="yyyy-mm-dd" id="startDate">
+                            <div class="input-group-addon">到</div>
+                            <input type="text" class="form-control" value="" readonly data-date-format="yyyy-mm-dd" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 scroll-me" id="imgView">
+
+                </div>
             </div>
         </div>
     </div>

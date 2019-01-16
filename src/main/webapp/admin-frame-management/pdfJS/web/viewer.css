@@ -1092,7 +1092,7 @@ html[dir='rtl'] .splitToolbarButtonSeparator {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  /* Opera does not support admin-user-select, use <... unselectable="on"> instead */
+  /* Opera does not support user-select, use <... unselectable="on"> instead */
   cursor: default;
   transition-property: background-color, border-color, box-shadow;
   transition-duration: 150ms;

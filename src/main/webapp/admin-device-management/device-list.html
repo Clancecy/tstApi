@@ -41,34 +41,9 @@
             console.log(devTypeList);
             var devInfo, adselDevType;
             var ztree, tagtree;
-            $(".devinfo").jqthumb({
-                classname      : 'jqthumb1',             // class name. DEFUALT IS jqthumb
-                width          : '174px',                // new image width after cropping. DEFAULT IS 100px.
-                height         : '174px',               // new image height after cropping. DEFAULT IS 100px.
-                source         : 'src',
-                zoom           : '1',//缩放比例
-                method         : 'auto',
-            });
-            $(".info-img").jqthumb({
-                classname      : 'jqthumb2',             // class name. DEFUALT IS jqthumb
-                width          : $(".info-file").width()+'px',                // new image width after cropping. DEFAULT IS 100px.
-                height         : $(".info-file").width()+'px',               // new image height after cropping. DEFAULT IS 100px.
-                source         : 'src',
-                zoom           : '1',//缩放比例
-                method         : 'auto',
-            });
-            Vue.component('treeselect', VueTreeselect.Treeselect);
 
-            $('.form_date').datetimepicker({
-                language:  'zh_CN',
-                weekStart: 1,
-                todayBtn:  1,
-                autoclose: 1,
-                todayHighlight: 1,
-                startView: 2,
-                minView: 2,
-                forceParse: 0,
-            });
+
+            Vue.component('treeselect', VueTreeselect.Treeselect);
             adselDevType = new Vue({
                 el: '#type',
                 data: {
@@ -90,6 +65,42 @@
                     }
                 }
             });
+
+            $(document.body).css({
+                "overflow-x":"hidden",
+                "overflow-y":"hidden"
+            });
+            $(".container-fluid").css("height", $(window).height()+"px");
+            $(".pan-left").css("height", $(window).height()-60+"px");
+            $("#scroll").css("height", $('.pan-left').height()-55+"px");
+
+            $('.form_date').datetimepicker({
+                language:  'zh_CN',
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                forceParse: 0,
+            });
+            $(".devinfo").jqthumb({
+                classname      : 'jqthumb1',             // class name. DEFUALT IS jqthumb
+                width          : '174px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : '174px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+            $(".info-img").jqthumb({
+                classname      : 'jqthumb2',             // class name. DEFUALT IS jqthumb
+                width          : $(".info-file").width()+'px',                // new image width after cropping. DEFAULT IS 100px.
+                height         : $(".info-file").width()+'px',               // new image height after cropping. DEFAULT IS 100px.
+                source         : 'src',
+                zoom           : '1',//缩放比例
+                method         : 'auto',
+            });
+
 
             $("#addLabelimg").click(function () {
                 if (!$("#id").val()){
@@ -367,8 +378,8 @@
         <div class="title col-xs-6 col-sm-6">设备列表</div>
     </div>
     <div class="row">
-        <div class="pan col-xs-12 col-sm-3 simple-bacc">
-            <div class="row simple-bacc">
+        <div class="pan col-xs-12 col-sm-3">
+            <div class="row simple-bacc pan-left">
                 <div class="row" id="add-title">
                     <div class=" col-xs-12">
                         <button class="btn btn-primary col-xs-6 col-xs-push-3" id="adddevice">新增设备</button>
@@ -396,144 +407,146 @@
                         <button class="btn btn-primary" style="float: right;" id="addoutput">添加出厂值</button>
                     </div>
                 </div>
-                <div class="row" id="info-body">
-                    <input id="id" type="hidden">
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="deviceType">被试品类型</span>
-                            <treeselect
-                                    v-model="value"
-                                    :options="options"
-                                    :normalizer="normalizer"
-                                    :disable-branch-nodes="true"
-                                    :show-count="true"
-                                    placeholder="请选择"
-                                    id="type"
-                                    aria-describedby="deviceType"
-                            />
-                            <pre class="result">{{ value }}</pre>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="textlinenumber">线路单元号</span>
-                            <input id="linenumber" type="text" class="form-control" aria-describedby="textlinenumber">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="devName">设备名称</span>
-                            <input id="name" type="text" class="form-control"  aria-describedby="devName">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="voltz">电压等级</span>
-                            <input id="volt" type="text" class="form-control"  aria-describedby="voltz">
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="number">运行编号</span>
-                            <input id="runnumber" type="text" class="form-control" aria-describedby="number">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="outputnumber">出厂编号</span>
-                            <input id="outnumber" type="text" class="form-control" aria-describedby="outputnumber">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="manutype">型号</span>
-                            <input id="manunumber" type="text" class="form-control" aria-describedby="manutype">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="manufactory">生产厂家</span>
-                            <input id="plant" type="text" class="form-control" aria-describedby="manufactory">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="devicestate">运行状态</span>
-                            <input id="state" type="text" class="form-control" aria-describedby="devicestate">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="devicetag">标签</span>
-                            <input id="tag" type="text" class="form-control" aria-describedby="devicetag">
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="indate2" data-link-format="yyyy-mm-dd">
-                            <span class="input-group-addon">投运日期</span>
-                            <input class="form-control" id="indate" size="16" type="text" value="" readonly>
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                        </div>
-                        <input type="hidden" id="indate2" value="" /><br>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 normal-input">
-                        <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="manudate2" data-link-format="yyyy-mm-dd">
-                            <span class="input-group-addon">制造日期</span>
-                            <input class="form-control" id="manudate" size="16" type="text" value="" readonly>
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                        </div>
-                        <input type="hidden" id="manudate2" value=""/><br>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="labelimg">铭牌</span>
-                            <div class="form-control" aria-describedby="labelimg" id="label">
-
-                            </div>
-                            <div class="input-group-addon">
-                                <button type="button" class="btn btn-primary" id="addLabelimg" data-toggle="modal" data-target="#labelinput">上传</button>
+                <div class="row no-padding no-margin scroll-me" id="scroll">
+                    <div class="row" id="info-body">
+                        <input id="id" type="hidden">
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="deviceType">设备类型</span>
+                                <treeselect
+                                        v-model="value"
+                                        :options="options"
+                                        :normalizer="normalizer"
+                                        :disable-branch-nodes="true"
+                                        :show-count="true"
+                                        placeholder="请选择"
+                                        id="type"
+                                        aria-describedby="deviceType"
+                                />
+                                <pre class="result">{{ value }}</pre>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="deviceimg">设备</span>
-                            <div class="form-control" aria-describedby="deviceimg" id="device">
-
-                            </div>
-                            <div class="input-group-addon">
-                                <button type="button" class="btn btn-primary" id="addDeviceimg" data-toggle="modal" data-target="#deviceinput">上传</button>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="textlinenumber">线路单元</span>
+                                <input id="linenumber" type="text" class="form-control" aria-describedby="textlinenumber">
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="input-group input-class">
-                            <span class="input-group-addon" id="additionInfo">备注</span>
-                            <input id="addition" type="text" class="form-control" aria-describedby="stationtag">
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="devName">设备名称</span>
+                                <input id="name" type="text" class="form-control"  aria-describedby="devName">
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row" id="img-title">
-                    <div class="title-2 col-xs-6 col-sm-6">附件信息</div>
-                    <div class="col-xs-6 col-sm-6">
-                        <button type="button" class="btn btn-primary" id="addfile" data-toggle="modal" data-target="#fileinput">上传</button>
-                    </div>
-                </div>
-                <div class="row" id="img-body">
-                    <div class="col-xs-12 col-sm-12" id="file-body">
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="voltz">电压等级</span>
+                                <input id="volt" type="text" class="form-control"  aria-describedby="voltz">
+                            </div>
+                        </div>
 
-                    </div>
-                </div>
-                <div class="row" id="foot-title">
-                    <div class="col-xs-12">
-                        <div class="col-xs-6">
-                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editdevice">保存修改</button>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="number">运行编号</span>
+                                <input id="runnumber" type="text" class="form-control" aria-describedby="number">
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="deldevice">删除设备</button>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="outputnumber">出厂编号</span>
+                                <input id="outnumber" type="text" class="form-control" aria-describedby="outputnumber">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="manutype">设备型号</span>
+                                <input id="manunumber" type="text" class="form-control" aria-describedby="manutype">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="manufactory">生产厂家</span>
+                                <input id="plant" type="text" class="form-control" aria-describedby="manufactory">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="devicestate">运行状态</span>
+                                <input id="state" type="text" class="form-control" aria-describedby="devicestate">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="devicetag">设备标签</span>
+                                <input id="tag" type="text" class="form-control" aria-describedby="devicetag">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="indate2" data-link-format="yyyy-mm-dd">
+                                <span class="input-group-addon">投运日期</span>
+                                <input class="form-control" id="indate" size="16" type="text" value="" readonly>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                            <input type="hidden" id="indate2" value="" /><br>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 normal-input">
+                            <div class="input-group date form_date col-xs-12" data-date="" data-date-format="yyyy-mm-dd" data-link-field="manudate2" data-link-format="yyyy-mm-dd">
+                                <span class="input-group-addon">制造日期</span>
+                                <input class="form-control" id="manudate" size="16" type="text" value="" readonly>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                            <input type="hidden" id="manudate2" value=""/><br>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="labelimg">设备铭牌</span>
+                                <div class="form-control" aria-describedby="labelimg" id="label">
+
+                                </div>
+                                <div class="input-group-addon">
+                                    <button type="button" class="btn btn-primary" id="addLabelimg" data-toggle="modal" data-target="#labelinput">上传</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="deviceimg">设备照片</span>
+                                <div class="form-control" aria-describedby="deviceimg" id="device">
+
+                                </div>
+                                <div class="input-group-addon">
+                                    <button type="button" class="btn btn-primary" id="addDeviceimg" data-toggle="modal" data-target="#deviceinput">上传</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="input-group input-class">
+                                <span class="input-group-addon" id="additionInfo">设备备注</span>
+                                <input id="addition" type="text" class="form-control" aria-describedby="stationtag">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="img-title">
+                        <div class="title-2 col-xs-6 col-sm-6">附件信息</div>
+                        <div class="col-xs-6 col-sm-6">
+                            <button type="button" class="btn btn-primary" id="addfile" data-toggle="modal" data-target="#fileinput">上传</button>
+                        </div>
+                    </div>
+                    <div class="row" id="img-body">
+                        <div class="col-xs-12 col-sm-12" id="file-body">
+
+                        </div>
+                    </div>
+                    <div class="row" id="foot-title">
+                        <div class="col-xs-12">
+                            <div class="col-xs-6">
+                                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editdevice">保存修改</button>
+                            </div>
+                            <div class="col-xs-6">
+                                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="deldevice">删除设备</button>
+                            </div>
                         </div>
                     </div>
                 </div>

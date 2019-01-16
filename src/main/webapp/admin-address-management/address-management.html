@@ -38,8 +38,14 @@
             var lng,lat;
             var tagtree,ztree;
 
+            $(document.body).css({
+                "overflow-x":"hidden",
+                "overflow-y":"hidden"
+            });
             $(".container-fluid").css("height",$(window).height()+"px");
-            $(".pan-right").css('height',$(".pan").height() +"px");
+            $(".pan-right").css('height',$(window).height()-60 +"px");
+            $(".pan-left").css("height", $(window).height()-60+"px");
+            $("#img-body").css("height", $('.pan-right').height()-362+"px");
 
             $("img").jqthumb({
                 classname      : 'jqthumb',             // class name. DEFUALT IS jqthumb
@@ -276,8 +282,8 @@
         <div class="title col-xs-6 col-sm-6">站点列表</div>
     </div>
     <div class="row">
-        <div class="pan col-xs-12 col-sm-3 simple-bacc">
-            <div class="row">
+        <div class="pan col-xs-12 col-sm-3 no-padding">
+            <div class="row simple-bacc pan-left">
                 <div class="row" id="add-title">
                     <div class=" col-xs-12">
                         <button class="btn btn-primary col-xs-6 col-xs-push-3" id="addstation">新增站点</button>
@@ -297,8 +303,8 @@
                 </div>
             </div>
         </div>
-        <div class="pan-right col-xs-12 col-sm-9 ">
-            <div class="row simple-bacc">
+        <div class=" col-xs-12 col-sm-9">
+            <div class="row simple-bacc pan-right">
                 <div class="row" id="info-title">
                     <div class="title-2 col-xs-6 col-sm-6">站点详情</div>
                     <div class="col-xs-6 col-sm-6">
@@ -359,7 +365,7 @@
 
                     </div>
                 </div>
-                <div class="row" id="img-body">
+                <div class="row scroll-me" id="img-body">
                     <div class="col-xs-12 col-sm-12" id="gallery">
                     </div>
                 </div>

@@ -46,9 +46,9 @@
                 if(testList[i].status === 0){
                     testList[i].staName = '进行中';
                 }else if(testList[i].status === 1){
-                    testList[i].staName = '已终止';
-                }else if(testList[i].status === 2){
                     testList[i].staName = '已完成';
+                }else if(testList[i].status === 2){
+                    testList[i].staName = '审核中';
                 }
                 var testNames = '';
                 for(index in testList[i].testUserList){
@@ -59,7 +59,7 @@
                 testList[i].testNames = testNames;
             }
             memberList = resetUser(memberList);
-            // console.log(testList);
+            console.log(testList);
             // console.log(devTypeList);
             console.log(devList);
             console.log(proList);
@@ -68,7 +68,7 @@
             // console.log(testInfos['planDanID']);
             // console.log(testInfos['testID']);
 
-            var tableHeight,testInfo;
+            var testInfo,taskInfo;
             var members,manager,solution,device,project,taskMember,taskManager;
 
 
@@ -154,13 +154,129 @@
                 }
             });
 
+            device = new Vue({
+                el: '#seldev',
+                data: {
+                    value: null,
+                    options: devList,
+                    normalizer(node) {
+                        return {
+                            id: node.id,
+                            label: node.name,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            project = new Vue({
+                el: '#selpro',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.proID,
+                            label: node.proName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            device.$watch('value',function () {
+                if(!device.value){
+                    alert("请先选择设备")
+                }else{
+                    var optionDevice ={
+                        'devID': device.value
+                    };
+                    var pros = getDeviceProject(optionDevice);
+                    project.setOptions(pros);
+                    project.setValue(null);
+                }
+            });
+            taskMember = new Vue({
+                el: '#taskmembers',
+                data: {
+                    value: null,
+                    options: memberList,
+                    normalizer(node) {
+                        return {
+                            id: node.tagID,
+                            label: node.tagName,
+                            children: node.children,
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            taskManager = new Vue({
+                el: '#taskmanager',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.userID,
+                            label: node.userRealName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            taskMember.$watch('value', function () {
+                if(!taskMember.value){
+                    alert("成员为空");
+                }else{
+                    var optionmanager = {
+                        'userIDs': JSON.stringify(taskMember.value)
+                    };
+                    var leaders = getManagerOptions(optionmanager);
+                    taskManager.setOptions(leaders);
+                    taskManager.setValue(null);
+                }
+            });
+
 
             $(".container-fluid").css("height", $(window).height()+"px");
-            tableHeight = ($(".container-fluid").height-15)/2 + "px";
             var testTable = $("#testtable").DataTable({
                 order: [[ 6, "desc" ]],
                 select: true,
-                scrollY: tableHeight,
+                scrollY: '300px',
                 scrollCollapse: "true",
                 language: {
                     "sProcessing": "处理中...",
@@ -204,7 +320,7 @@
             var taskTable = $("#tasktable").DataTable({
                 order: [[ 5, "desc" ]],
                 select: true,
-                scrollY: tableHeight,
+                scrollY: '300px',
                 scrollCollapse: "true",
                 language: {
                     "sProcessing": "处理中...",
@@ -264,7 +380,7 @@
                 // item.setValue(testInfo.proID);
                 var mems = new Array();
                 if(!testInfo.testUserList){
-                    alert("没有试验成员")
+                    alert("没有试验成员");
                 }else {
                     for(i in testInfo.testUserList){
                         mems.push(testInfo.testUserList[i].userID);
@@ -304,15 +420,25 @@
                         mems.push(testInfo.testUserList[i].userID);
                     }
                     console.log(mems);
-                    members.setOptions(memberList);
-                    members.setValue(mems);
-                    var optionmanager = {
-                        'userIDs': JSON.stringify(mems)
-                    };
-                    var leaders = getManagerOptions(optionmanager);
-                    console.log(leaders);
-                    manager.setOptions(leaders);
-                    manager.setValue(testInfo.leaderID);
+                    if(mems){
+                        members.setOptions(memberList);
+                        members.setValue(mems);
+                        var optionmanager = {
+                            'userIDs': JSON.stringify(mems)
+                        };
+                        var leaders = getManagerOptions(optionmanager);
+                        console.log(leaders);
+                        manager.setOptions(leaders);
+                    }else{
+                        alert("没有成员");
+                    }
+
+                    if(testInfo.leaderID === -1){
+                        manager.setValue(null);
+                    }else{
+                        manager.setValue(testInfo.leaderID);
+                    }
+
                 }
 
                 var options = {
@@ -359,6 +485,30 @@
                     }
                 }
 
+            });
+            $("#saveTest").click(function () {
+                if(!$("#testid").val()){
+                    alert("请选择试验单");
+                }else if(testInfo.status === 1){
+                    alert("已完成试验单无法修改");
+                }else{
+                    var options = {
+                        'testNumber': $("#testNumber").val(),
+                        'testID': $("#testid").val(),
+                        'userIDs': JSON.stringify(members.value),
+                        'leaderID': manager.value
+                    };
+                    var res = updateTestSheet(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
             });
 
 
@@ -435,25 +585,6 @@
                 $("#importaddtest").css("display","none");
             });
 
-            $("#saveTest").click(function () {
-                var options = {
-                    'testNumber': $("#testNumber").val(),
-                    'testID': $("#testid").val(),
-                    'userIDs': JSON.stringify(members.value),
-                    'leaderID': manager.value
-                };
-                var res = updateTestSheet(options);
-                if(res.code === 101){
-                    alert(res.message);
-                    window.location.reload();
-                }else if(res.code === 5004){
-                    alert(res.message);
-                    window.location.href = '../admin-login-register/login.html'
-                }else{
-                    alert(res.message);
-                }
-            });
-
             $('#tasktable tbody').on('click', 'tr',function() {
                 var id = taskTable.row(this).data().taskID;
                 $("#taskid").val(id);
@@ -478,128 +609,65 @@
                 }
             });
             $("#updateTask").click(function () {
-                if($("#taskid").val()){
-                    $("#edittask").css("display","block");
-                    var left = $(window).width()/2 -  $("#edittask").width()/2;
-                    var top = $(window).height()/2 -  $("#edittask").height()/2;
-                    $("#edittask").css("left",left + "px");
-                    $("#edittask").css("top",top + "px");
+                if(!$("#taskid").val()) {
+                    alert("请选择任务单");
+                }else {
+                    var optionTask = {
+                        'taskID':$("#taskid").val()
+                    };
+                    taskInfo = getTaskInfo(optionTask);
+                    console.log(taskInfo);
+                    if(taskInfo.status === 1) {
+                        alert("已完成任务单不能修改");
+                    }else{
+                        $("#edittask").css("display","block");
+                        var left = $(window).width()/2 -  $("#edittask").width()/2;
+                        var top = $(window).height()/2 -  $("#edittask").height()/2;
+                        $("#edittask").css("left",left + "px");
+                        $("#edittask").css("top",top + "px");
 
-                    device = new Vue({
-                        el: '#seldev',
-                        data: {
-                            value: null,
-                            options: devList,
-                            normalizer(node) {
-                                return {
-                                    id: node.id,
-                                    label: node.name,
-                                    children: node.children,
-                                }
-                            }
-                        },
-                        methods: {
-                            async setOptions(newoptions){
-                                this.options = newoptions;
-                            },
-                            async setValue(newValue) {
-                                this.value = newValue;
-                            }
-                        }
-                    });
-                    project = new Vue({
-                        el: '#selpro',
-                        data: {
-                            // define default value
-                            value: null,
-                            // define options
-                            options: null,
-                            normalizer(node) {
-                                return {
-                                    id: node.proID,
-                                    label: node.proName,
-                                    children: node.children
-                                }
-                            }
-                        },
-                        methods: {
-                            async setOptions(newoptions){
-                                this.options = newoptions;
-                            },
-                            async setValue(newValue) {
-                                this.value = newValue;
-                            }
-                        }
-                    });
-                    device.$watch('value',function () {
-                        if(!device.value){
-                            alert("请先选择设备")
+
+                        if(taskInfo.devID === -1){
+                            device.setValue(null);
                         }else{
-                            var optionDevice ={
-                                'devID': device.value
+                            device.setValue(taskInfo.devID);
+                            var optionPro = {
+                                'devID': taskInfo.devID
                             };
-                            var pros = getDeviceProject(optionDevice);
-                            project.setOptions(pros);
+                            proList = getDeviceProject(optionPro);
+                            project.setOptions(proList);
+                        }
+                        if(taskInfo.proID === -1){
                             project.setValue(null);
+                        }else{
+                            project.setValue(taskInfo.proID);
                         }
-                    });
-                    taskMember = new Vue({
-                        el: '#taskmembers',
-                        data: {
-                            value: null,
-                            options: testInfo.testUserList,
-                            normalizer(node) {
-                                return {
-                                    id: node.userID,
-                                    label: node.userRealName,
-                                    children: node.children,
-                                }
+                        var userIDs = new Array();
+                        if(!taskInfo.taskUserList){
+                            taskMember.setValue(null);
+                        }else{
+                            for(i in taskInfo.taskUserList){
+                                userIDs.push(taskInfo.taskUserList[i].userID);
                             }
-                        },
-                        methods: {
-                            async setOptions(newoptions){
-                                this.options = newoptions;
-                            },
-                            async setValue(newValue) {
-                                this.value = newValue;
-                            }
+                            taskMember.setValue(userIDs);
                         }
-                    });
-                    taskManager = new Vue({
-                        el: '#taskmanager',
-                        data: {
-                            // define default value
-                            value: null,
-                            // define options
-                            options: null,
-                            normalizer(node) {
-                                return {
-                                    id: node.userID,
-                                    label: node.userRealName,
-                                    children: node.children
-                                }
+                        if(taskMember.value){
+                            if(taskInfo.leaderID === -1){
+                                taskManager.setValue(null);
+                            }else{
+                                var optionmanager = {
+                                    'userIDs': JSON.stringify(taskMember.value)
+                                };
+                                var leaders = getManagerOptions(optionmanager);
+                                taskManager.setOptions(leaders);
+                                taskManager.setValue(null);
                             }
-                        },
-                        methods: {
-                            async setOptions(newoptions){
-                                this.options = newoptions;
-                            },
-                            async setValue(newValue) {
-                                this.value = newValue;
-                            }
+                        }else{
+                            taskManager.setOptions(null);
+                            taskManager.setValue(null);
                         }
-                    });
-                    taskMember.$watch('value', function () {
-                        var optionmanager = {
-                            'userIDs': JSON.stringify(taskMember.value)
-                        };
-                        var leaders = getManagerOptions(optionmanager);
-                        taskManager.setOptions(leaders);
-                        taskManager.setValue(null);
-                    });
-
+                    }
                 }
-
             });
             $("#save-edit-btn").click(function () {
                 if(!$("#taskid").val()){
@@ -661,6 +729,8 @@
                     }
                 }
             });
+
+
             $('#filterTest').click(function () {
                 if ($(this).is(':checked')) {
                     reNewTestTableByStatus(testTable,testList);
@@ -680,7 +750,7 @@
         </div>
         <button class="btn btn-danger float-right" id="delTest">删除试验单</button>
         <button class="btn btn-primary float-right btn-margin" id="addTest">新建试验单</button>
-        <div class="float-right btn-margin title-8">
+        <div class="float-right btn-margin checkbox">
             <input type="checkbox" id="filterTest">只显示未完成</label>
         </div>
     </div>

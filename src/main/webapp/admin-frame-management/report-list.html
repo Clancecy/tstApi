@@ -29,14 +29,24 @@
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
-            var filename = 'ss.pdf';
             var reportList = getReportList();
+            for(i in reportList){
+                if(reportList[i].endtime){
+                    reportList[i].endDate = _getDate(reportList[i].endtime);
+                }else{
+                    reportList[i].endDate = '';
+                }
+
+                reportList[i].staName = '已完成';
+            }
             console.log(reportList);
             var reportInfo;
 
+
+
             $(".container-fluid").css("height", $(window).height()+"px");
             var reportTable = $("#reporttable").DataTable({
-                order: [[ 3, "desc" ]],
+                order: [[ 4, "desc" ]],
                 select: true,
                 scrollY: '300px',
                 scrollCollapse: "true",
@@ -67,44 +77,54 @@
                 data: reportList,
                 columnDefs:[{"targets":0,"visible":false}],
                 columns:[
-                    {data: "reportID", title: "报告编号"},
-                    {data: "testID", title: "试验单号"},
-                    {data: "reportName", title: "负责人"},
-                    {data: "status", title: "状态"},
-                    {data: "addtime", title: "完成时间"},
-                    {data: "reportName", title: "报告模板"},
+                    {data: "testID", title: "报告编号",defaultContent:""},
+                    {data: "testNumber", title: "试验单号",defaultContent:""},
+                    {data: "leader", title: "负责人",defaultContent:""},
+                    {data: "staName", title: "状态",defaultContent:""},
+                    {data: "endDate", title: "完成时间",defaultContent:""},
+                    {data: "soluName", title: "报告模板",defaultContent:""},
                 ]
             });
-            $("#table").click(function () {
+            $('#reporttable tbody').on('click', 'tr',function() {
                 $(this).toggleClass('selected').siblings().removeClass('selected');
-                var id = reportTable.row(this).data().reportID;
+                var id = reportTable.row(this).data().testID;
                 $("#reportid").val(id);
                 var options = {
                     'testID': id
                 };
                 reportInfo = getReportInfo(options);
-                $("#number").val(reportInfo.testID);
+                console.log(reportInfo);
+                $("#name").val(reportInfo.soluName);
                 $("#addDate").val(_getDate(reportInfo.addtime));
             });
+
+
             $("#checkReport").click(function () {
                 if(!$("#reportid").val()){
                     alert("请选择报告");
                 }else {
                     var options = {
-                        'reportID': $("#reportid").val()
+                        'testID': $("#reportid").val()
                     };
-                    var res = reViewReport(options);
-                    if(res.code === 101){
-                        alert(res.message);
-                        var link = "./pdfJS/web/viewer.html?file=../../../pdfFile/"+filename;
-                        window.location.href = link;
-                    }else if(res.code === 5004){
-                        alert(res.message);
-                        window.location.href = '../admin-login-register/login.html'
-                    }else{
-                        alert(res.message);
-                    }
+                    var res = getTestReportPreView(options);
+                    console.log(res);
+
+                    $("#previewReport").css("display","block");
+                    var left = $(window).width()/2 -  $("#previewReport").width()/2;
+                    var top = $(window).height()/2 -  $("#previewReport").height()/2;
+                    $("#previewReport").css("left",left + "px");
+                    $("#previewReport").css("top",top + "px");
+
+                    var html = '';
+                    html += '<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=';
+                    html += encodeURIComponent(getResearchUrl()+'/project/testPdf?pathList='+JSON.stringify(res)+'&fname='+$("#name").val()+'报告预览'+$("#reportid").val());
+                    html += '" width="100%" height="365px" security="restricted" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>';
+                    console.log(html);
+                    $(".preview-report").html(html);
                 }
+            });
+            $("#cancel").click(function () {
+                $("#previewReport").css("display","none");
             });
 
         })
@@ -124,8 +144,8 @@
         <div class="col-xs-12 col-sm-6">
             <input type="hidden" id="reportid">
             <div class="input-group input-class">
-                <span class="input-group-addon" id="edittaskNumber">报告编号</span>
-                <input id="number" type="text" class="form-control" placeholder="报告编号" aria-describedby="edittaskNumber" readonly>
+                <span class="input-group-addon" id="edittaskNumber">报告模板</span>
+                <input id="name" type="text" class="form-control" placeholder="报告编号" aria-describedby="edittaskNumber" readonly>
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
@@ -141,6 +161,18 @@
             <table class="table table-responsive table-bordered table-hover" id="reporttable">
             </table>
         </div>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="previewReport">
+    <div class="panel-heading">
+        <div class="panel-title">预览模板</div>
+    </div>
+    <div class="panel-body preview-report">
+
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary float-right" id="cancel">退出</button>
     </div>
 </div>
 </body>

@@ -35,28 +35,8 @@ See https://github.com/adobe-type-tools/cmap-resources
 <!-- This snippet is used in production (included from viewer.html) -->
 <link rel="resource" type="application/l10n" href="locale/locale.properties">
 <script src="../build/pdf.js"></script>
-    <script src="../../../js/jquery/jquery.min.js"></script>
-
     <script src="viewer.js"></script>
-    <script>
-      $(function () {
-          function getUrl() {
-              var url = location.search; //获取url中"?"符后的字串
-              var theRequest = new Object();
-              if (url.indexOf("?") != -1) {
-                  var str = url.substr(1);
-                  strs = str.split("&");
-                  for (var i = 0; i < strs.length; i++) {
-                      theRequest[strs[i].split("=")[0]] = decodeURIComponent(strs[i].split("=")[1]);
-                  }
-              }
-              return theRequest;
-          }
-          var filename = getUrl();
-          var DEFAULT_URL = filename['file'];
-          window.open(DEFAULT_URL,'PDF');
-      });
-    </script>
+
   </head>
 
   <body tabindex="1" class="loadingInProgress">

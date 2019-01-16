@@ -114,7 +114,7 @@ body{
     display: none;
     z-index: 999;
 }
-#preview{
+#preview, #previewReport{
     width: 700px;
     height: 500px;
     position: absolute;
@@ -173,9 +173,6 @@ body{
 .little-padding{
     padding: 0 5px 0 5px;
 }
-#imgView{
-    overflow: scroll;
-}
 .margin-bottom{
     margin-bottom: 10px;
 }
@@ -190,4 +187,29 @@ body{
 }
 .none-display{
     display: none;
+}
+.checkboxme{
+    position: relative;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.checkboxme label{
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+.checkboxme input{
+    position: absolute;
+    margin: 4px 0 0 -20px;
+    line-height: normal;
+}
+.scroll-me{
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+#ins .active{
+    background-color: #EAEAEA;
 }
