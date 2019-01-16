@@ -5,6 +5,8 @@ import com.testyle.common.ResContent;
 import com.testyle.common.Utils;
 import com.testyle.model.*;
 import com.testyle.service.*;
+import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -26,7 +28,11 @@ public class TestController {
     private ISoluProService soluProService;
     @Resource
     private ITaskService taskService;
+    @Resource
+    ISolutionService solutionService;
     String charact = "UTF-8";
+    @Value("${EsUrl}")
+    String EsUrl;
 
     @RequestMapping("/add")
     public void addTest(Test test, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -51,7 +57,9 @@ public class TestController {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            int count = testService.update(test);
+            Test oldTest = testService.select(test.getTestID());
+            oldTest.setLeaderID(test.getLeaderID());
+            int count = testService.update(oldTest);
             if (count > 0) {
                 count = testUserService.delete(test.getTestID());
                 if (count > 0) {
@@ -73,7 +81,7 @@ public class TestController {
         ResContent resContent = new ResContent();
         List<Test> testList = new ArrayList<>();
         testList = testService.select(test);
-        for (Test t:testList){
+        for (Test t : testList) {
             t.setTaskRate(getTaskRate(t.getTestID()));
         }
         dealTestList(resContent, testList);
@@ -82,12 +90,12 @@ public class TestController {
     }
 
     @RequestMapping("/show")
-    public void showTest(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public void showTest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
-        ResContent resContent=new ResContent();
+        ResContent resContent = new ResContent();
         try {
-            long testID=Long.parseLong(request.getParameter("testID"));
-            Test test=testService.select(testID);
+            long testID = Long.parseLong(request.getParameter("testID"));
+            Test test = testService.select(testID);
             TestUser testUser = new TestUser();
             testUser.setTestID(testID);
             List<TestUser> testUsers = testUserService.select(testUser);
@@ -96,13 +104,14 @@ public class TestController {
             resContent.setCode(101);
             resContent.setMessage("获取成功");
             resContent.setData(test);
-        }catch (NumberFormatException ne){
+        } catch (NumberFormatException ne) {
             resContent.setCode(103);
             resContent.setMessage(ne.getMessage());
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
+
     @RequestMapping("/delete")
     public void deleteTest(Test test, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
@@ -175,7 +184,7 @@ public class TestController {
         soluPro.setSoluID(test.getSoluID());
         List<SoluPro> soluProList = soluProService.select(soluPro);
         for (SoluPro pro : soluProList) {
-            Task task=new Task();
+            Task task = new Task();
             task.setStatus(0);
             task.setTestID(test.getTestID());
             task.setBuilderID(1);
@@ -234,5 +243,35 @@ public class TestController {
         task.setStatus(1);
         doneCount = taskService.getCount(task);
         return doneCount + "/" + taskCount;
+    }
+
+    @RequestMapping("/report")
+    public void report(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        try {
+            long testID = Long.parseLong(request.getParameter("testID"));
+            Test test = testService.select(testID);
+            if (test.getStatus() != 0) {
+                Task task = new Task();
+                task.setTestID(testID);
+                List<Task> taskList = taskService.select(task);
+                List<String> pathList = new ArrayList<>();
+                for (Task temp : taskList) {
+                    pathList.add(temp.getUrl());
+                }
+                resContent.setCode(101);
+                resContent.setMessage("获取成功");
+                resContent.setData(pathList);
+            } else {
+                resContent.setCode(105);
+                resContent.setMessage("试验未完成");
+            }
+        } catch (Exception e) {
+            resContent.setCode(104);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
     }
 }

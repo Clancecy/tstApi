@@ -14,6 +14,7 @@ import com.testyle.common.Utils;
 import com.testyle.model.*;
 import com.testyle.service.*;
 import okhttp3.*;
+import org.apache.poi.ss.formula.atp.AnalysisToolPak;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,8 @@ public class DataController {
     private ITestService testService;
     @Resource
     private ITaskService taskService;
+    @Resource
+    IAnalysisItemService analysisItemService;
 
     @Value("${EsUrl}")
     String EsUrl;
@@ -52,25 +55,25 @@ public class DataController {
         ResContent resContent = new ResContent();
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         String fname = request.getParameter("url");
-        String remark=request.getParameter("remark");
+        String remark = request.getParameter("remark");
         try {
-        int status=Integer.parseInt(request.getParameter("status"));
-            System.out.println("进来的dataVal："+data.getDataVal());
-        if (data.getTestID() == -1
-                || data.getTaskID() == -1
-                || data.getProID() == -1
-                || data.getDataVal() == null
-                || fname == null
-        ||data.getStatus()==-1) {
-            resContent.setCode(107);
-            resContent.setMessage("参数错误");
-        } else {
-            Task task=taskService.select(data.getTaskID());
-            task.setUrl(fname);
-            task.setRemark(remark);
-            task.setStatus(status);
-            taskService.update(task);
-            try {
+            int status = Integer.parseInt(request.getParameter("status"));
+            System.out.println("进来的dataVal：" + data.getDataVal());
+            if (data.getTestID() == -1
+                    || data.getTaskID() == -1
+                    || data.getProID() == -1
+                    || data.getDataVal() == null
+                    || fname == null
+                    || data.getStatus() == -1) {
+                resContent.setCode(107);
+                resContent.setMessage("参数错误");
+            } else {
+                Task task = taskService.select(data.getTaskID());
+                task.setUrl(fname);
+                task.setRemark(remark);
+                task.setStatus(status);
+                taskService.update(task);
+                try {
                     String url = EsUrl + "data/add";
                     FormBody formBody = new FormBody.Builder()
                             .add("url", fname)
@@ -86,13 +89,13 @@ public class DataController {
                     String RecStr = resContent.getData().toString();
                     List<Record> dataList = (List<Record>) JSON.parseArray(RecStr, Record.class);
 
-                    addDb(dataList, data,task, resContent);
+                    addDb(dataList, data, task, resContent);
                 } catch (JSONException jsone) {
                     resContent.setCode(109);
                     resContent.setMessage(jsone.getMessage());
                 }
-        }
-        }catch (JSONException je){
+            }
+        } catch (JSONException je) {
             resContent.setCode(110);
             resContent.setMessage(je.getMessage());
         }
@@ -101,11 +104,11 @@ public class DataController {
     }
 
     @RequestMapping("/getRecord")
-    public void getRecord(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        long proID=Long.parseLong(request.getParameter("proID"));
-        List<Map<String,Object>> mapList=dataService.getRecord(proID);
+        long proID = Long.parseLong(request.getParameter("proID"));
+        List<Map<String, Object>> mapList = dataService.getRecord(proID);
         if (mapList.size() == 0) {
             resContent.setMessage("没有数据");
             resContent.setCode(102);
@@ -119,11 +122,11 @@ public class DataController {
     }
 
     @RequestMapping("/getItem")
-    public void getItem(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public void getItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        long recordID=Long.parseLong(request.getParameter("recordID"));
-        List<Map<String,Object>> mapList=dataService.getItem(recordID);
+        long recordID = Long.parseLong(request.getParameter("recordID"));
+        List<Map<String, Object>> mapList = dataService.getItem(recordID);
         if (mapList.size() == 0) {
             resContent.setMessage("没有数据");
             resContent.setCode(102);
@@ -141,13 +144,13 @@ public class DataController {
     public void changeStatus(Task task, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
-        if (task.getTaskID()==-1 ||
-        task.getStatus()==-1) {
+        if (task.getTaskID() == -1 ||
+                task.getStatus() == -1) {
             resContent.setCode(103);
             resContent.setMessage("参数错误");
         } else {
-            int status=task.getStatus();
-            Task temp=new Task();
+            int status = task.getStatus();
+            Task temp = new Task();
             temp.setTaskID(task.getTaskID());
             List<Task> taskList = taskService.select(temp);
             if (taskList.size() == 0) {
@@ -157,6 +160,7 @@ public class DataController {
                 task = taskList.get(0);
                 task.setStatus(status);
                 task.setEndtime(new Date());
+                updateTestStatus(task.getTestID());
                 int count = taskService.update(task);
                 Utils.dealForUpdate(count, resContent);
             }
@@ -165,8 +169,29 @@ public class DataController {
         response.getWriter().close();
     }
 
+    private void updateTestStatus(long testID) {
+        Task task = new Task();
+        task.setTestID(testID);
+        List<Task> taskList = taskService.select(task);
+        boolean c = true;
+        if (taskList == null)
+            c = false;
+        else {
+            for (Task t : taskList) {
+                if (t.getStatus() != 1) {
+                    c = false;
+                }
+            }
+        }
+        if (c) {
+            Test test = testService.select(testID);
+            test.setStatus(1);
+            testService.update(test);
+        }
+    }
+
     @RequestMapping("/xDraw")
-    public void getOption_x(HttpServletRequest request,HttpServletResponse response)throws IOException {
+    public void getOption_x(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         String devIDs = request.getParameter("devIDs");
         String itemIDs = request.getParameter("items");
@@ -190,29 +215,68 @@ public class DataController {
 
         }
     }
+
     @RequestMapping("/yDraw")
-    public void getOption_y(HttpServletRequest request,HttpServletResponse response)throws IOException {
+    public void getOption_y(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         try {
-            long devID=Long.parseLong(request.getParameter("devID"));
-            long recordID=Long.parseLong(request.getParameter("recordID"));
+            Calendar calendar = Calendar.getInstance();
+            long devID = Long.parseLong(request.getParameter("devID"));
+            long analyID = Long.parseLong(request.getParameter("analyID"));
+            int timeType = Integer.parseInt(request.getParameter("timeType"));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date aTime=sdf.parse(request.getParameter("atime"));
-            Date bTime=sdf.parse(request.getParameter("btime"));
-            String itemIDs = request.getParameter("itemIDs");
-            List<Long> itemIDList = JSON.parseArray(itemIDs, Long.class);
-            Task task=new Task();
+            Date aTime;
+            Date bTime;
+            String astr = request.getParameter("atime");
+            String bstr = request.getParameter("btime");
+            switch (timeType) {
+                case 0:
+                    bTime = new Date();
+                    calendar.setTime(bTime);
+                    calendar.add(Calendar.DAY_OF_YEAR, -30);
+                    aTime = calendar.getTime();
+                    break;
+                case 1:
+                    bTime = new Date();
+                    calendar.setTime(bTime);
+                    calendar.add(Calendar.YEAR, -1);
+                    aTime = calendar.getTime();
+                    break;
+                case 2:
+                    String temp = "1999-01-01";
+                    aTime = sdf.parse(temp);
+                    bTime = new Date();
+                    break;
+                case 3:
+                    aTime = sdf.parse(astr);
+                    bTime = sdf.parse(bstr);
+                    break;
+                default:
+                    temp = "1999-01-01";
+                    aTime = sdf.parse(temp);
+                    bTime = new Date();
+                    break;
+            }
+
+            List<Long> itemIDList = new ArrayList<>();
+            AnalysisItem analysisItem=new AnalysisItem();
+            analysisItem.setAnalyID(analyID);
+            List<AnalysisItem> analysisItemList=analysisItemService.select(analysisItem);
+            for(AnalysisItem item:analysisItemList){
+                itemIDList.add(item.getItemID());
+            }
+            Task task = new Task();
             task.setDevID(devID);
             task.setStatus(1);
             task.setAtime(aTime);
             task.setBtime(bTime);
-            List<Task> taskList=taskService.select(task);
-            List<Series> seriesList=new ArrayList<>();
-            if(taskList.size()==0){
+            List<Task> taskList = taskService.select(task);
+            List<Series> seriesList = new ArrayList<>();
+            if (taskList.size() == 0) {
                 resContent.setCode(103);
                 resContent.setMessage("没有数据");
-            }else {
+            } else {
                 //创建Option
                 Option option = new Option();
                 option.tooltip(Trigger.axis);
@@ -220,38 +284,43 @@ public class DataController {
                 option.yAxis(new ValueAxis().boundaryGap(false));
                 //创建类目轴
                 CategoryAxis category = new CategoryAxis().boundaryGap(false);
-                boolean isF=true;
-                for(long itemID:itemIDList){
-                    Data data=new Data();
-                    data.setRecordID(recordID);
+                boolean isF = true;
+                for (long itemID : itemIDList) {
+                    Data data = new Data();
+//                    data.setRecordID(recordID);
                     data.setItemID(itemID);
-                    List<Data> dataList=dataService.select(data);
-                    data=dataList.get(0);
-                    Line line = new Line(data.getItemName());
-                    option.legend(data.getItemName());
-                    for(Task t:taskList){
-                        SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                        if(isF) {
-                            category.data(temp.format(t.getEndtime()));
-                        }
-                        long taskID=t.getTaskID();
-                        Data tdata=new Data();
-                        tdata.setTaskID(taskID);
-                        tdata.setRecordID(recordID);
-                        tdata.setItemID(itemID);
-                        List<Data> tdataList=dataService.select(tdata);
-                        if(tdataList.size()==0){
-                            resContent.setCode(105);
-                            resContent.setMessage("没有数据");
-                            break;
-                        }else {
-                            tdata=tdataList.get(0);
+                    List<Data> dataList = dataService.select(data);
+                    if (dataList.size() == 0) {
+                        resContent.setCode(105);
+                        resContent.setMessage("没有数据");
+                        break;
+                    } else {
+                        data = dataList.get(0);
+                        Line line = new Line(data.getItemName());
+                        option.legend(data.getItemName());
+                        for (Task t : taskList) {
+                            SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            if (isF) {
+                                category.data(temp.format(t.getEndtime()));
+                            }
+                            long taskID = t.getTaskID();
+                            Data tdata = new Data();
+                            tdata.setTaskID(taskID);
+                            tdata.setItemID(itemID);
+                            List<Data> tdataList = dataService.select(tdata);
+                            if (tdataList.size() == 0) {
+                                resContent.setCode(105);
+                                resContent.setMessage("没有数据");
+                                break;
+                            } else {
+                                tdata = tdataList.get(0);
 //                            line.setStack("数值");
-                            line.data(tdata.getDataVal());
+                                line.data(tdata.getDataVal());
+                            }
                         }
+                        isF = false;
+                        seriesList.add(line);
                     }
-                    isF=false;
-                    seriesList.add(line);
                 }
                 //设置类目轴
                 option.xAxis(category);
@@ -261,11 +330,10 @@ public class DataController {
                 resContent.setData(option);
                 System.out.println(option);
             }
-        }catch (JSONException je){
+        } catch (JSONException je) {
             resContent.setCode(105);
             resContent.setMessage(je.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             resContent.setCode(104);
             resContent.setMessage(e.getMessage());
@@ -280,13 +348,13 @@ public class DataController {
         ResContent resContent = new ResContent();
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         try {
-            Task task=taskService.select(data.getTaskID());
+            Task task = taskService.select(data.getTaskID());
             List<Data> dataList = dataService.select(data);
             String url = EsUrl + "data/get";
             FormBody formBody = new FormBody.Builder()
                     .add("dataVal", JSON.toJSONString(dataList))
                     .add("remark", task.getRemark())
-                    .add("url",task.getUrl())
+                    .add("url", task.getUrl())
                     .build();
             Request req = new Request.Builder().url(url)
                     .post(formBody)
@@ -453,14 +521,14 @@ public class DataController {
 
     private void addDb(List<Record> records, Data data, Task task, ResContent resContent) {
         List<Data> List = new ArrayList<>();
-        dataService.delete(data.getTable(),task.getTaskID());
+        dataService.delete(data.getTable(), task.getTaskID());
         for (Record chunk : records) {
             List<Record> recordList = chunk.getRecords();
             int recCount = recordList.size();
             for (int i = 0; i < recCount; i++) {
                 Record record = recordList.get(i);
                 long recordID = record.getRecordID();
-                String recordName=record.getRecordName();
+                String recordName = record.getRecordName();
                 int testOrder = i + 1;
                 for (Item item : record.getItemList()
                 ) {
@@ -471,7 +539,7 @@ public class DataController {
                     tempData.setDevID(task.getDevID());
                     tempData.setProID(data.getProID());
                     long itemID = item.getItemID();
-                    String itemName=item.getItemName();
+                    String itemName = item.getItemName();
                     String dataVal = item.getItemVal();
                     tempData.setRecordID(recordID);
                     tempData.setRecordName(recordName);

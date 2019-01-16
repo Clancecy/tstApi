@@ -22,6 +22,7 @@ public class Task {
     String insNumber;
     String url;
     String remark;
+    int recordNum=-1;
     int status=-1;
     Date endtime;
     Date addtime = new Date();
@@ -33,6 +34,14 @@ public class Task {
     String staID;
     String staName;
     String address;
+
+    public int getRecordNum() {
+        return recordNum;
+    }
+
+    public void setRecordNum(int recordNum) {
+        this.recordNum = recordNum;
+    }
 
     public String getAddress() {
         return address;

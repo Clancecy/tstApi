@@ -3,10 +3,12 @@ package com.testyle.service.impl;
 import com.testyle.dao.ICompanyDao;
 import com.testyle.model.Company;
 import com.testyle.service.ICompanyService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@Service("companyService")
 public class CompanyServiceImpl implements ICompanyService {
     @Resource
     private ICompanyDao companyDao;

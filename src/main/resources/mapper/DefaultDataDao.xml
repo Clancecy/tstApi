@@ -4,11 +4,11 @@
     <resultMap id="listDefaultData" type="DefaultData">
         <id column="defaultID" property="defaultID"></id>
         <result property="devID" column="devID"></result>
+        <result property="devName" column="devName"></result>
         <result property="proID" column="proID"></result>
         <result property="dataVal" column="dataVal"></result>
         <result property="recordID" column="recordID"></result>
         <result property="itemID" column="itemID"></result>
-        <result property="devID" column="devID"></result>
         <result property="testOrder" column="testOrder"></result>
     </resultMap>
 
@@ -35,9 +35,7 @@
             <if test="itemID!=-1">
                 and itemID=#{itemID}
             </if>
-            <if test="devID!=-1">
-                and devID=#{devID}
-            </if>
+
         </where>
 
     </select>
@@ -62,9 +60,6 @@
             <if test="itemID!=-1">
                 and itemID=#{itemID}
             </if>
-            <if test="devID!=-1">
-                and devID=#{devID}
-            </if>
         </where>
     </select>
     <insert id="insert" parameterType="DefaultData">
@@ -72,21 +67,21 @@
             SELECT @@IDENTITY
         </selectKey>
         INSERT into ${table} (devID,proID,dataVal,recordID,
-        testOrder,itemID,devID,addtime)
+        testOrder,itemID,addtime)
         values (#{devID},#{proID},#{dataVal},#{recordID},
-        #{testOrder},#{itemID},#{devID},#{addtime})
+        #{testOrder},#{itemID},#{addtime})
     </insert>
     <insert id="insertList" useGeneratedKeys="true">
         <selectKey resultType="long" keyProperty="defaultID">
             SELECT @@IDENTITY
         </selectKey>
         INSERT into ${table} (devID,proID,dataVal,recordID,
-        testOrder,itemID,devID,addtime) values
+        testOrder,itemID,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
         <foreach collection="dataList" item="DefaultData" index="index" separator="," close=";">
             (
             #{DefaultData.devID},#{DefaultData.proID},#{DefaultData.dataVal},
-            #{DefaultData.recordID},#{DefaultData.testOrder},#{DefaultData.itemID},#{DefaultData.devID},
+            #{DefaultData.recordID},#{DefaultData.testOrder},#{DefaultData.itemID},
             #{DefaultData.addtime})
         </foreach>
     </insert>
@@ -104,7 +99,6 @@
             recordID  = #{recordID},
             testOrder = #{testOrder},
             itemID    = #{itemID},
-            devID=#{devID},
             addtime   = #{addtime}
         where defaultID = #{defaultID}
     </update>
@@ -140,12 +134,6 @@
                  separator=" " open="case DefaultDataID" close="end">
             when #{DefaultData.defaultID} then
             #{DefaultData.itemID}
-        </foreach>
-        ,devID =
-        <foreach collection="list" item="DefaultData" index="index"
-                 separator=" " open="case DefaultDataID" close="end">
-            when #{DefaultData.defaultID} then
-            #{DefaultData.devID}
         </foreach>
         ,addtime =
         <foreach collection="list" item="DefaultData" index="index"

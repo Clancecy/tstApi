@@ -10,6 +10,10 @@ import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -308,7 +313,7 @@ public class TaskController {
     }
 
     @RequestMapping("/report")
-    public void report(HttpServletRequest request,HttpServletResponse response)throws IOException{
+    public ResponseEntity<byte[]> report(HttpServletRequest request,HttpServletResponse response)throws IOException{
         response.setCharacterEncoding(charact);
         ResContent resContent=new ResContent();
         try {
@@ -320,27 +325,31 @@ public class TaskController {
                 OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
                 String url = EsUrl + "project/report";
                 FormBody formBody = new FormBody.Builder()
-                        .add("path", path)
-                        .add("fname", fname)
+                        .add("path",path)
+                        .add(fname,fname)
                         .build();
                 Request req = new Request.Builder().url(url)
                         .post(formBody)
                         .build();
                 Call call = okHttpClient.newCall(req);
                 Response response1 = call.execute();
-                String proStr = response1.body().string();
-                System.out.println(proStr);
-                resContent = JSON.parseObject(proStr, ResContent.class);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentDispositionFormData("attachment",fname);
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                return new ResponseEntity<byte[]>(response1.body().bytes(),headers, HttpStatus.OK);
             }else {
                 resContent.setCode(105);
                 resContent.setMessage("任务未完成");
+                response.getWriter().write(JSON.toJSONString(resContent));
+                response.getWriter().close();
             }
         }catch ( Exception e){
             resContent.setCode(104);
             resContent.setMessage(e.getMessage());
+            response.getWriter().write(JSON.toJSONString(resContent));
+            response.getWriter().close();
         }
-        response.getWriter().write(JSON.toJSONString(resContent));
-        response.getWriter().close();
+        return null;
     }
 
     @RequestMapping("/detail")

@@ -252,7 +252,7 @@ public class PlanDanController {
     /**
      * 每天5点触发（清空验证码表t_captcha中的数据）
      */
-    @Scheduled(cron = "0 15 01 ? * *")
+//    @Scheduled(cron = "0 15 01 ? * *")
 
     public void testTask() {
         System.out.println(System.currentTimeMillis());

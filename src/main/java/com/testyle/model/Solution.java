@@ -9,8 +9,26 @@ public class Solution {
     long devTypeID = -1;
     long builderID = -1;
     String userRealName;
+    long coverID=-1;
+    String coverName;
     Date addtime=new Date();
     List<SoluPro> pros;
+
+    public long getCoverID() {
+        return coverID;
+    }
+
+    public void setCoverID(long coverID) {
+        this.coverID = coverID;
+    }
+
+    public String getCoverName() {
+        return coverName;
+    }
+
+    public void setCoverName(String coverName) {
+        this.coverName = coverName;
+    }
 
     public long getSoluID() {
         return soluID;

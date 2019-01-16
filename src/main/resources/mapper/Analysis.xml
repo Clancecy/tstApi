@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IAnalysisDao">
+    <resultMap id="listAnalysis" type="Analysis">
+        <id column="proID" property="proID"></id>
+        <result property="proName" column="proName"></result>
+        <result property="typeID" column="typeID"></result>
+        <result property="typeName" column="typeName"></result>
+        <result property="builderID" column="builderID"></result>
+        <result property="builder" column="builder"></result>
+        <result property="analyID" column="analyID"></result>
+        <result property="analyName" column="analyName"></result>
+        <result property="addtime" column="addtime"></result>
+    </resultMap>
+
+    <select id="selectByID" resultType="Analysis" parameterType="Long">
+    select a.*,b.userName as builder from analysis a left join user b on a.builderID=b.userID where a.analyID=#{analyID}
+    </select>
+    <select id="select" resultMap="listAnalysis" parameterType="Analysis">
+        select a.*,b.userName as builder from analysis a left join user b on a.builderID=b.userID
+        <where>
+            <if test="proID!=-1">
+                and proID=#{proID}
+            </if>
+            <if test="proName!=null">
+                and proName=#{proName}
+            </if>
+            <if test="analyID!=-1">
+                and analyID=#{analyID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="Analysis">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="proID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into analysis (proName,builderID,proID,analyName,addtime) values (#{proName},
+        #{builderID},#{proID},#{analyName},#{addtime} )
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete from analysis where analyID=#{analyID}
+    </delete>
+
+    <update id="update" parameterType="Analysis">
+        update analysis
+        set proName=#{proName},
+        builderID=#{builder},proID=#{proID},
+        analyName=#{analyName},
+        typeID=#{typeID},
+        typeName=#{typeName},
+        addtime=#{addtime} where analyID=#{analyID}
+    </update>
+
+</mapper>

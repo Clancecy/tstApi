@@ -8,6 +8,8 @@ import com.testyle.model.SoluPro;
 import com.testyle.model.Solution;
 import com.testyle.service.ISoluProService;
 import com.testyle.service.ISolutionService;
+import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -26,7 +28,8 @@ public class SolutionController {
     @Resource
     private ISolutionService solutionService;
     String charact = "UTF-8";
-
+    @Value("${EsUrl}")
+    String EsUrl;
     @RequestMapping("/add")
     public void addSolution(Solution solution, HttpServletRequest request, HttpServletResponse response)throws IOException {
         response.setCharacterEncoding(charact);
@@ -175,4 +178,82 @@ public class SolutionController {
             solution.setPros(soluProList);
         }
     }
+    @RequestMapping("/cover")
+    public void coverList(HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        try {
+            String url = EsUrl + "project/list";
+            FormBody formBody = new FormBody.Builder()
+                    .add("proType", "3")
+                    .build();
+            Request req = new Request.Builder().url(url)
+                    .post(formBody)
+                    .build();
+            Call call = okHttpClient.newCall(req);
+            Response response1 = call.execute();
+            String proStr = response1.body().string();
+            resContent = JSON.parseObject(proStr, ResContent.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resContent.setCode(102);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/addCover")
+    public void addCover(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            long soluID=Long.parseLong(request.getParameter("soluID"));
+            long coverID=Long.parseLong(request.getParameter("coverID"));
+            String coverName=request.getParameter("coverName");
+            Solution solution=solutionService.select(soluID);
+            solution.setCoverID(coverID);
+            solution.setCoverName(coverName);
+            solutionService.update(solution);
+            resContent.setCode(101);
+            resContent.setMessage("更新成功");
+        }catch (Exception e){
+            resContent.setCode(102);
+            resContent.setMessage("更新失败");
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/report")
+    public void report(HttpServletRequest request,HttpServletResponse response)throws IOException{
+        response.setCharacterEncoding(charact);
+        response.setCharacterEncoding(charact);
+        ResContent resContent=new ResContent();
+        try {
+            List<Long> proIDs=new ArrayList<>();
+            long soluID = Long.parseLong(request.getParameter("soluID"));
+            Solution solution=solutionService.select(soluID);
+            long coverID=solution.getCoverID();
+            proIDs.add(coverID);
+            SoluPro soluPro=new SoluPro();
+            soluPro.setSoluID(soluID);
+            List<SoluPro> soluProList=soluProService.select(soluPro);
+            for(SoluPro pro:soluProList){
+                proIDs.add(pro.getProID());
+            }
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(proIDs);
+        }catch (Exception e){
+            e.printStackTrace();
+            resContent.setCode(102);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
 }

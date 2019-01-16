@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testyle.dao.IAnalysisItemDao">
+    <resultMap id="listAnalysisItem" type="AnalysisItem">
+        <id column="ID" property="ID"></id>
+        <result column="analyID" property="analyID"></result>
+        <result column="itemID" property="itemID"></result>
+        <result column="itemName" property="itemName"></result>
+    </resultMap>
+
+    <select id="getAnalysisItem" resultType="AnalysisItem" parameterType="long">
+        select *
+        from AnalysisItem
+        where ID = #{ID}
+    </select>
+    <select id="selOne" resultType="long" parameterType="AnalysisItem">
+        select IFNULL(max(ID),0) as ID from AnalysisItem
+        <where>
+            <if test="analyID!=-1">
+                and analyID=#{analyID}
+            </if>
+            <if test="itemID!=-1">
+                and itemID=#{itemID}
+            </if>
+        </where>
+
+    </select>
+    <select id="select" resultMap="listAnalysisItem" parameterType="AnalysisItem">
+        select a.ID,a.analyID,a.itemID,a.itemName from AnalysisItem a
+        <where>
+            <if test="ID!=-1">
+                and a.ID=#{ID}
+            </if>
+            <if test="analyID!=-1">
+                and a.analyID=#{analyID}
+            </if>
+            <if test="itemID!=-1">
+                and a.itemID=#{itemID}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="AnalysisItem">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into AnalysisItem (analyID,itemID,itemName,addtime) values (#{analyID},
+        #{itemID},#{itemName},#{addtime})
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="ID">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT into AnalysisItem (analyID,itemID,itemName,addtime) values
+        <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
+        <foreach collection="list" item="AnalysisItem" index="index" separator="," close=";">
+            ( #{AnalysisItem.analyID},#{AnalysisItem.itemID},#{AnalysisItem.itemName},#{AnalysisItem.addtime})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from AnalysisItem
+        where analyID = #{analyID}
+    </delete>
+    <delete id="delOne">
+        delete
+        from AnalysisItem
+        where ID = #{ID}
+    </delete>
+    <update id="update" parameterType="AnalysisItem">
+        update AnalysisItem
+        set analyID  = #{analyID},
+            itemID  = #{itemID},
+            itemName  = #{itemName},
+            addtime = #{addtime}
+        where ID = #{ID}
+    </update>
+
+    <update id="updateList" parameterType="java.util.List">
+        update AnalysisItem set
+        analyID =
+        <foreach collection="list" item="AnalysisItem" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{AnalysisItem.ID} then
+            #{AnalysisItem.analyID}
+        </foreach>
+        ,itemID =
+        <foreach collection="list" item="AnalysisItem" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{AnalysisItem.ID} then
+            #{AnalysisItem.itemID}
+        </foreach>
+        ,itemName=
+        <foreach collection="list" item="AnalysisItem" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{AnalysisItem.ID} then
+            #{AnalysisItem.itemName}
+        </foreach>
+        ,addtime =
+        <foreach collection="list" item="AnalysisItem" index="index"
+                 separator=" " open="case ID" close="end">
+            when #{AnalysisItem.ID} then
+            #{AnalysisItem.addtime}
+        </foreach>
+    </update>
+
+</mapper>

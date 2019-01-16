@@ -6,13 +6,12 @@ import java.util.List;
 public class DefaultData {
     String table="defaultdata";
     long defaultID = -1;
-    long testID=-1;
-    long taskID=-1;
+    long devID=-1;
+    String devName;
     long proID = -1;
     int testOrder=-1;
     long recordID = -1;
     long itemID = -1;
-    long devID=-1;
     String dataVal;
     Date addtime = new Date();
 
@@ -32,22 +31,6 @@ public class DefaultData {
         this.devID = devID;
     }
 
-
-    public long getTestID() {
-        return testID;
-    }
-
-    public void setTestID(long testID) {
-        this.testID = testID;
-    }
-
-    public long getTaskID() {
-        return taskID;
-    }
-
-    public void setTaskID(long taskID) {
-        this.taskID = taskID;
-    }
 
     public List<Project> getProjects() {
         return projects;

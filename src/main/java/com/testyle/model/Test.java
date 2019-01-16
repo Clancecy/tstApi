@@ -14,12 +14,21 @@ public class Test {
     String builder;
     long leaderID=-1;
     String leader;
+    Date endtime;
     int status=-1;
     Date addtime=new Date();
 
     String taskRate;
 
     List<TestUser> testUserList;
+
+    public Date getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
+    }
 
     public long getTestID() {
         return testID;

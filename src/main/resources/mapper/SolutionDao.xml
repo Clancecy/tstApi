@@ -6,7 +6,10 @@
         <result property="soluName" column="soluName"></result>
         <result property="devTypeID" column="devTypeID"></result>
         <result property="builderID" column="builderID"></result>
+        <result property="coverID" column="coverID"></result>
+        <result property="coverName" column="coverName"></result>
         <result property="userRealName" column="userRealName"></result>
+        <result property="addtime" column="addtime"></result>
     </resultMap>
 
     <select id="selectByID" resultType="Solution" parameterType="long">
@@ -42,8 +45,8 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="soluID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into solution (soluName,devTypeID,builderID,addtime) values (#{soluName},
-        #{devTypeID},#{builderID},#{addtime})
+        INSERT into solution (soluName,devTypeID,coverID,coverName,builderID,addtime) values (#{soluName},
+        #{devTypeID},#{coverID},#{coverName},#{builderID},#{addtime})
     </insert>
     <delete id="delete" parameterType="long">
         delete
@@ -56,6 +59,8 @@
         set soluName  = #{soluName},
             devTypeID = #{devTypeID},
             builderID   = #{builderID},
+            coverID   = #{coverID},
+            coverName   = #{coverName},
             addtime   = #{addtime}
         where soluID = #{soluID}
     </update>
