@@ -52,6 +52,11 @@
                 $(".sidebar").addClass('toggle');
                 $("#side-menu").addClass('none-display');
             });
+            $("#report").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-frame-management/report-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
+            });
             $("#test").click(function () {
                 $("#page-wrapper").html('<object type="text/html" data="admin-test-management/test-list.html" width="100%" height="100%"></object>');
                 $(".sidebar").addClass('toggle');
@@ -109,6 +114,11 @@
             });
             $("#testReport").click(function () {
                 $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/report-solution-list.html" width="100%" height="100%"></object>');
+                $(".sidebar").addClass('toggle');
+                $("#side-menu").addClass('none-display');
+            });
+            $("#testanalyse").click(function () {
+                $("#page-wrapper").html('<object type="text/html" data="admin-solution-management/data-solution-list.html" width="100%" height="100%"></object>');
                 $(".sidebar").addClass('toggle');
                 $("#side-menu").addClass('none-display');
             });
@@ -174,7 +184,7 @@
                         <!-- /.nav-second-level -->
                     </li>
                     <li>
-                        <a href="#" id="report"><i class="fa fa-table fa-fw"></i> 报告管理</a>
+                        <a href="#" id="report"><i class="fa fa-file-text fa-fw"></i> 报告管理</a>
                     </li>
                     <li>
                         <a href="#" id="test"><i class="fa fa-table fa-fw"></i> 试验管理</a>
@@ -224,7 +234,7 @@
                                 <a id="testProject" href="#"> 任务模板</a>
                             </li>
                             <li>
-                                <a id="testyfenxi" href="#"> 数据分析模板</a>
+                                <a id="testanalyse" href="#"> 数据分析模板</a>
                             </li>
 
                         </ul>

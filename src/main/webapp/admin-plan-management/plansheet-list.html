@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -55,17 +55,15 @@
                 }else if(planList[i].status === 1){
                     planList[i].stateName = '已完成';
                 }else if(planList[i].status === 2){
-                    planList[i].stateName = '已完成';
+                    planList[i].stateName = '审核中';
                 }
             }
             console.log(planList);
             // console.log(sheetList);
             var planSheetInfo;
-            var tableHeight;
             var station,cycle,manager,plan;
 
             $(".container-fluid").css("height", $(window).height()+"px");
-            tableHeight = ($(".container-fluid").height-15)/2 + "px";
             Vue.component('treeselect', VueTreeselect.Treeselect);
 
             station = new Vue({
@@ -251,9 +249,21 @@
                 $("#id").val(planSheetInfo.planDanID);
                 $("#planNumber").val(planSheetInfo.planDanNumber);
                 $("#planTime").val(_getDate(planSheetInfo.addtime));
-                station.setValue(planSheetInfo.staID);
-                cycle.setValue(planSheetInfo.cycType);
-                manager.setValue(planSheetInfo.leaderID);
+                if(planSheetInfo.staID != -1){
+                    station.setValue(planSheetInfo.staID);
+                }else{
+                    station.setValue(null);
+                }
+                if(planSheetInfo.cycType != -1){
+                    cycle.setValue(planSheetInfo.cycType);
+                }else{
+                    cycle.setValue(null);
+                }
+                if(planSheetInfo.leaderID != -1){
+                    manager.setValue(planSheetInfo.leaderID);
+                }else{
+                    manager.setValue(null);
+                }
                 var option = {
                     'planDanID': $("#id").val()
                 };
@@ -300,8 +310,10 @@
             $("#saveplansheet").click(function () {
                 if(!planSheetInfo){
                     alert("请先选择计划单！");
-                }else {
-                    //发送delplan请求
+                }else if(planSheetInfo.status === 1) {
+                    alert("已完成计划单不能修改");
+                }else{
+                        //发送delplan请求
                     console.log(testTable.data());
                     var testIDs = new Array();
                     var counter = 0;
@@ -327,7 +339,6 @@
                         alert(res.message);
                     }
                 }
-
             });
 
             $("#exportplan").click(function () {
@@ -476,8 +487,8 @@
         </div>
         <button class="btn btn-danger float-right" id="delplansheet">删除计划单</button>
         <button class="btn btn-primary float-right btn-margin" id="addplansheet">新建计划单</button>
-        <div class="float-right btn-margin title-8">
-            <input type="checkbox" id="filter">只显示未完成</label>
+        <div class="float-right btn-margin checkbox">
+            <input type="checkbox" id="filter">只显示未完成</input>
         </div>
 
     </div>

@@ -18,7 +18,6 @@
     <script src="../js/respond/respond.min.js"></script>
     <script src="../js/img/jqthumb.min.js"></script>
     <script src="../lightbox2/js/lightbox.min.js"></script>
-    <script src="../utils/pdfJS/build/pdf.js"></script>
     <script src="../videoJS/video.min.js"></script>
     <script src="../audioJS/js/vpplayer.js"></script>
     <script src="../js/vue/vue.min.js"></script>
@@ -27,26 +26,19 @@
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
-            $("#taskData").html('<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=../../../pdfFile/ss.pdf" width="100%" height="100%"></iframe>');
-
             var task = getUrl();
             var options = {
                 'taskID': task['taskID']
             };
             var taskDetail = getTaskDetail(options);
             if(taskDetail.planDan.cycType === 0){
-                taskDetail.planDan.cycName = '无周期';
+                taskDetail.planDan.cycName = '临时性计划';
             }else if(taskDetail.planDan.cycType === 1){
-                taskDetail.planDan.cycName = '一周';
-            }else if(taskDetail.planDan.cycType === 2){
-                taskDetail.planDan.cycName = '一个月';
-            }else if(taskDetail.planDan.cycType === 3){
-                taskDetail.planDan.cycName = '一季度';
-            }else if(taskDetail.planDan.cycType === 4){
-                taskDetail.planDan.cycName = '一年';
+                taskDetail.planDan.cycName = '周期性计划';
             }
             taskDetail.addDate = _getDate(taskDetail.addtime);
             console.log(taskDetail);
+
             new Vue({
                 el: '#tasktitle',
                 data: {
@@ -80,6 +72,13 @@
                     testUser: '王五'
                 }
             });
+
+            var html = '';
+            html += '<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=';
+            html += encodeURIComponent(getResearchUrl()+'/project/getPdf?proID='+taskDetail.taskID);
+            html += '" width="100%" height="365px" security="restricted" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>';
+            console.log(html);
+            $("#taskData").html(html);
             $("#img-task").css('height',$("#img-task").width() + 'px');
             $("#img-task .col-xs-4").css('height',$("#img-task .col-xs-4").width() + 'px');
             $("#rec-task").css('height',$("#rec-task").width() + 'px');

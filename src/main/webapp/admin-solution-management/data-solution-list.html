@@ -29,7 +29,297 @@
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
+            var dSolutionList = getDataSolutionList();
+            var devTypeList = getDevTypeList();
+            for (i in dSolutionList){
+                var items = new Array();
+                var itemid = new Array();
+                for(j in dSolutionList[i].analysisItemList){
+                    items.push(dSolutionList[i].analysisItemList[j].itemName);
+                    itemid.push(dSolutionList[i].analysisItemList[j].itemID);
+                }
+                dSolutionList[i].itemNames = items;
+                dSolutionList[i].itemIDs = itemid;
+                dSolutionList[i].addDate = _getDate(dSolutionList[i].addtime);
+            }
+            console.log(dSolutionList);
+            console.log(devTypeList);
+            var proList,itemList;
+            var seldevtype,selproject,selitem;
+            var dSolutionInfo;
 
+            Vue.component('treeselect', VueTreeselect.Treeselect);
+            seldevtype = new Vue({
+                el: '#seldevType',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: devTypeList,
+                    normalizer(node) {
+                        return {
+                            id: node.typeID,
+                            label: node.typeName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            selproject = new Vue({
+                el: '#selproject',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.proID,
+                            label: node.proName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            selitem = new Vue({
+                el: '#selitem',
+                data: {
+                    // define default value
+                    value: null,
+                    // define options
+                    options: null,
+                    normalizer(node) {
+                        return {
+                            id: node.itemID,
+                            label: node.itemName,
+                            children: node.children
+                        }
+                    }
+                },
+                methods: {
+                    async setOptions(newOptions){
+                        this.options = newOptions;
+                    },
+                    async setValue(newValue) {
+                        this.value = newValue;
+                    }
+                }
+            });
+            seldevtype.$watch('value', function () {
+                if(!seldevtype.value) {
+                    alert('请选择设备类型');
+                }else {
+                    var options = {
+                        'devTypeID': seldevtype.value
+                    };
+                    proList = getdevTypeProjectList(options);
+                    console.log(proList);
+                    selproject.setOptions(proList);
+                    // selproject.setValue(null);
+                }
+
+            });
+            selproject.$watch('value', function () {
+                if(!selproject.value){
+                    alert('请先选择项目');
+                }else{
+                    var options = {
+                        'proID': selproject.value
+                    };
+                    itemList = getProItemList(options);
+                    console.log(itemList);
+                    selitem.setOptions(itemList);
+                }
+            });
+
+            $(".container-fluid").css("height", $(window).height()+"px");
+
+            var table = $("#table").DataTable({
+                order: [[ 5, "desc" ]],
+                select: true,
+                scrollY: '300px',
+                scrollCollapse: "true",
+                language: {
+                    "sProcessing": "处理中...",
+                    "sLengthMenu": "显示 _MENU_ 项结果",
+                    "sZeroRecords": "没有匹配结果",
+                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix": "",
+                    "sSearch": "搜索:",
+                    "sUrl": "",
+                    "sEmptyTable": "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands": ",",
+                    "oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上页",
+                        "sNext": "下页",
+                        "sLast": "末页"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": 以升序排列此列",
+                        "sSortDescending": ": 以降序排列此列"
+                    }
+                },
+                data: dSolutionList,
+                columnDefs:[{"targets":0,"visible":false}],
+                columns:[
+                    {data: "analyID", title: "模板编号", defaultContent:""},
+                    {data: "analyName", title: "模板名称", defaultContent:""},
+                    {data: "typeName", title: "设备类型", defaultContent:""},
+                    {data: "proName", title: "项目名称", defaultContent:""},
+                    {data: "itemNames", title: "条目组", defaultContent:""},
+                    {data: "addDate", title: "创建时间", defaultContent:""},
+                ]
+            });
+
+            $('#table tbody').on('click', 'tr',function() {
+                $(this).toggleClass('selected').siblings().removeClass('selected');
+                var id = table.row(this).data().analyID;
+                console.log(id);
+                var options = {
+                    'analyID': parseInt(id)
+                };
+                dSolutionInfo = getDataSolutionInfo(options);
+                console.log(dSolutionInfo);
+
+                var itemkk = new Array();
+                for(j in dSolutionInfo.analysisItemList){
+                    itemkk.push(dSolutionInfo.analysisItemList[j].itemID);
+                }
+                dSolutionInfo.itemIDs = itemkk;
+
+                $("#id").val(id);
+                $("#name").val(dSolutionInfo.analyName);
+                if(dSolutionInfo.typeID != -1){
+                    seldevtype.setValue(dSolutionInfo.typeID);
+                    var optiondev = {
+                        'devTypeID': seldevtype.value
+                    };
+                    proList = getdevTypeProjectList(optiondev);
+                    console.log(proList);
+                    selproject.setOptions(proList);
+                }
+
+                if(dSolutionInfo.proID != -1){
+                    selproject.setValue(dSolutionInfo.proID);
+                    var optionpro = {
+                        'proID': selproject.value
+                    };
+                    itemList = getProItemList(optionpro);
+                    console.log(itemList);
+                    selitem.setOptions(itemList);
+                }
+
+                if(dSolutionInfo.itemIDs){
+                    selitem.setValue(dSolutionInfo.itemIDs);
+                }
+            });
+
+            $("#addSolution").click(function () {
+                var optiondata = {
+
+                };
+                var res = addDataSolution(optiondata);
+                if(res.code === 101){
+                    alert(res.message);
+                    window.location.reload();
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
+
+            $("#updaterSolution").click(function () {
+                if(!$("#id").val()){
+                    alert("请选择模板");
+                }else if(!$("#name").val()){
+                    alert("请填写模板名称");
+                }else if(!seldevtype.value){
+                    alert("请选择设备类型");
+                }else if(!selproject.value){
+                    alert("请选择项目");
+                }else if(!selitem.value){
+                    alert("请选择条目");
+                }else{
+                    var devtype,project;
+                    var itemsm = new Array();
+
+                    devtype = getDataDevType(seldevtype.value,devTypeList);
+                    console.log(devtype);
+
+                    for(i in proList){
+                        if(selproject.value === proList[i].proID){
+                            project = proList[i].proName;
+                        }
+                    }
+                    var item = selitem.value;
+
+                    for(i in item){
+                        console.log(item[i]);
+                        itemsm[i] = getDataItems(item[i],itemList);
+                    }
+                    var options = {
+                        'analyID': $("#id").val(),
+                        'analyName': $("#name").val(),
+                        'typeID': seldevtype.value,
+                        'typeName': devtype,
+                        'proID': selproject.value,
+                        'proName': project,
+                        'items': JSON.stringify(itemsm)
+                    };
+                    var res = updateDataSolution(options);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+
+            $("#delrSolution").click(function () {
+                if(!$("#id").val()){
+                    alert("请选择模板");
+                }else{
+                    var optionData = {
+                        'analyID': $("#id").val()
+                    };
+                    var res  = delDataSolution(optionData);
+                    if(res.code === 101){
+                        alert(res.message);
+                        window.location.reload();
+                    }else if(res.code === 5004){
+                        alert(res.message);
+                        window.location.href = '../admin-login-register/login.html'
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
         });
     </script>
 </head>
@@ -40,7 +330,7 @@
         <div class="title col-xs-6 col-sm-6">
             数据分析模板列表
         </div>
-        <button class="btn btn-primary float-right" id="prerSolution">新建分析模板</button>
+        <button class="btn btn-primary float-right" id="addSolution">新建分析模板</button>
 
     </div>
     <div class="row simple-bacc">
@@ -59,12 +349,12 @@
         <div class="col-xs-12 col-sm-6">
             <div class="input-group input-class">
                 <span class="input-group-addon" id="editpsolutionName">模板名称</span>
-                <input id="name" type="text" class="form-control" placeholder="模板名称" aria-describedby="editpsolutionName" readonly>
+                <input id="name" type="text" class="form-control" placeholder="模板名称" aria-describedby="editpsolutionName">
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
             <div class="input-group input-class">
-                <span class="input-group-addon" id="editprojectName">设备类型</span>
+                <span class="input-group-addon" id="editdevTypeName">设备类型</span>
                 <treeselect
                         v-model="value"
                         :options="options"
@@ -72,15 +362,15 @@
                         :disable-branch-nodes="true"
                         :show-count="true"
                         placeholder="请选择"
-                        id="proname"
-                        aria-describedby="editprojectName"
+                        id="seldevType"
+                        aria-describedby="editdevTypeName"
                 />
                 <pre class="result">{{ value }}</pre>
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
             <div class="input-group input-class">
-                <span class="input-group-addon" id="editseltestsolution">模板封面</span>
+                <span class="input-group-addon" id="editselproject">项目名称</span>
                 <treeselect
                         v-model="value"
                         :options="options"
@@ -88,8 +378,25 @@
                         :disable-branch-nodes="true"
                         :show-count="true"
                         placeholder="请选择"
-                        id="cover"
-                        aria-describedby="editseltestsolution"
+                        id="selproject"
+                        aria-describedby="editselproject"
+                />
+                <pre class="result">{{ value }}</pre>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12">
+            <div class="input-group input-class">
+                <span class="input-group-addon" id="editselitems">比对条目</span>
+                <treeselect
+                        v-model="value"
+                        :multiple="true"
+                        :options="options"
+                        :normalizer="normalizer"
+                        :disable-branch-nodes="true"
+                        :show-count="true"
+                        placeholder="请选择"
+                        id="selitem"
+                        aria-describedby="editselitems"
                 />
                 <pre class="result">{{ value }}</pre>
             </div>
@@ -97,14 +404,11 @@
     </div>
     <div class="row info-foot simple-bacc">
         <div class="col-xs-12">
-            <div class="col-xs-4">
+            <div class="col-xs-6">
                 <button class="btn btn-primary col-xs-8 col-xs-push-2" id="updaterSolution">保存更改</button>
             </div>
-            <div class="col-xs-4">
+            <div class="col-xs-6">
                 <button class="btn btn-primary col-xs-8 col-xs-push-2" id="delrSolution">删除模板</button>
-            </div>
-            <div class="col-xs-4">
-                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="preview">预览封面</button>
             </div>
         </div>
     </div>

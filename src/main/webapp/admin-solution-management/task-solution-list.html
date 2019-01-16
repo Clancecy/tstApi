@@ -29,7 +29,7 @@
     <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
-            var tSolutionList = getTaskSolution();
+            var tSolutionList = getTaskSolutionList();
             for(i in tSolutionList){
                 tSolutionList[i].addDate = _getDate(tSolutionList[i].addtime);
             }
@@ -98,13 +98,6 @@
                 if(!$("#id").val()){
                     alert("请先选择模板");
                 }else{
-                    var options = {
-                        'path': $("#url").val(),
-                        'fname': $("#name").val()
-                    };
-                    var res = projectReview(options);
-                    if(res.code === 101){
-                        alert(res.message);
 
                         $("#preview").css("display","block");
                         var left = $(window).width()/2 -  $("#preview").width()/2;
@@ -113,17 +106,12 @@
                         $("#preview").css("top",top + "px");
 
 
-                        var result = res.data;
-
-                        var furl = encodeURIComponent('http://192.168.137.140/ES'+result);
-                        console.log(furl);
-                        $(".panel-body").html('<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file='+furl+'" width="100%" height="365px"></iframe>');
-                    }else if(res.code === 5004){
-                        alert(res.message);
-                        window.location.href = '../admin-login-register/login.html'
-                    }else{
-                        alert(res.message);
-                    }
+                        var html = '';
+                        html += '<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=';
+                        html += encodeURIComponent(getResearchUrl()+'/project/getPdf?proID='+$("#id").val());
+                        html += '" width="100%" height="365px" security="restricted" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>';
+                        console.log(html);
+                        $(".panel-body").html(html);
 
                 }
             });
