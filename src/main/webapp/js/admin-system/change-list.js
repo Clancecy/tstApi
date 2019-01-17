@@ -1,5 +1,9 @@
-var userurl = 'http://127.0.0.1:80';
-var researchurl = 'http://127.0.0.1:8080/ES';
+var userurl = 'http://47.98.136.246:80';
+var researchurl = 'http://47.98.136.246/ES';
+
+
+// var userurl = 'http://192.168.137.140:80';
+// var researchurl = 'http://192.168.137.140:8080/ES';
 
 
 
@@ -828,6 +832,24 @@ function delDataSolution(options) {
         async:false,
         crossDomain: true,
         url: userurl+'/analysis/delete',
+        data: options,
+        success: function (data) {
+            res = JSON.parse(data);
+        }
+    });
+    return res;
+}
+
+function addOutput(options) {
+    var res = '';
+    $.ajax({
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        async:false,
+        crossDomain: true,
+        url: userurl+'/device/addOut',
         data: options,
         success: function (data) {
             res = JSON.parse(data);
