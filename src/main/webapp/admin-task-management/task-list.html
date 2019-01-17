@@ -43,9 +43,9 @@
                 if(taskList[i].status === 0){
                     taskList[i].staName = '进行中';
                 }else if(taskList[i].status === 1){
-                    taskList[i].staName = '已终止';
-                }else if(taskList[i].status === 2){
                     taskList[i].staName = '已完成';
+                }else if(taskList[i].status === 2){
+                    taskList[i].staName = '审核中';
                 }
                 var taskNames = '';
                 for(index in taskList[i].taskUserList){
@@ -239,6 +239,11 @@
                 $("#taskid").val(id);
                 $("#taskNumber").val(taskInfo.taskNumber);
                 $("#addDate").val(_getDate(taskInfo.addtime));
+                if(taskInfo.recordNum === -1){
+                    $("#recordNumber").val('1');
+                }else{
+                    $("#recordNumber").val(taskInfo.recordNum);
+                }
                 if(taskInfo.devID != -1){
                     device.setValue(taskInfo.devID);
                     var optiondevice = {
@@ -297,11 +302,21 @@
             $("#updateTask").click(function () {
                 if(!$("#taskid").val()){
                     alert("请选择任务单");
+                }else if(!$("#recordNumber").val()){
+                    alert("请填写记录数,若没有,请填入1");
                 }else{
+                    var pro = '';
+                    for(i in proList){
+                        if(project.value === proList[i].proID){
+                            pro = proList[i].proName;
+                        }
+                    }
                     var options = {
                         'taskID': $("#taskid").val(),
                         'devID': device.value,
                         'proID': project.value,
+                        'proName': pro,
+                        'recordNum': $("#recordNumber").val(),
                         'userIDs': JSON.stringify(members.value),
                         'leaderID': manager.value
                     };
@@ -354,7 +369,7 @@
             <div class="col-xs-12 col-sm-6">
                 <input type="hidden" id="taskid">
                 <div class="input-group input-class">
-                    <span class="input-group-addon" id="edittaskNumber">任务单编号</span>
+                    <span class="input-group-addon" id="edittaskNumber">任务编号</span>
                     <input id="taskNumber" type="text" class="form-control" placeholder="任务单编号" aria-describedby="edittaskNumber" readonly>
                 </div>
             </div>
@@ -396,6 +411,12 @@
                     <pre class="result">{{ value }}</pre>
                 </div>
             </div>
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-group input-class">
+                    <span class="input-group-addon" id="editrecordNumber">记录数目</span>
+                    <input id="recordNumber" type="text" class="form-control" placeholder="记录数" aria-describedby="editrecordNumber">
+                </div>
+            </div>
             <div class="col-xs-12 col-sm-6">
                 <div class="input-group input-class">
                     <span class="input-group-addon" id="edittaskmembers">试验人员</span>
@@ -415,7 +436,7 @@
             </div>
             <div class="col-xs-12 col-sm-6">
                 <div class="input-group input-class">
-                    <span class="input-group-addon" id="edittaskmanager">负责人</span>
+                    <span class="input-group-addon" id="edittaskmanager">负责人员</span>
                     <treeselect
                             v-model="value"
                             :options="options"

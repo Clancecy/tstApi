@@ -31,6 +31,7 @@
     <script src="../js/admin-system/get-list.js"></script>
     <script src="../js/admin-system/change-list.js"></script>
     <script src="../js/admin-system/default-attribute.js"></script>
+    <script src="../js/admin-system/ProjectTableUtil.js"></script>
     <script>
         $(function () {
             var devList = getDevList();
@@ -367,6 +368,16 @@
                 }
             });
 
+            $("#addoutput").click(function () {
+                $("#addoutplant").css("display","block");
+                var left = $(window).width()/2 -  $("#addoutplant").width()/2;
+                var top = $(window).height()/2 -  $("#addoutplant").height()/2;
+                $("#addoutplant").css("left",left + "px");
+                $("#addoutplant").css("top",top + "px");
+
+                var tbody = document.getElementById('outtable');
+                showProRecords(tbody,)
+            });
 
         });
     </script>
@@ -601,6 +612,22 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
             </div>
         </div>
+    </div>
+</div>
+<div class="panel panel-primary" id="addoutplant">
+    <div class="panel-heading">
+        <div class="panel-title">设备出厂值</div>
+    </div>
+    <div class="panel-body">
+        <table>
+            <tbody id="outtable">
+
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary float-right" id="cancel-btn">取消</button>
+        <button class="btn btn-primary float-right" id="save-btn">保存</button>
     </div>
 </div>
 </body>
