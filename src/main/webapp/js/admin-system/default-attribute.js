@@ -1,9 +1,9 @@
-// var userurl = 'http://47.98.136.246:80';
-// var researchurl = 'http://47.98.136.246/ES';
+var userurl = 'http://47.98.136.246:80';
+var researchurl = 'http://47.98.136.246/ES';
 
 
-var userurl = 'http://192.168.137.140:80';
-var researchurl = 'http://192.168.137.140:8080/ES';
+// var userurl = 'http://192.168.137.140:80';
+// var researchurl = 'http://192.168.137.140:8080/ES';
 
 
 
