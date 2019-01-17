@@ -106,7 +106,7 @@ body{
     padding-top: 10px;
 }
 
-#importaddplan, #exportaddplan, #addplan, #importaddtest, #exportaddtest, #edittask, #addtask, #addreportSolu{
+#importaddplan, #exportaddplan, #addplan, #importaddtest, #exportaddtest, #edittask, #addtask, #addreportSolu, #addoutplant{
     width: 400px;
     min-height: 172px;
     position: absolute;
