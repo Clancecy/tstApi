@@ -1,24 +1,11 @@
+// var userurl = 'http://47.98.136.246:80';
+// var researchurl = 'http://47.98.136.246/ES';
+
+
 var userurl = 'http://192.168.137.140:80';
 var researchurl = 'http://192.168.137.140:8080/ES';
 
 
-function defaultmems(aTd,task) {
-    var names = new Array();
-    for(index in task.taskUserList){
-        names.push(task.taskUserList[index].userID);
-    }
-    return names;
-}
-
-function selectTask(aTd,taskList) {
-    var task;
-    for(index in taskList){
-        if(taskList[index].taskID === parseInt(aTd[0].innerHTML)){
-            task = taskList[index];
-        }
-    }
-    return task;
-}
 
 function initUpload(staid) {
     $("#uploadimg").fileinput('destroy').fileinput({
@@ -47,7 +34,7 @@ function reNewStation(addressInfo) {
     var html = '';
     for(i in addressInfo.fileList){
         html +=
-        '<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 file-block">\n' +
+        '<div class="col-xs-6 col-sm-3 col-md-2 col-lg-2 file-block">\n' +
         '                            <input class="fileid" type="hidden" value="'+addressInfo.fileList[i].fileID+'" />\n' +
         '                            <div class="col-xs-12 info-file">\n' +
         '                                        <a href="'+addressInfo.fileList[i].url+'" data-lightbox="image" data-title="'+addressInfo.fileList[i].remark+'">\n' +
@@ -58,7 +45,7 @@ function reNewStation(addressInfo) {
         '                                '+addressInfo.fileList[i].fileName+'\n' +
         '                            </div>\n' +
         '                            <div class="col-xs-12 info-btn">\n' +
-        '                                <a class="btn btn-danger">删除</a>\n' +
+        '                                <a class="btn btn-danger btn-block">删除</a>\n' +
         '                            </div>\n' +
         '                        </div>';
     }
@@ -128,7 +115,7 @@ function reNewDevice(devInfo, adselDevType) {
     for(i in devInfo.fileList){
         console.log(userurl+'/device/download?devID='+devInfo.fileList[i].devID+'&fileID='+devInfo.fileList[i].fileID);
         html +=
-            '<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 file-block">\n' +
+            '<div class="col-xs-6 col-sm-3 col-md-2 col-lg-2 file-block">\n' +
             '                            <input class="fileid" type="hidden" value="'+devInfo.fileList[i].fileID+'" />\n' +
             '                            <div class="col-xs-12 info-file">\n' +
             '                                <img src="../images/file.jpg" class="jqthumb2 info-img" alt="image">\n' +
@@ -137,8 +124,8 @@ function reNewDevice(devInfo, adselDevType) {
             '                                '+devInfo.fileList[i].fileName+'\n' +
             '                            </div>\n' +
             '                            <div class="col-xs-12 info-btn">\n' +
-            '                                <a href="'+userurl+'/device/download?devID='+devInfo.fileList[i].devID+'&fileID='+devInfo.fileList[i].fileID+'" download="'+devInfo.fileList[i].fileName+'" class="btn btn-primary">下载</a>\n' +
-            '                                <a class="btn btn-danger" style="float: right;">删除</a>\n' +
+            '                                <a href="'+userurl+'/device/download?devID='+devInfo.fileList[i].devID+'&fileID='+devInfo.fileList[i].fileID+'" download="'+devInfo.fileList[i].fileName+'" class="btn btn-primary btn-sm">下载</a>\n' +
+            '                                <a class="btn btn-danger btn-sm float-right">删除</a>\n' +
             '                            </div>\n' +
             '                        </div>';
     }
