@@ -81,9 +81,9 @@ public class DeviceController {
                 Tag tag = new Tag();
                 tag.setTagType(1);
                 tag.setTagName(tags[i]);
-                tag.setpTagID(0);
                 List<Tag> tagList = tagService.select(tag);
                 if (tagList.size() == 0) {
+                    tag.setpTagID(0);
                     int ic = tagService.insert(tag);
                     TagDevice tagDevice = new TagDevice();
                     tagDevice.setDevID(devID);

@@ -1,6 +1,7 @@
-var userurl = 'http://47.98.136.246:80';
-var researchurl = 'http://47.98.136.246/ES';
-
+// var userurl = 'http://47.98.136.246:80';
+// var researchurl = 'http://47.98.136.246/ES';
+var userurl = 'http://127.0.0.1:80';
+var researchurl = 'http://127.0.0.1:8080/ES';
 function getUrl() {
     var url = location.search; //获取url中"?"符后的字串
     var theRequest = new Object();

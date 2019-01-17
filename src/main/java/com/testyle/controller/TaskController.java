@@ -92,6 +92,7 @@ public class TaskController {
     @RequestMapping("/update")
     public void updateTask(Task task, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(charact);
+        System.out.println(JSON.toJSONString(task));
         ResContent resContent = new ResContent();
         List<Long> userIDs = JSON.parseArray(request.getParameter("userIDs"), Long.class);
         if (task.getTaskID() == -1) {
@@ -104,6 +105,8 @@ public class TaskController {
             t.setDevID(task.getDevID());
             t.setProID(task.getProID());
             t.setLeaderID(task.getLeaderID());
+            t.setProName(task.getProName());
+            t.setRecordNum(task.getRecordNum());
             int count = taskService.update(t);
             if (count > 0) {
                 taskUserService.delete(task.getTaskID());
