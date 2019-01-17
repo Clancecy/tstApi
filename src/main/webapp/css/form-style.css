@@ -90,6 +90,9 @@ body{
     padding: 10px 0 10px 0;
     border-bottom: 1px solid #EAEAEA;
 }
+.info-title{
+    text-align: center;
+}
 .info-body{
     margin: 0;
     padding: 10px 0 10px 0;
@@ -107,7 +110,7 @@ body{
 }
 
 #importaddplan, #exportaddplan, #addplan, #importaddtest, #exportaddtest, #edittask, #addtask, #addreportSolu, #addoutplant{
-    width: 400px;
+    width: 500px;
     min-height: 172px;
     position: absolute;
     background-color: white;

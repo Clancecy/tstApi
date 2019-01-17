@@ -4,15 +4,15 @@ var mColCount = 0; // 表格最大列数
 var mClickAble = false;
 
 // 数据
-var mProFullData = null;
+var mproFullRecord = null;
 var mDictData = null; // 记录表格'rowIndex-cellIndex'对应的chunkIndex, recordIndex, itemIndex
 
 /**
  * 显示任务数据
  */
-function showProRecords(tbody, proFullData, clickable) {
+function showProRecords(tbody, proFullRecord, clickable) {
     mTbody = tbody || mTbody;
-    mProFullData = proFullData || mProFullData;
+    mproFullRecord = mproFullRecord || proFullRecord;
     if (null == clickable || false == clickable) {
         mClickAble = false;
     } else {
@@ -20,7 +20,7 @@ function showProRecords(tbody, proFullData, clickable) {
     }
 
     // 错误处理
-    if (null == mProFullData || null == mProFullData.proRecord) {
+    if (null == mproFullRecord ) {
         mTbody.innerText = "项目数据为空或者请求错误";
         return;
     }
@@ -29,9 +29,9 @@ function showProRecords(tbody, proFullData, clickable) {
     mTbody.innerHTML = '';
     mDictData = new Array();
 
-    var proRecord = mProFullData.proRecord;
+    var proRecord = mproFullRecord;
     countMaxCol(proRecord);
-    document.getElementById('thProHead').colSpan = mColCount;
+    // document.getElementById('thProHead').colSpan = mColCount;
     for (var chunkIndex = 0; chunkIndex < proRecord.length; chunkIndex++) {
         var chunk = proRecord[chunkIndex];
         var record = chunk.records[0];
@@ -45,8 +45,9 @@ function showProRecords(tbody, proFullData, clickable) {
 
     if (mClickAble) {
         // 表格点击事件委托
-        $(mTbody).click(function (e) {
-            onTableClick(e);
+        $(mTbody).on('click',function(ev){
+            var ev = ev || event;
+            onTableClick(ev);
         });
     }
 }
@@ -201,8 +202,19 @@ function showItemValue(td, item) {
         var num = new Number(item.itemVal);
         td.innerText = num.toFixed(2);
     } else {
-        td.innerText = item.itemVal;
+        td.innerText= item.itemVal;
         td.style.backgroundColor = '#eee';
+        $(td).editable({
+            validate: function (value) { //字段验证
+                if (!$.trim(value)) {
+                    return '不能为空';
+                }else {
+                    item.itemVal = value;
+
+                    // showProRecords();
+                }
+            }
+        });
         // td.style.fontWeight = 'bold';
     }
 }
@@ -222,11 +234,18 @@ function setDictData(rowIndex, cellIndex, chunkIndex, recordIndex, itemIndex) {
  * 表格点击事件
  */
 function onTableClick(e) {
+    // console.log(e.target);
     var td = e.target;
-    var tr = e.target.parentNode;
-    var tdData = mDictData[tr.rowIndex + '-' + td.cellIndex];
-    var chunk = mProFullData.proRecord[tdData['chunkIndex']];
-    var record = tdData['recordIndex'] == null ? null : chunk.records[tdData['recordIndex']];
-    var item = tdData['itemIndex'] == null ? null : record.itemList[tdData['itemIndex']];
-    var mode = mProFullData.proModes[0];
+    if (td.tagName === 'TD'){
+        var tr = e.target.parentNode;
+        var tdData = mDictData[tr.rowIndex + '-' + td.cellIndex];
+        var chunk = mproFullRecord[tdData['chunkIndex']];
+        var record = tdData['recordIndex'] == null ? null : chunk.records[tdData['recordIndex']];
+        var item = tdData['itemIndex'] == null ? null : record.itemList[tdData['itemIndex']];
+    }
+    // console.log(item);
+}
+
+function getFullRecords() {
+    return mproFullRecord;
 }

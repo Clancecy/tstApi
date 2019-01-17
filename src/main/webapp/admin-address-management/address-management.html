@@ -38,15 +38,16 @@
             var lng,lat;
             var tagtree,ztree;
 
-            $(document.body).css({
-                "overflow-x":"hidden",
-                "overflow-y":"hidden"
-            });
+            // $(document.body).css({
+            //     "overflow-x":"hidden",
+            //     "overflow-y":"hidden"
+            // });
             $(".container-fluid").css("height",$(window).height()+"px");
             $(".pan-right").css('height',$(window).height()-60 +"px");
             $(".pan-left").css("height", $(window).height()-60+"px");
+            $("#sta-menu").css("height", ($(window).height()-160)/2+"px");
+            $("#tag-menu").css("height", ($(window).height()-160)/2+"px");
             $("#img-body").css("height", $('.pan-right').height()-362+"px");
-
             $("img").jqthumb({
                 classname      : 'jqthumb',             // class name. DEFUALT IS jqthumb
                 width          : '207px',                // new image width after cropping. DEFAULT IS 100px.
@@ -55,6 +56,23 @@
                 zoom           : '1',//缩放比例
                 method         : 'auto',
             });
+
+            window.onresize = function () {
+                $(".container-fluid").css("height",$(window).height()+"px");
+                $(".pan-right").css('height',$(window).height()-60 +"px");
+                $(".pan-left").css("height", $(window).height()-60+"px");
+                $("#sta-menu").css("height", ($(window).height()-160)/2+"px");
+                $("#tag-menu").css("height", ($(window).height()-160)/2+"px");
+                $("#img-body").css("height", $('.pan-right').height()-362+"px");
+                $("img").jqthumb({
+                    classname      : 'jqthumb',             // class name. DEFUALT IS jqthumb
+                    width          : '207px',                // new image width after cropping. DEFAULT IS 100px.
+                    height         : '44px',                // new image height after cropping. DEFAULT IS 100px.
+                    source         : 'src',
+                    zoom           : '1',//缩放比例
+                    method         : 'auto',
+                });
+            };
 
 
             var setting = {
@@ -289,14 +307,14 @@
                         <button class="btn btn-primary col-xs-6 col-xs-push-3" id="addstation">新增站点</button>
                     </div>
                 </div>
-                <div class="row" id="dialogTree-title">站点目录</div>
-                <div class="row">
+                <div class="row no-margin" id="dialogTree-title">站点目录</div>
+                <div class="row no-margin scroll-me" id="sta-menu">
                     <div class=" col-xs-12 col-sm-12">
                         <ul id="stationTree" class="ztree"></ul>
                     </div>
                 </div>
-                <div class="row" id="tagTree-title">标签目录</div>
-                <div class="row">
+                <div class="row no-margin" id="tagTree-title">标签目录</div>
+                <div class="row no-margin scroll-me" id="tag-menu">
                     <div class=" col-xs-12 col-sm-12">
                         <ul id="tagTree" class="ztree"></ul>
                     </div>

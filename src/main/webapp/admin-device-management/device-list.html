@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/ztree/metroStyle/metroStyle.css">
     <link rel="stylesheet" href="../swiper/css/swiper.min.css">
     <link rel="stylesheet" href="../lightbox2/css/lightbox.min.css">
+    <link rel="stylesheet" href="../x-editable/bootstrap3-editable/css/bootstrap-editable.css">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="../bootstrap-fileinput/css/fileinput.min.css">
     <link rel="stylesheet" href="../js/vue/vue-treeselect/dist/vue-treeselect.min.css">
@@ -21,6 +22,7 @@
     <script src="../js/respond/respond.min.js"></script>
     <script src="../js/vue/vue.min.js"></script>
     <script src="../js/vue/vue-treeselect/dist/vue-treeselect.min.js"></script>
+    <script src="../x-editable/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="../js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
     <script src="../js/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <script src="../bootstrap-fileinput/js/fileinput.min.js"></script>
@@ -67,14 +69,15 @@
                 }
             });
 
-            $(document.body).css({
-                "overflow-x":"hidden",
-                "overflow-y":"hidden"
-            });
+            // $(document.body).css({
+            //     "overflow-x":"hidden",
+            //     "overflow-y":"hidden"
+            // });
             $(".container-fluid").css("height", $(window).height()+"px");
             $(".pan-left").css("height", $(window).height()-60+"px");
-            $("#scroll").css("height", $('.pan-left').height()-55+"px");
-
+            $("#dev-menu").css("height", ($(window).height()-160)/2+"px");
+            $("#tag-menu").css("height", ($(window).height()-160)/2+"px");
+            $("#scroll").css("height", $('.pan-left').height()-111+"px");
             $('.form_date').datetimepicker({
                 language:  'zh_CN',
                 weekStart: 1,
@@ -102,6 +105,40 @@
                 method         : 'auto',
             });
 
+            window.onresize = function(){
+                $(".container-fluid").css("height", $(window).height()+"px");
+                $(".pan-left").css("height", $(window).height()-60+"px");
+                $("#dev-menu").css("height", ($(window).height()-170)/2+"px");
+                $("#tag-menu").css("height", ($(window).height()-170)/2+"px");
+                $("#scroll").css("height", $('.pan-left').height()-111+"px");
+
+                $('.form_date').datetimepicker({
+                    language:  'zh_CN',
+                    weekStart: 1,
+                    todayBtn:  1,
+                    autoclose: 1,
+                    todayHighlight: 1,
+                    startView: 2,
+                    minView: 2,
+                    forceParse: 0,
+                });
+                $(".devinfo").jqthumb({
+                    classname      : 'jqthumb1',             // class name. DEFUALT IS jqthumb
+                    width          : '174px',                // new image width after cropping. DEFAULT IS 100px.
+                    height         : '174px',               // new image height after cropping. DEFAULT IS 100px.
+                    source         : 'src',
+                    zoom           : '1',//缩放比例
+                    method         : 'auto',
+                });
+                $(".info-img").jqthumb({
+                    classname      : 'jqthumb2',             // class name. DEFUALT IS jqthumb
+                    width          : $(".info-file").width()+'px',                // new image width after cropping. DEFAULT IS 100px.
+                    height         : $(".info-file").width()+'px',               // new image height after cropping. DEFAULT IS 100px.
+                    source         : 'src',
+                    zoom           : '1',//缩放比例
+                    method         : 'auto',
+                });
+            };
 
             $("#addLabelimg").click(function () {
                 if (!$("#id").val()){
@@ -369,16 +406,44 @@
             });
 
             $("#addoutput").click(function () {
-                $("#addoutplant").css("display","block");
-                var left = $(window).width()/2 -  $("#addoutplant").width()/2;
-                var top = $(window).height()/2 -  $("#addoutplant").height()/2;
-                $("#addoutplant").css("left",left + "px");
-                $("#addoutplant").css("top",top + "px");
+                if(!$("#id").val()){
+                    alert("请先选择设备");
+                }else{
+                    var optionid = {
+                        'devID': $("#id").val()
+                    };
+                    var result = getOutputTable(optionid);
+                    $("#addoutplant").css("display","block");
+                    var left = $(window).width()/2 -  $("#addoutplant").width()/2;
+                    var top = $(window).height()/2 -  $("#addoutplant").height()/2;
+                    $("#addoutplant").css("left",left + "px");
+                    $("#addoutplant").css("top",top + "px");
 
-                var tbody = document.getElementById('outtable');
-                showProRecords(tbody,)
+                    var tbody = document.getElementById('outtbody');
+                    var profulldata =
+                        [{"pRecID":0,"proID":27,"recordID":77,"recordName":"温度","records":[{"itemList":[{"itemID":65,"itemName":"温度","itemType":"NUMERIC","itemVal":"2.0","recordID":78}],"pRecID":77,"proID":27,"recordID":78,"recordName":"温度"}]},{"pRecID":0,"proID":27,"recordID":79,"recordName":"湿度","records":[{"itemList":[{"itemID":66,"itemName":"湿度","itemType":"NUMERIC","itemVal":"2.0","recordID":80}], "pRecID":79,"proID":27,"recordID":80,"recordName":"湿度"}]},
+                            {"pRecID":0,"proID":27,"recordID":81,"recordName":"低压绕阻","records":[{"itemList":[{"itemID":67,"itemName":"AB","itemType":"NUMERIC","itemVal":"3.0","recordID":82},{"itemID":68,"itemName":"BC","itemType":"NUMERIC","itemVal":"4.0","recordID":82},{"itemID":69,"itemName":"CA","itemType":"NUMERIC","itemVal":"5.0","recordID":82},{"itemID":70,"itemName":"误差 ","itemType":"FORMULA","itemVal":"0.4","recordID":82}],"pRecID":81,"proID":27,"recordID":82,"recordName":"数据"}]},
+                            {"pRecID":0,"proID":27,"recordID":83,"recordName":"中压绕阻","records":[{"itemList":[{"itemID":71,"itemName":"AB","itemType":"NUMERIC","itemVal":"7.0","recordID":84},{"itemID":72,"itemName":"BC","itemType":"NUMERIC","itemVal":"8.0","recordID":84},{"itemID":73,"itemName":"CA","itemType":"NUMERIC","itemVal":"9.0","recordID":84},{"itemID":74,"itemName":"误差 ","itemType":"FORMULA","itemVal":"0.2222222222222222","recordID":84}],"pRecID":83,"proID":27,"recordID":84,"recordName":"数据"}]},
+                            {"pRecID":0,"proID":27,"recordID":85,"recordName":"高压绕阻","records":[{"itemList":[{"itemID":75,"itemName":"AB","itemType":"NUMERIC","itemVal":"11.0","recordID":86},{"itemID":76,"itemName":"BC","itemType":"NUMERIC","itemVal":"12.0","recordID":86},{"itemID":77,"itemName":"CA","itemType":"NUMERIC","itemVal":"13.0","recordID":86},{"itemID":78,"itemName":"误差 ","itemType":"FORMULA","itemVal":"0.15384615384615385","recordID":86}],"pRecID":85,"proID":27,"recordID":86,"recordName":"1.0"}]}];
+                    showProRecords(tbody,profulldata,true);
+                }
             });
 
+            $("#save-btn").click(function () {
+                var optionall = {
+                    'devID': $("#id").val(),
+                    'records': getFullRecords()
+                };
+                var res = addOutput(optionall);
+                if(res.code === 101){
+                    alert(res.message);
+                }else if(res.code === 5004){
+                    alert(res.message);
+                    window.location.href = '../admin-login-register/login.html'
+                }else{
+                    alert(res.message);
+                }
+            });
         });
     </script>
 </head>
@@ -396,22 +461,22 @@
                         <button class="btn btn-primary col-xs-6 col-xs-push-3" id="adddevice">新增设备</button>
                     </div>
                 </div>
-                <div class="row" id="dialogTree-title">设备目录</div>
-                <div class="row">
+                <div class="row no-margin" id="dialogTree-title">设备目录</div>
+                <div class="row scroll-me no-margin" id="dev-menu">
                     <div class=" col-xs-12 col-sm-12">
                         <ul id="deviceTree" class="ztree"></ul>
                     </div>
                 </div>
-                <div class="row" id="tagTree-title">标签目录</div>
-                <div class="row">
+                <div class="row no-margin" id="tagTree-title">标签目录</div>
+                <div class="row scroll-me no-margin" id="tag-menu">
                     <div class=" col-xs-12 col-sm-12">
                         <ul id="tagTree" class="ztree"></ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="pan-right col-xs-12 col-sm-9 ">
-            <div class="row simple-bacc">
+        <div class="col-xs-12 col-sm-9 ">
+            <div class="row simple-bacc pan-right ">
                 <div class="row" id="info-title">
                     <div class="title-2 col-xs-6 col-sm-6">设备详情</div>
                     <div class="col-xs-6 col-sm-6">
@@ -550,14 +615,15 @@
 
                         </div>
                     </div>
-                    <div class="row" id="foot-title">
-                        <div class="col-xs-12">
-                            <div class="col-xs-6">
-                                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editdevice">保存修改</button>
-                            </div>
-                            <div class="col-xs-6">
-                                <button class="btn btn-primary col-xs-8 col-xs-push-2" id="deldevice">删除设备</button>
-                            </div>
+
+                </div>
+                <div class="row" id="foot-title">
+                    <div class="col-xs-12">
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="editdevice">保存修改</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary col-xs-8 col-xs-push-2" id="deldevice">删除设备</button>
                         </div>
                     </div>
                 </div>
@@ -615,19 +681,22 @@
     </div>
 </div>
 <div class="panel panel-primary" id="addoutplant">
-    <div class="panel-heading">
+    <div class="panel-heading" style="z-index: 960">
         <div class="panel-title">设备出厂值</div>
     </div>
-    <div class="panel-body">
-        <table>
-            <tbody id="outtable">
+    <div class="panel-body scroll-me" style="height: 350px; z-index: 950;">
+        <table class="table table-bordered" style="z-index: 950;">
+            <!--<thead style="z-index: 950;">-->
+                <!--<th id="thProHead" colspan="2" style="z-index: 950;">任务数据</th>-->
+            <!--</thead>-->
+            <tbody id="outtbody" style="z-index: 950;">
 
             </tbody>
         </table>
     </div>
-    <div class="panel-footer">
-        <button class="btn btn-primary float-right" id="cancel-btn">取消</button>
-        <button class="btn btn-primary float-right" id="save-btn">保存</button>
+    <div class="panel-footer" style="z-index: 960">
+        <button class="btn btn-primary btn-margin" id="save-btn">保存</button>
+        <button class="btn btn-primary " id="cancel-btn">取消</button>
     </div>
 </div>
 </body>

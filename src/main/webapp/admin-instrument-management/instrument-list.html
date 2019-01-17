@@ -41,6 +41,7 @@
             });
             $(".container-fluid").css("height", $(window).height()+"px");
             $(".pan-left").css("height", $(window).height()-60+"px");
+            $("#ins-menu").css("height", $(window).height()-138+"px");
             $("#scroll").css("height", $('.pan-left').height()-55+"px");
 
             var html ='';
@@ -258,14 +259,14 @@
     </div>
     <div class="row">
         <div class="pan col-xs-12 col-sm-3 ">
-            <div class="row simple-bacc scroll-me pan-left">
+            <div class="row simple-bacc pan-left">
                 <div class="row" id="add-title">
                     <div class=" col-xs-12">
                         <button class="btn btn-primary col-xs-6 col-xs-push-3" id="addinstru">新增仪器</button>
                     </div>
                 </div>
-                <div class="row" id="dialogTree-title">仪器目录</div>
-                <div class="row">
+                <div class="row no-margin" id="dialogTree-title">仪器目录</div>
+                <div class="row scroll-me" id="ins-menu">
                     <div class=" col-xs-12 col-sm-12" style="padding: 0;">
                         <ul id="ins">
 

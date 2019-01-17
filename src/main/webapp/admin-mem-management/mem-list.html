@@ -40,6 +40,8 @@
 
             Vue.component('treeselect', VueTreeselect.Treeselect);
 
+            $(".pan-left").css("height", $(window).height()-60+"px");
+            $("#mem-list").css("height", $(window).height()-138+"px");
             var html = '';
             var newhtml = searchUser(userList,html);
             // console.log(newhtml);
@@ -63,11 +65,21 @@
                     }else{
                         userInfo = getUserInfo(options);
                         console.log(userInfo);
-                        $("#name").html(userInfo.userRealName);
-                        $("#companyName").html(userInfo.companyName);
-                        $("#mobile").html(userInfo.userMobile);
-                        $("#mail").html(userInfo.userMail);
-                        $("#department").html(userInfo.deptName);
+                        if(userInfo.userRealName){
+                            $("#name").html('真实姓名:'+userInfo.userRealName);
+                        }
+                        if(userInfo.companyName){
+                            $("#companyName").html('公司名称:'+userInfo.companyName);
+                        }
+                        if(userInfo.userMobile){
+                            $("#mobile").html('手机号码:'+userInfo.userMobile);
+                        }
+                        if(userInfo.userMail){
+                            $("#mail").html('联系邮箱:'+userInfo.userMail);
+                        }
+                        if(userInfo.deptName){
+                            $("#department").html('所属部门:'+userInfo.deptName);
+                        }
                     }
                 }
 
@@ -187,6 +199,7 @@
                     var top = $(window).height()/2 -  $("#edituser").height()/2;
                     $("#edituser").css("left",left + "px");
                     $("#edituser").css("top",top + "px");
+
                     editDepart = new Vue({
                         el: '#type',
                         data: {
@@ -211,6 +224,7 @@
                     $("#truename2").val(userInfo.userRealName);
                     $("#phonenumber2").val(userInfo.userMobile);
                     $("#email2").val(userInfo.userMail);
+
                     return false;
                 }
                     //获取当前点击记录的数据
@@ -338,7 +352,7 @@
     </div>
     <div class="row">
         <div class="pan col-xs-12 col-sm-3">
-            <div class="row simple-bacc">
+            <div class="row simple-bacc pan-left">
                 <div class="row" id="add-title">
                     <div class=" col-xs-6">
                         <button class="btn btn-primary col-xs-8 col-xs-push-2" id="addgroup">新增组</button>
@@ -348,7 +362,7 @@
                     </div>
                 </div>
                 <div class="row" id="dialogTree-title">人员目录</div>
-                <div class="row" id="mem-list">
+                <div class="row scroll-me" id="mem-list">
                     <div class=" col-xs-12 col-sm-12">
                         <nav class="sidebar-nav">
                             <ul class="metismenu" id="menu">
@@ -361,9 +375,9 @@
             </div>
         </div>
         <div class="pan-right col-xs-12 col-sm-9">
-            <div class="row simple-bacc">
+            <div class="row simple-bacc pan-left">
                 <div class="row" id="info-title">
-                    <div class="title-4 col-xs-6 col-sm-6" id="name"></div>
+                    <div class="title-4 col-xs-12 col-sm-12" id="name">真实姓名:</div>
                 </div>
                 <div class="row" id="info-body">
                     <input type="hidden" id="userid">
@@ -371,19 +385,19 @@
                     <input type="hidden" id="tagName">
                     <div class="col-xs-12 border-bottom">
                         <div class="col-xs-12 title-5">企业/组织</div>
-                        <div class="col-xs-12 title-6" id="companyName"></div>
+                        <div class="col-xs-12 title-6" id="companyName">公司名称:</div>
                     </div>
                     <div class="col-xs-12 border-bottom">
                         <div class="col-xs-12 title-5">电话</div>
-                        <div class="col-xs-12 title-6" id="mobile"></div>
+                        <div class="col-xs-12 title-6" id="mobile">手机号码:</div>
                     </div>
                     <div class="col-xs-12 border-bottom">
                         <div class="col-xs-12 title-5">邮箱</div>
-                        <div class="col-xs-12 title-6" id="mail"></div>
+                        <div class="col-xs-12 title-6" id="mail">联系邮箱:</div>
                     </div>
                     <div class="col-xs-12 border-bottom">
                         <div class="col-xs-12 title-5">部门</div>
-                        <div class="col-xs-12 title-6 " id="department"></div>
+                        <div class="col-xs-12 title-6 " id="department">所属部门:</div>
                     </div>
                 </div>
                 <div class="row" id="foot-title">
