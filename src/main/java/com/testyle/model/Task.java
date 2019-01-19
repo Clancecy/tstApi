@@ -1,5 +1,7 @@
 package com.testyle.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import java.util.List;
 
@@ -27,8 +29,9 @@ public class Task {
     Date endtime;
     Date addtime = new Date();
 
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date atime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date btime;
 
     String staID;

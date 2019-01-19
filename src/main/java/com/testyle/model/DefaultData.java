@@ -15,6 +15,22 @@ public class DefaultData {
     String dataVal;
     Date addtime = new Date();
 
+    public long getDefaultID() {
+        return defaultID;
+    }
+
+    public void setDefaultID(long defaultID) {
+        this.defaultID = defaultID;
+    }
+
+    public String getDevName() {
+        return devName;
+    }
+
+    public void setDevName(String devName) {
+        this.devName = devName;
+    }
+
     public String getTable() {
         return table;
     }

@@ -88,7 +88,7 @@
     <delete id="delete" parameterType="long">
         delete
         from ${table}
-        where defaultID = #{defaultID}
+        where devID = #{devID}
     </delete>
 
     <update id="update" parameterType="DefaultData">

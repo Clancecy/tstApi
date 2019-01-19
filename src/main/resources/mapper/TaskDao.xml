@@ -121,6 +121,29 @@
             </if>
         </where>
     </select>
+    <select id="selectByMap" resultMap="listTask">
+        SELECT a.*,b.testNumber,c.userRealName as builder,d.userRealName as
+        leader,e.devName,f.insName,e.runNumber,f.insNumber FROM
+        ((((`task` a
+        LEFT JOIN test b on a.testID=b.testID)
+        LEFT JOIN user c on a.builderID=c.userID)
+        LEFT JOIN `user` d on a.leaderID=d.userID)
+        LEFT JOIN device e on a.devID=e.devID)
+        LEFT JOIN instrument f on a.insID=f.insID
+        <where>
+            a.taskID in
+            <foreach collection="list" item="taskID" open="(" close=")" separator=",">
+                #{taskID}
+            </foreach>
+            <if test="atime!=null">
+                and DATE_FORMAT(a.endtime,'%Y-%m-%d') between DATE_FORMAT(#{atime},'%Y-%m-%d')
+            </if>
+            <if test="btime!=null">
+                and DATE_FORMAT(#{btime},'%Y-%m-%d')
+            </if>
+            and a.status=1
+        </where>
+    </select>
     <insert id="insert" parameterType="Task">
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="taskID">
             SELECT @@IDENTITY

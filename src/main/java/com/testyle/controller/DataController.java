@@ -43,6 +43,10 @@ public class DataController {
     private ITaskService taskService;
     @Resource
     IAnalysisItemService analysisItemService;
+    @Resource
+    IDefaultDataService defaultDataService;
+    @Resource
+    IDeviceService deviceService;
 
     @Value("${EsUrl}")
     String EsUrl;
@@ -73,11 +77,17 @@ public class DataController {
                 task.setRemark(remark);
                 task.setStatus(status);
                 taskService.update(task);
+                long devID=task.getDevID();
+                DefaultData defaultData=new DefaultData();
+                defaultData.setDevID(devID);
+                List<DefaultData> defaultDataList=defaultDataService.select(defaultData);
+                String defaultStr=JSON.toJSONString(defaultDataList);
                 try {
                     String url = EsUrl + "data/add";
                     FormBody formBody = new FormBody.Builder()
                             .add("url", fname)
                             .add("dataVal", data.getDataVal())
+                            .add("default",defaultStr)
                             .build();
                     Request req = new Request.Builder().url(url)
                             .post(formBody)
@@ -88,7 +98,6 @@ public class DataController {
                     resContent = JSON.parseObject(Str, ResContent.class);
                     String RecStr = resContent.getData().toString();
                     List<Record> dataList = (List<Record>) JSON.parseArray(RecStr, Record.class);
-
                     addDb(dataList, data, task, resContent);
                 } catch (JSONException jsone) {
                     resContent.setCode(109);
@@ -102,6 +111,68 @@ public class DataController {
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
     }
+
+    @RequestMapping("/addDefault")
+    public void addDataDefault(DefaultData data, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        try {
+            System.out.println("进来的dataVal：" + data.getDataVal());
+            if (data.getDevID()==-1
+                    || data.getDataVal() == null) {
+                resContent.setCode(107);
+                resContent.setMessage("参数错误");
+            } else {
+                try {
+                    List<Record> dataList = (List<Record>) JSON.parseArray(data.getDataVal(), Record.class);
+                    addDefaultDb(dataList, data,resContent);
+                } catch (JSONException jsone) {
+                    resContent.setCode(109);
+                    resContent.setMessage(jsone.getMessage());
+                }
+            }
+        } catch (JSONException je) {
+            resContent.setCode(110);
+            resContent.setMessage(je.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+    @RequestMapping("/getDefault")
+    public void getDefaultData(DefaultData data, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(charact);
+        ResContent resContent = new ResContent();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        try {
+            List<DefaultData> dataList = defaultDataService.select(data);
+            String url="";
+            Device device=new Device();
+            if(dataList.size()!=0) {
+                url = EsUrl + "data/getDefault";
+            }else {
+                url = EsUrl + "project/default";
+                device=deviceService.selectByID(data.getDevID());
+            }
+            FormBody formBody = new FormBody.Builder()
+                    .add("devTypeID",String.valueOf(device.getDevTypeID()))
+                    .add("dataVal", JSON.toJSONString(dataList))
+                    .build();
+            Request req = new Request.Builder().url(url)
+                    .post(formBody)
+                    .build();
+            Call call = okHttpClient.newCall(req);
+            Response response1 = call.execute();
+            String proStr = response1.body().string();
+            resContent = JSON.parseObject(proStr, ResContent.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resContent.setCode(102);
+            resContent.setMessage(e.getMessage());
+        }
+        response.getWriter().write(JSON.toJSONString(resContent));
+        response.getWriter().close();
+    }
+
 
     @RequestMapping("/getRecord")
     public void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -561,6 +632,42 @@ public class DataController {
         }
 
     }
+    private void addDefaultDb(List<Record> records, DefaultData data, ResContent resContent) {
+        List<DefaultData> List = new ArrayList<>();
+        defaultDataService.delete(data.getTable(), data.getDevID());
+        for (Record chunk : records) {
+            List<Record> recordList = chunk.getRecords();
+            int recCount = recordList.size();
+            for (int i = 0; i < recCount; i++) {
+                Record record = recordList.get(i);
+                long recordID = record.getRecordID();
+                int testOrder = i + 1;
+                for (Item item : record.getItemList()
+                ) {
+                    DefaultData tempData = new DefaultData();
+                    tempData.setDevID(data.getDevID());
+                    tempData.setProID(data.getProID());
+                    long itemID = item.getItemID();
+                    String dataVal = item.getItemVal();
+                    tempData.setRecordID(recordID);
+                    tempData.setTestOrder(testOrder);
+                    tempData.setItemID(itemID);
+                    tempData.setDataVal(dataVal);
+                    tempData.setProID(chunk.getProID());
+                    List.add(tempData);
+                }
+            }
+        }
+        int count = defaultDataService.insertList(data.getTable(), List);
+        if (count > 0) {
+            resContent.setCode(101);
+            resContent.setMessage("录入成功");
+        } else {
+            resContent.setCode(104);
+            resContent.setMessage("录入失败");
+        }
+    }
+
 
     private int writeToItemExcel(Workbook wb, List<Record> newList) {
         Sheet sheet = wb.getSheetAt(1);

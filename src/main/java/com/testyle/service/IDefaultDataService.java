@@ -7,7 +7,7 @@ import java.util.List;
 public interface IDefaultDataService {
     List<DefaultData> select(DefaultData data);
     int insert(DefaultData data);
-    int delete(String table, long dataID);
+    int delete(String table, long proID);
     int update(DefaultData data);
     int insertList(String table, List<DefaultData> dataList);
     long selOne(DefaultData data);

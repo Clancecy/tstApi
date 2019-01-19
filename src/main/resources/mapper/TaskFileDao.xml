@@ -62,6 +62,9 @@
             <if test="fileID!=-1">
                 and a.fileID=#{fileID}
             </if>
+            <if test="fileType!=-1">
+                and b.fileType=#{fileType}
+            </if>
         </where>
     </select>
 </mapper>

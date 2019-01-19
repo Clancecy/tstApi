@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
@@ -53,5 +54,10 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public Task select(long taskID) {
         return taskDao.selectByID(taskID);
+    }
+
+    @Override
+    public List<Task> select(List<Long> taskIDs, Date atime, Date btime) {
+        return taskDao.selectByMap(taskIDs,atime,btime);
     }
 }
