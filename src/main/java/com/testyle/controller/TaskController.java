@@ -191,19 +191,17 @@ public class TaskController {
         } else {
             TaskUser taskUser = new TaskUser();
             taskUser.setUserID(userID);
-            List<TaskUser> taskUserList = taskUserService.select(taskUser);
+            List<TaskUser> taskUserList = new ArrayList<>();
+            taskUserList = taskUserService.select(taskUser);
             List<Long> taskIDs = new ArrayList<>();
             addTaskIDList(taskUserList, taskIDs);
-            List<Task> taskList = taskService.selectList(taskIDs);
+            List<Task> taskList = new ArrayList<>();
+            taskList = taskService.selectList(taskIDs);
             addStaionInfo(taskList);
-            if (taskList.size() == 0) {
-                resContent.setCode(102);
-                resContent.setMessage("没有任务");
-            } else {
-                resContent.setCode(101);
-                resContent.setMessage("获取成功");
-                resContent.setData(taskList);
-            }
+            resContent.setCode(101);
+            resContent.setMessage("获取成功");
+            resContent.setData(taskList);
+
         }
         response.getWriter().write(JSON.toJSONString(resContent));
         response.getWriter().close();
@@ -214,39 +212,32 @@ public class TaskController {
         response.setCharacterEncoding(charact);
         ResContent resContent = new ResContent();
         try {
-        long userID = Long.parseLong(request.getParameter("userID"));
-        String astr = request.getParameter("atime");
-        String bstr = request.getParameter("btime");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            long userID = Long.parseLong(request.getParameter("userID"));
+            String astr = request.getParameter("atime");
+            String bstr = request.getParameter("btime");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date aTime = sdf.parse(astr);
-        Date bTime = sdf.parse(bstr);
-        if (userID == 0) {
-            resContent.setCode(103);
-            resContent.setMessage("参数错误");
-        } else {
-            TaskUser taskUser = new TaskUser();
-            taskUser.setUserID(userID);
-            List<TaskUser> taskUserList = taskUserService.select(taskUser);
-            List<Long> taskIDs = new ArrayList<>();
-            addTaskIDList(taskUserList, taskIDs);
-            if (taskIDs.size() == 0) {
-                resContent.setCode(104);
-                resContent.setMessage("没有数据");
+            Date aTime = sdf.parse(astr);
+            Date bTime = sdf.parse(bstr);
+            if (userID == 0) {
+                resContent.setCode(103);
+                resContent.setMessage("参数错误");
             } else {
-                List<Task> taskList = taskService.select(taskIDs, aTime, bTime);
+                TaskUser taskUser = new TaskUser();
+                taskUser.setUserID(userID);
+                List<TaskUser> taskUserList = new ArrayList<>();
+                taskUserList = taskUserService.select(taskUser);
+                List<Long> taskIDs = new ArrayList<>();
+                addTaskIDList(taskUserList, taskIDs);
+                List<Task> taskList = new ArrayList<>();
+                taskList = taskService.select(taskIDs, aTime, bTime);
                 addStaionInfo(taskList);
-                if (taskList.size() == 0) {
-                    resContent.setCode(102);
-                    resContent.setMessage("没有任务");
-                } else {
-                    resContent.setCode(101);
-                    resContent.setMessage("获取成功");
-                    resContent.setData(taskList);
-                }
+                resContent.setCode(101);
+                resContent.setMessage("获取成功");
+                resContent.setData(taskList);
+
             }
-        }
-        }catch (Exception e){
+        } catch (Exception e) {
             resContent.setCode(103);
             resContent.setMessage(e.getMessage());
         }
@@ -257,11 +248,15 @@ public class TaskController {
     private void addStaionInfo(List<Task> taskList) {
         for (Task task : taskList) {
             Test test = testService.select(task.getTestID());
-            PlanDan planDan = planDanService.select(test.getPlanDanID());
-            Station station = stationService.selectStaton(planDan.getStaID());
-            task.setStaID(String.valueOf(station.getStaID()));
-            task.setStaName(station.getStaName());
-            task.setAddress(station.getAddress());
+            if(test!=null) {
+                PlanDan planDan = planDanService.select(test.getPlanDanID());
+                if(planDan!=null) {
+                    Station station = stationService.selectStaton(planDan.getStaID());
+                    task.setStaID(String.valueOf(station.getStaID()));
+                    task.setStaName(station.getStaName());
+                    task.setAddress(station.getAddress());
+                }
+            }
         }
     }
 
@@ -299,7 +294,7 @@ public class TaskController {
 
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
-                    String fname = file.getOriginalFilename() + Utils.getNumberForPK();
+                    String fname = file.getOriginalFilename();
                     FileUtils.copyInputStreamToFile(file.getInputStream(), new File(
                             imageRoot,
                             fname));
@@ -316,7 +311,7 @@ public class TaskController {
                     taskFile.setFileID(file1.getFileID());
                     int count = taskFileService.insert(taskFile);
                     Utils.dealForAdd(resContent, count);
-                }else {
+                } else {
 
                 }
             }

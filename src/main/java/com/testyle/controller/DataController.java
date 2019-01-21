@@ -72,7 +72,8 @@ public class DataController {
                 resContent.setCode(107);
                 resContent.setMessage("参数错误");
             } else {
-                Task task = taskService.select(data.getTaskID());
+                Task task = new Task();
+                task=taskService.select(data.getTaskID());
                 task.setUrl(fname);
                 task.setRemark(remark);
                 task.setStatus(status);

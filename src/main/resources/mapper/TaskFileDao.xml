@@ -14,17 +14,17 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ID">
             SELECT @@IDENTITY
         </selectKey>
-        insert into taskfile (fileID,taskID,addtime)
-        values (#{fileID},#{taskID},#{addtime} );
+        insert into taskfile (fileID,taskID,fileType,addtime)
+        values (#{fileID},#{taskID},#{fileType},#{addtime} );
     </insert>
     <insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
         <selectKey resultType="long" keyProperty="ID">
             SELECT @@IDENTITY
         </selectKey>
-        INSERT into taskfile (fileID,taskID,proName,addtime) values
+        INSERT into taskfile (fileID,taskID,proName,fileType,addtime) values
         <!--data就是List里每一项的对象名，要用","分割每一条数据，最后要";"结尾-->
         <foreach collection="list" item="TaskFile" index="index" separator="," close=";">
-            ( #{TaskFile.fileID},#{TaskFile.taskID},#{TaskFile.addtime})
+            ( #{TaskFile.fileID},#{TaskFile.taskID},#{TaskFile.fileType},#{TaskFile.addtime})
         </foreach>
     </insert>
     <delete id="delete" parameterType="TaskFile">
@@ -39,6 +39,9 @@
             </if>
             <if test="fileID!=-1">
                 and fileID=#{fileID}
+            </if>
+            <if test="fileType!=-1">
+                and fileType=#{fileType}
             </if>
         </where>
     </delete>
@@ -63,7 +66,7 @@
                 and a.fileID=#{fileID}
             </if>
             <if test="fileType!=-1">
-                and b.fileType=#{fileType}
+                and a.fileType=#{fileType}
             </if>
         </where>
     </select>

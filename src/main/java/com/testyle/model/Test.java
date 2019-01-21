@@ -15,12 +15,21 @@ public class Test {
     long leaderID=-1;
     String leader;
     Date endtime;
+    String url;
     int status=-1;
     Date addtime=new Date();
 
     String taskRate;
 
     List<TestUser> testUserList;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public Date getEndtime() {
         return endtime;
