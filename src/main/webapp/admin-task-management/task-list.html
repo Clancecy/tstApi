@@ -237,6 +237,7 @@
                 taskInfo = getTaskInfo(options);
                 // console.log(taskInfo);
                 $("#taskid").val(id);
+                $("#status").val(taskInfo.status);
                 $("#taskNumber").val(taskInfo.taskNumber);
                 $("#addDate").val(_getDate(taskInfo.addtime));
                 if(taskInfo.recordNum === -1){
@@ -335,9 +336,11 @@
             $("#checkTask").click(function () {
                 if(!$("#taskid").val()){
                     alert("请选择任务单");
+                }else if($("#status").val() != '1'){
+                    alert('该任务未完成，无法查看');
                 }else{
-                    var link = "../admin-task-management/task-detail.html" + '?taskID=' + $("#taskid").val();
-                    window.location.href = link;
+                        var link = "../admin-task-management/task-detail.html" + '?taskID=' + $("#taskid").val();
+                        window.location.href = link;
                 }
             });
             $('#filterTask').click(function () {
@@ -368,6 +371,7 @@
         <div class="row task-body simple-bacc">
             <div class="col-xs-12 col-sm-6">
                 <input type="hidden" id="taskid">
+                <input type="hidden" id="status">
                 <div class="input-group input-class">
                     <span class="input-group-addon" id="edittaskNumber">任务编号</span>
                     <input id="taskNumber" type="text" class="form-control" placeholder="任务单编号" aria-describedby="edittaskNumber" readonly>

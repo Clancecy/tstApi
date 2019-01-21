@@ -16,14 +16,13 @@
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <script src="../js/html5shiv/html5shiv.min.js"></script>
     <script src="../js/respond/respond.min.js"></script>
+    <script src="../js/admin-system/get-list.js"></script>
+    <script src="../js/admin-system/change-list.js"></script>
+    <script src="../js/admin-system/default-attribute.js"></script>
     <script src="../js/img/jqthumb.min.js"></script>
     <script src="../lightbox2/js/lightbox.min.js"></script>
     <script src="../videoJS/video.min.js"></script>
     <script src="../audioJS/js/vpplayer.js"></script>
-    <script src="../js/vue/vue.min.js"></script>
-    <script src="../js/admin-system/get-list.js"></script>
-    <script src="../js/admin-system/change-list.js"></script>
-    <script src="../js/admin-system/default-attribute.js"></script>
     <script>
         $(function () {
             var task = getUrl();
@@ -31,54 +30,88 @@
                 'taskID': task['taskID']
             };
             var taskDetail = getTaskDetail(options);
-            if(taskDetail.planDan.cycType === 0){
-                taskDetail.planDan.cycName = '临时性计划';
-            }else if(taskDetail.planDan.cycType === 1){
-                taskDetail.planDan.cycName = '周期性计划';
+            if(taskDetail.planDan){
+                if(taskDetail.planDan.cycType === 0){
+                    taskDetail.planDan.cycName = '临时性计划';
+                }else if(taskDetail.planDan.cycType === 1){
+                    taskDetail.planDan.cycName = '周期性计划';
+                }
             }
             taskDetail.addDate = _getDate(taskDetail.addtime);
             console.log(taskDetail);
 
-            var tasktitle = new Vue({
-                el: '#tasktitle',
-                data: {
-                    taskNumber: taskDetail.taskNumber,
+            if(taskDetail){
+                if(taskDetail.planDan){
+                    $("#taskNumber").html('任务单号: '+taskDetail.taskNumber);
+                    $("#planDanNumber").html('任务单号: '+taskDetail.planDan.planDanID);
+                    $("#station").html('计划单号：'+taskDetail.planDan.staName);
+                    $("#planName").html('站点名称：'+taskDetail.planDan.planName);
+                    $("#planType").html('计划方案：'+taskDetail.planDan.cycName);
                 }
-            });
-            var taskInfo = new Vue({
-                el: '#taskInfo',
-                data:{
-                    planDanNumber: taskDetail.planDan.planDanID,
-                    station: taskDetail.planDan.staName,
-                    planName: taskDetail.planDan.planName,
-                    planType: taskDetail.planDan.cycName,
-                    addTime: taskDetail.addDate,
-                    userName: taskDetail.builder,
-                    testNumber: taskDetail.testNumber,
-                    devName: taskDetail.devName,
-                    devID: taskDetail.runNumber,
-                    insName: taskDetail.insName,
-                    insID: taskDetail.insNumber,
-                    userNames: taskDetail.leader,
-
-                }
-            });
-            var conclusion = new Vue({
-                el: '#conclusion',
-                data: {
-                    result: '合格',
-                    taskDes: '所有分接位各相变比与标称值误差均在规定范围内，组别与标称值一致，试验合格。',
-                    testTime: '2018.12.14  15:48',
-                    testUser: '王五'
-                }
-            });
+                $("#addTime").html('计划类型：'+taskDetail.addDate);
+                $("#userName").html('创建时间：'+taskDetail.builder);
+                $("#testNumber").html('创建人：'+taskDetail.testNumber);
+                $("#devName").html('试验单号：'+taskDetail.devName);
+                $("#devID").html('设备名称：'+taskDetail.runNumber);
+                $("#insName").html('仪器名称：'+taskDetail.insName);
+                $("#insID").html('仪器编号：'+taskDetail.insNumber);
+                $("#userNames").html('执行人：'+taskDetail.leader);
+                $("#result").html('合格');
+                $("#taskDes").html(taskDetail.remark);
+                $("#testTime").html('试验时间：'+_getDate(taskDetail.endtime));
+                $("#testUser").html('试验人：'+taskDetail.leader);
+            }
 
             var html = '';
             html += '<iframe src="../admin-frame-management/pdfJS/web/viewer.html?file=';
-            html += encodeURIComponent(getResearchUrl()+'/project/getPdf?proID='+taskDetail.taskID);
+            html += encodeURIComponent(getResearchUrl()+'/project/report?path='+taskDetail.url+'&fname='+taskDetail.proName+'-预览');
             html += '" width="100%" height="365px" security="restricted" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>';
             console.log(html);
             $("#taskData").html(html);
+
+            var optionImg = {
+                'taskID': task['taskID'],
+                'fileType': 1
+            };
+            var ImgInfo = getImgFiles(optionImg);
+            console.log(ImgInfo);
+            var imgHtml = '';
+            for(i in ImgInfo){
+                imgHtml +=
+                    '<div class="col-xs-4">\n' +
+                    '    <a href="'+getUserUrl()+ImgInfo[i].url+'" data-lightbox="image-1" data-title="'+ImgInfo[i].remark+'">\n' +
+                    '          <img src="'+getUserUrl()+ImgInfo[i].url+'" alt="image" class="my-img">\n' +
+                    '     </a>\n' +
+                    ' </div>';
+            }
+            $("#img-task").html(imgHtml);
+
+            var optionvideo = {
+                'taskID': task['taskID'],
+                'fileType': 2
+            };
+            var videoInfo = getImgFiles(optionvideo);
+            var videoHtml = '';
+            for(i in videoInfo){
+                videoHtml +=
+                    '<video id="video-1" class="video-js vjs-default-skin col-xs-12" controls preload="none"\n' +
+                    '                                       poster="../videos/posters/oceans.png">\n' +
+                    '        <source src="'+getUserUrl()+videoInfo[i].url+'" type="video/mp4">\n' +
+                    '</video>'
+            }
+            $("#rec-task").html(videoHtml);
+
+            var optionmusic = {
+                'taskID': task['taskID'],
+                'fileType': 3
+            };
+            var musicInfo = getImgFiles(optionmusic);
+            var musicHtml = '';
+            for(i in musicInfo){
+                musicHtml +=
+                    '<audio src="'+getUserUrl()+musicInfo[i].url+'" controls="controls" class="col-xs-12"></audio>'
+            }
+            $("#muc-task").html(musicHtml);
 
             $("#img-task").css('height',$("#img-task").width() + 'px');
             $("#img-task .col-xs-4").css('height',$("#img-task .col-xs-4").width() + 'px');
@@ -86,13 +119,9 @@
             $("#muc-task").css('height',$("#muc-task").width() + 'px');
             $("#video-1").css('height',$("#video-1").width() + 'px');
             $("img").jqthumb({
-                classname      : 'jqthumb',             // class name. DEFUALT IS jqthumb
+                classname      : 'my-img',             // class name. DEFUALT IS jqthumb
                 width          : $("#img-task .col-xs-4").width() + 'px',                // new image width after cropping. DEFAULT IS 100px.
                 height         : $("#img-task .col-xs-4").width() + 'px',                // new image height after cropping. DEFAULT IS 100px.
-                position       : {
-                    x : '50%',                          // x position of the image. DEFAULT is 50%. 50% also means centerize the image.
-                    y : '50%'                           // y position of the image. DEFAULT is 50%. 50% also means centerize the image.
-                },
                 source         : 'src',
                 zoom           : '1',//缩放比例
                 method         : 'auto',
@@ -110,45 +139,45 @@
     <div class="row" id="tasktitle">
         <div class="col-xs-6 no-padding">
                 <a class="title" href="javascript:history.go(-1);"><i class="fa  fa-arrow-circle-left fa-lg"></i></a>
-                <span class="title">任务单号: {{taskNumber}}</span>
+                <span class="title" id="taskNumber">任务单号: </span>
         </div>
     </div>
     <div class="row simple-bacc font-little font-center" id="taskInfo">
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">计划单号：{{planDanNumber}}</div>
+            <div class="col-xs-12 col-sm-12" id="planDanNumber">计划单号：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">站点名称：{{station}}</div>
+            <div class="col-xs-12 col-sm-12" id="station">站点名称：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">计划方案：{{planName}}</div>
+            <div class="col-xs-12 col-sm-12" id="planName">计划方案：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">计划类型：{{planType}}</div>
+            <div class="col-xs-12 col-sm-12" id="planType">计划类型：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">创建时间：{{addTime}}</div>
+            <div class="col-xs-12 col-sm-12" id="addTime">创建时间：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">创建人：{{userName}}</div>
+            <div class="col-xs-12 col-sm-12" id="userName">创建人：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">试验单号：{{testNumber}}</div>
+            <div class="col-xs-12 col-sm-12" id="testNumber">试验单号：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">设备名称：{{devName}}</div>
+            <div class="col-xs-12 col-sm-12" id="devName">设备名称：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">设备编号：{{devID}}</div>
+            <div class="col-xs-12 col-sm-12" id="devID">设备编号：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">仪器名称：{{insName}}</div>
+            <div class="col-xs-12 col-sm-12" id="insName">仪器名称：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">仪器编号：{{insID}}</div>
+            <div class="col-xs-12 col-sm-12" id="insID">仪器编号：</div>
         </div>
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 no-padding padding-top padding-bottom">
-            <div class="col-xs-12 col-sm-12">执行人：{{userNames}}</div>
+            <div class="col-xs-12 col-sm-12" id="userNames">执行人：</div>
         </div>
     </div>
     <div class="row">
@@ -164,19 +193,19 @@
                 <div class="col-xs-12 col-sm-12" >
                     <div class="col-xs-12 col-sm-12" id="conclusion">
                         <div class="col-xs-2 col-sm-2">
-                            <h1>{{result}}</h1>
+                            <h1 id="result"></h1>
                         </div>
                         <div class="col-xs-10 col-sm-10">
                             <div class="row">
                                 <h5>说明：</h5>
                             </div>
                             <div class="row">
-                                <p>{{taskDes}}</p>
+                                <p id="taskDes"></p>
                             </div>
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6" style="float: right">
-                                    <div class="col-xs-12 col-sm-6">试验时间：{{testTime}}</div>
-                                    <div class="col-xs-12 col-sm-6">试验人：{{testUser}}</div>
+                                    <div class="col-xs-12 col-sm-6" id="testTime">试验时间：</div>
+                                    <div class="col-xs-12 col-sm-6" id="testUser">试验人：</div>
                                 </div>
                             </div>
                         </div>
@@ -190,66 +219,19 @@
                         <div class="col-xs-12 col-sm-4 col-lg-12 no-padding">
                             <div class="col-xs-12 col-sm-12 no-padding">图片</div>
                             <div class="col-xs-12 col-sm-12" id="img-task">
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image-1" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-2.jpg" data-lightbox="image-2" data-title="文字说明">
-                                        <img src="../images/img-2.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
-                                <div class="col-xs-4">
-                                    <a href="../images/img-1.jpg" data-lightbox="image" data-title="文字说明">
-                                        <img src="../images/img-1.jpg" alt="image" class="jqthumb">
-                                    </a>
-                                </div>
+
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-4 col-lg-12 no-padding">
                             <div class="col-xs-12 col-sm-12 no-padding">视频</div>
                             <div class="col-xs-12 col-sm-12" id="rec-task">
-                                <video id="video-1" class="video-js vjs-default-skin col-xs-12" controls preload="none"
-                                       poster="../videos/posters/oceans.png">
-                                    <source src="../videos/oceans.mp4" type="video/mp4">
-                                </video>
+
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-4 col-lg-12 no-padding">
                             <div class="col-xs-12 col-sm-12 no-padding">音频</div>
                             <div class="col-xs-12 col-sm-12" id="muc-task">
-                                <audio src="../audios/juicy.mp3" class="col-xs-12"></audio>
+
                             </div>
                         </div>
                     </div>

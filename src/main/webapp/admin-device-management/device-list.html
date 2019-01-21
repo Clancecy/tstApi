@@ -410,39 +410,39 @@
                     alert("请先选择设备");
                 }else{
                     var optionid = {
-                        'devID': $("#id").val()
+                        'devID': $("#id").val(),
                     };
                     var result = getOutputTable(optionid);
-                    $("#addoutplant").css("display","block");
-                    var left = $(window).width()/2 -  $("#addoutplant").width()/2;
-                    var top = $(window).height()/2 -  $("#addoutplant").height()/2;
-                    $("#addoutplant").css("left",left + "px");
-                    $("#addoutplant").css("top",top + "px");
-
-                    var tbody = document.getElementById('outtbody');
-                    var profulldata =
-                        [{"pRecID":0,"proID":27,"recordID":77,"recordName":"温度","records":[{"itemList":[{"itemID":65,"itemName":"温度","itemType":"NUMERIC","itemVal":"2.0","recordID":78}],"pRecID":77,"proID":27,"recordID":78,"recordName":"温度"}]},{"pRecID":0,"proID":27,"recordID":79,"recordName":"湿度","records":[{"itemList":[{"itemID":66,"itemName":"湿度","itemType":"NUMERIC","itemVal":"2.0","recordID":80}], "pRecID":79,"proID":27,"recordID":80,"recordName":"湿度"}]},
-                            {"pRecID":0,"proID":27,"recordID":81,"recordName":"低压绕阻","records":[{"itemList":[{"itemID":67,"itemName":"AB","itemType":"NUMERIC","itemVal":"3.0","recordID":82},{"itemID":68,"itemName":"BC","itemType":"NUMERIC","itemVal":"4.0","recordID":82},{"itemID":69,"itemName":"CA","itemType":"NUMERIC","itemVal":"5.0","recordID":82},{"itemID":70,"itemName":"误差 ","itemType":"FORMULA","itemVal":"0.4","recordID":82}],"pRecID":81,"proID":27,"recordID":82,"recordName":"数据"}]},
-                            {"pRecID":0,"proID":27,"recordID":83,"recordName":"中压绕阻","records":[{"itemList":[{"itemID":71,"itemName":"AB","itemType":"NUMERIC","itemVal":"7.0","recordID":84},{"itemID":72,"itemName":"BC","itemType":"NUMERIC","itemVal":"8.0","recordID":84},{"itemID":73,"itemName":"CA","itemType":"NUMERIC","itemVal":"9.0","recordID":84},{"itemID":74,"itemName":"误差 ","itemType":"FORMULA","itemVal":"0.2222222222222222","recordID":84}],"pRecID":83,"proID":27,"recordID":84,"recordName":"数据"}]},
-                            {"pRecID":0,"proID":27,"recordID":85,"recordName":"高压绕阻","records":[{"itemList":[{"itemID":75,"itemName":"AB","itemType":"NUMERIC","itemVal":"11.0","recordID":86},{"itemID":76,"itemName":"BC","itemType":"NUMERIC","itemVal":"12.0","recordID":86},{"itemID":77,"itemName":"CA","itemType":"NUMERIC","itemVal":"13.0","recordID":86},{"itemID":78,"itemName":"误差 ","itemType":"FORMULA","itemVal":"0.15384615384615385","recordID":86}],"pRecID":85,"proID":27,"recordID":86,"recordName":"1.0"}]}];
-                    showProRecords(tbody,profulldata,true);
+                    if(result){
+                        var tbody = document.getElementById('outtbody');
+                        showProRecords(tbody,result,true);
+                        $("#addoutplant").css("display","block");
+                        var left = $(window).width()/2 -  $("#addoutplant").width()/2;
+                        var top = $(window).height()/2 -  $("#addoutplant").height()/2;
+                        $("#addoutplant").css("left",left + "px");
+                        $("#addoutplant").css("top",top + "px");
+                    }
                 }
             });
 
             $("#save-btn").click(function () {
                 var optionall = {
                     'devID': $("#id").val(),
-                    'records': getFullRecords()
+                    'dataVal': JSON.stringify(getFullRecords())
                 };
                 var res = addOutput(optionall);
                 if(res.code === 101){
                     alert(res.message);
+                    $("#addoutplant").css("display","none");
                 }else if(res.code === 5004){
                     alert(res.message);
                     window.location.href = '../admin-login-register/login.html'
                 }else{
                     alert(res.message);
                 }
+            });
+            $("#cancel-btn").click(function () {
+                $("#addoutplant").css("display","none");
             });
         });
     </script>

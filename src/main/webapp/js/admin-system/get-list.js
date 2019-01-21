@@ -1,8 +1,8 @@
-// var userurl = 'http://47.98.136.246:80';
-// var researchurl = 'http://47.98.136.246/ES';
+var userurl = 'http://47.98.136.246:80';
+var researchurl = 'http://47.98.136.246/ES';
 
-var userurl = 'http://192.168.137.140:80';
-var researchurl = 'http://192.168.137.140:8080/ES';
+// var userurl = 'http://192.168.137.140:80';
+// var researchurl = 'http://192.168.137.140:8080/ES';
 
 function getUrl() {
     var url = location.search; //获取url中"?"符后的字串
@@ -1415,7 +1415,37 @@ function getOutputTable(options) {
             withCredentials: true // 这里设置了withCredentials
         },
         crossDomain: true,
-        url: userurl+'/device/report',
+        url: userurl+'/data/getDefault',
+        data: options,
+        async:false,
+        success: function (data) {
+            var result = JSON.parse(data);
+            // console.log(result.data);
+            if(result.code === 101){
+                pSInfo = result.data;
+            }else if(result.code === 5004){
+                alert(result.message);
+                window.location.href = '../admin-login-register/login.html'
+            }else{
+                alert(result.message);
+            }
+        },
+        error: function(err) {
+            console.error(err);
+        }
+    });
+    return pSInfo;
+}
+
+function getImgFiles(options) {
+    var pSInfo;
+    $.ajax({
+        type: 'GET',
+        xhrFields: {
+            withCredentials: true // 这里设置了withCredentials
+        },
+        crossDomain: true,
+        url: userurl+'/task/taskFile',
         data: options,
         async:false,
         success: function (data) {
