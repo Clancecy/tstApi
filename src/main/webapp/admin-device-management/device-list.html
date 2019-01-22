@@ -379,7 +379,10 @@
                 var res = updateDevice(options);
                 if(res.code === 101){
                     alert(res.message);
-                    devInfo = getDevInfo($("#id").val());
+                    var optionrenew = {
+                        'devID':$("#id").val()
+                    };
+                    devInfo = getDevInfo(optionrenew);
                     reNewDevice(devInfo,adselDevType);
                 }else if(res.code === 5004){
                     alert(res.message);
