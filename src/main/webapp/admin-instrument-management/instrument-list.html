@@ -48,10 +48,10 @@
             for(i in insList){
                 html +=
                     '<li data-id="'+insList[i].insID+'">\n' +
-                    '                                <a href="#">\n' +
+                    '        <a href="#">\n' +
                     '                                    <div class="row">\n' +
                     '                                        <div class="col-xs-4 ins-img-title">\n' +
-                    '                                            <img src="../images/img-1.jpg" class="jqthumb3 ins-img" alt="image">\n' +
+                    '                                            <img src="'+insList[i].insUrl+'" class="jqthumb3 ins-img" alt="image">\n' +
                     '                                        </div>\n' +
                     '                                        <div class="col-xs-8">\n' +
                     '                                            <div class="row">\n' +
@@ -62,7 +62,7 @@
                     '                                        </div>\n' +
                     '                                    </div>\n' +
                     '                                </a>\n' +
-                    '                            </li>'
+                    '</li>'
             }
             $("#ins").html(html);
 
