@@ -673,10 +673,18 @@
                 if(!$("#taskid").val()){
                     alert("请选择任务单");
                 }else{
+                    var proName;
+                    for(i in proList){
+                        if(proList[i].proID === project.value){
+                            proName = proList[i].proName;
+                            break;
+                        }
+                    }
                     var options = {
                         'taskID': $("#taskid").val(),
                         'devID': device.value,
                         'proID': project.value,
+                        'proName': proName,
                         'userIDs': JSON.stringify(taskMember.value),
                         'leaderID': taskManager.value
                     };
@@ -702,10 +710,10 @@
             });
             $("#cancel-edit-btn").click(function () {
                 $("#edittask").css("display","none");
-                device.setValue(null);
-                project.setValue(null);
-                taskMember.setValue(null);
-                taskManager.setValue(null);
+                // device.setValue(null);
+                // project.setValue(null);
+                // taskMember.setValue(null);
+                // taskManager.setValue(null);
             });
             $("#delTask").click(function () {
                 if(!$("#taskid").val()){
