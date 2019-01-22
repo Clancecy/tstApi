@@ -170,9 +170,9 @@ body{
 .selected-back{
     background-color: #c8c8c8;
 }
-#taskData{
-    height: 365px;
-}
+/*#taskData{*/
+    /*height: 365px;*/
+/*}*/
 .little-padding{
     padding: 0 5px 0 5px;
 }

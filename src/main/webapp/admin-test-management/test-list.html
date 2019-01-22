@@ -374,8 +374,8 @@
                 testInfo = getTestInfo(options);
                 console.log(testInfo);
                 $("#testid").val(testInfo.testID);
-                $("#testNumber").val(testInfo.testID);
-                $("#testTime").val(testInfo.testID);
+                $("#testNumber").val(testInfo.testNumber);
+                $("#testTime").val(_getDate(testInfo.addtime));
                 // devType.setValue(testInfo.devTypeID);
                 // item.setValue(testInfo.proID);
                 var mems = new Array();
@@ -414,7 +414,7 @@
                 // item.setValue(testInfo.proID);
                 var mems = new Array();
                 if(!testInfo.testUserList){
-                    alert("没有试验成员")
+                    alert("没有试验成员");
                 }else {
                     for(i in testInfo.testUserList){
                         mems.push(testInfo.testUserList[i].userID);

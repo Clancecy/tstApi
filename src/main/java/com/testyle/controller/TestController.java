@@ -61,14 +61,12 @@ public class TestController {
             oldTest.setLeaderID(test.getLeaderID());
             int count = testService.update(oldTest);
             if (count > 0) {
-                count = testUserService.delete(test.getTestID());
-                if (count > 0) {
-                    count = addListTestUser(test.getTestID(), userIDs);
-                    Utils.dealForUpdate(count, resContent);
-                } else {
-                    resContent.setCode(104);
-                    resContent.setMessage("新建失败");
-                }
+                testUserService.delete(test.getTestID());
+                count = addListTestUser(test.getTestID(), userIDs);
+                Utils.dealForUpdate(count, resContent);
+            }else {
+                resContent.setCode(104);
+                resContent.setMessage("更新失败");
             }
         }
         response.getWriter().write(JSON.toJSONString(resContent));
