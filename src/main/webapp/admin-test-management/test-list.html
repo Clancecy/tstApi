@@ -202,7 +202,7 @@
             });
             device.$watch('value',function () {
                 if(!device.value){
-                    alert("请先选择设备")
+                    alert("请先选择设备");
                 }else{
                     var optionDevice ={
                         'devID': device.value
@@ -688,10 +688,10 @@
                             'testID': $("#testid").val()
                         };
                         renewTaskTable(taskTable,option);
-                        device.setValue(null);
-                        project.setValue(null);
-                        taskMember.setValue(null);
-                        taskManager.setValue(null);
+                        // device.setValue(null);
+                        // project.setValue(null);
+                        // taskMember.setValue(null);
+                        // taskManager.setValue(null);
                     }else if(res.code === 5004){
                         alert(res.message);
                         window.location.href = '../admin-login-register/login.html'
